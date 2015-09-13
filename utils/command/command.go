@@ -2,7 +2,16 @@
 // way to execute a command and return stdout and stderr
 package command
 
-import "os/exec"
+import (
+	"os/exec"
+	"strings"
+)
+
+// Build builds up a command from a list of strings and returns
+// its string interpretation
+func Build(args ...string) string {
+	return strings.Join(args, " ")
+}
 
 // Run executes a command with arbitrary number of arguments passed in
 // as the function's parameter and returns combined stdour and stderr

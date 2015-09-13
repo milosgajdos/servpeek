@@ -9,14 +9,25 @@ type Pkg struct {
 	Name string
 	// Version is a package version
 	Version string
-	// Manager is a package manager
-	Manager manager.Manager
+	// Type is a package type
+	Type string
 }
 
-func (p *Pkg) IsInstalled() bool {
-	return p.Manager.CheckInstalled(p.Name)
+// IsInstalled return true if the package is installed
+func (p *Pkg) IsInstalled() (bool, error) {
+	pkgMgr, err := manager.NewPkgManager(p.Type)
+	if err != nil {
+		return false, err
+	}
+	return pkgMgr.CheckInstalled(p.Name)
 }
 
-func (p *Pkg) IsInstalledVersion() bool {
-	return p.Manager.CheckInstalledVersion(p.Name, p.Version)
+// IsInstalledVersion returns true installed package is
+// of the given version
+func (p *Pkg) IsInstalledVersion() (bool, error) {
+	pkgMgr, err := manager.NewPkgManager(p.Type)
+	if err != nil {
+		return false, err
+	}
+	return pkgMgr.CheckInstalledVersion(p.Name, p.Version)
 }
