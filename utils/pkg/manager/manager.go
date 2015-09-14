@@ -1,39 +1,46 @@
 // package manager provides an implementation of package manager
+// this sounds kind of silly redundant, so ignore the naming
 package manager
 
-// Manager defines generic software package manager interface
-type Manager interface {
-	// CheckInstalled returs true if pkgName package is installed
-	CheckInstalled(pkgName string) (bool, error)
-	// CheckInstalledVersion returns true if pkgName package is installed
-	// and its version is pkgVersion
-	CheckInstalledVersion(pkgName string, pkgVersion string) (bool, error)
+import "fmt"
+
+// PkgManager defines package manager interface
+type PkgManager interface {
+	// QueryInstalledAll returns a slice of all isntalled packages
+	QueryAllInstalled() ([]*PkgInfo, error)
+	// QueryInstalled returns a list of requested packages
+	QueryInstalled(pkgName ...string) ([]*PkgInfo, error)
 }
 
-// Commands defines various package manager commands
+// Commands defines package manager commands
 type Commands struct {
+	// Query all Installed packages
+	QueryAllInstalled string
 	// QueryInstalled queries installed packages
-	QueryInstalled string
-	// QueryInstalledVersion queries versions of installed packages
-	QueryInstalledVersion string
+	QueryPkgInfo string
 }
 
-// PkgManager is a package Manager that has a list of Commands
-type PkgManager struct {
-	// Cmds provides package manager commands
+// PkgInfo
+type PkgInfo struct {
+	Name    string
+	Version string
+}
+
+// BasePkgManager is a baic package Manager that has a package manager
+// with particular package manager comands
+type BasePkgManager struct {
+	// cmds provides package manager commands
 	cmds Commands
 }
 
-// NewPkgManager returns Manager based on the OS plafrom
-// It returns error when it's not able to inspect the host OS platform
-// or the OS platform is not supported
-func NewPkgManager(pkgType string) (Manager, error) {
+// NewPkgManager returns Manager based on the package type it manages
+func NewPkgManager(pkgType string) (PkgManager, error) {
 	switch pkgType {
 	case "apt", "dpkg":
 		return NewAptManager()
-	case "rhel":
-		return nil, nil
+	case "rpm", "yum":
+		return NewYumManager()
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("Unsupported package type")
 }

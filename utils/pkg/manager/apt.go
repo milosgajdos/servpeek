@@ -2,7 +2,6 @@ package manager
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/milosgajdos83/servpeek/utils/command"
 )
@@ -11,47 +10,47 @@ const (
 	DpkgQuery = "dpkg-query"
 )
 
-var cmds = Commands{
-	QueryInstalled:        command.Build(DpkgQuery, "-s %s"),
-	QueryInstalledVersion: command.Build(DpkgQuery, "-W -f '${Status} ${Version}' %s"),
+var aptCmds = Commands{
+	QueryAllInstalled: command.Build(DpkgQuery, "-l"),
+	QueryPkgInfo:      command.Build(DpkgQuery, "-W -f '${Status} ${Version}' %s"),
 }
 
 // AptManger embeds PkgManager and implements Manager interface
 type AptManager struct {
-	PkgManager
+	BasePkgManager
 }
 
 // NewAptManager returns Manager or fails with error
-func NewAptManager() (Manager, error) {
+func NewAptManager() (PkgManager, error) {
 	return &AptManager{
-		PkgManager: PkgManager{
-			cmds: cmds,
+		BasePkgManager: BasePkgManager{
+			cmds: aptCmds,
 		},
 	}, nil
 }
 
-func (am *AptManager) CheckInstalled(name string) (bool, error) {
-	aptCmd := fmt.Sprintf(cmds.QueryInstalled, name)
-	_, err := command.Run(aptCmd)
+func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
+	pkgs := make([]*PkgInfo, 0)
+	out, err := command.Run(aptCmds.QueryAllInstalled)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	// TODO: parse dpkg output
+	fmt.Printf("%v", out)
+	return pkgs, nil
 }
 
-func (am *AptManager) CheckInstalledVersion(name string, version string) (bool, error) {
-	aptCmd := fmt.Sprintf(cmds.QueryInstalledVersion, name)
-	versionRE := fmt.Sprintf("^(install|hold) ok installed %s$", version)
-	expectedOut := regexp.MustCompile(versionRE)
-	out, err := command.Run(aptCmd)
-	if err != nil {
-		return false, err
+func (am *AptManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
+	pkgs := make([]*PkgInfo, 0)
+	for _, name := range pkgName {
+		aptCmd := fmt.Sprintf(aptCmds.QueryPkgInfo, name)
+		out, err := command.Run(aptCmd)
+		if err != nil {
+			return nil, err
+		}
+		// TODO: parse dpkg output
+		fmt.Printf("%v", out)
 	}
-
-	if match := expectedOut.MatchString(out); match {
-		return true, nil
-	}
-
-	return false, nil
+	return pkgs, nil
 }
