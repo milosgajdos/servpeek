@@ -8,21 +8,26 @@ import (
 )
 
 const (
-	DpkgQuery            = "dpkg-query"
-	dpkgQueryAllArgs     = "-l"
-	dpkgQueryPkgInfoArgs = "-W -f '${Status} ${Version}' %s"
+	DpkgQuery = "dpkg-query"
 )
 
-var apt = Commands{
-	QueryAllInstalled: command.NewCommand(DpkgQuery, dpkgQueryAllArgs),
-}
+var (
+	// cli flags passed to dpkg-query
+	dpkgQueryAllArgs     = []string{"-l"}
+	dpkgQueryPkgInfoArgs = []string{"-W", "-f '${Status} ${Version}'"}
+	// commands provided by apt package manager
+	apt = Commands{
+		QueryAllInstalled: command.NewCommand(DpkgQuery, dpkgQueryAllArgs...),
+		QueryPkgInfo:      command.NewCommand(DpkgQuery, dpkgQueryPkgInfoArgs...),
+	}
+)
 
 // AptManger embeds PkgManager and implements Manager interface
 type AptManager struct {
 	BasePkgManager
 }
 
-// NewAptManager returns Manager or fails with error
+// NewAptManager returns PkgManager or fails with error
 func NewAptManager() (PkgManager, error) {
 	return &AptManager{
 		BasePkgManager: BasePkgManager{
@@ -33,11 +38,11 @@ func NewAptManager() (PkgManager, error) {
 
 func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
 	pkgInfos := make([]*PkgInfo, 0)
-	out := apt.QueryAllInstalled.Run()
-	defer out.Close()
+	cmdOut := am.cmds.QueryAllInstalled.Run()
+	defer cmdOut.Close()
 
-	for out.Next() {
-		line := out.Text()
+	for cmdOut.Next() {
+		line := cmdOut.Text()
 		if strings.HasPrefix(line, "ii") {
 			pkgInfo, err := parseDpkgInstalledOut(line)
 			if err != nil {
@@ -47,7 +52,7 @@ func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
 		}
 	}
 
-	if err := out.Err(); err != nil {
+	if err := cmdOut.Err(); err != nil {
 		return nil, err
 	}
 
@@ -57,13 +62,12 @@ func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
 func (am *AptManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 	pkgInfos := make([]*PkgInfo, 0)
 	for _, name := range pkgName {
-		pkgInfoArgs := fmt.Sprintf(dpkgQueryPkgInfoArgs, name)
-		apt.QueryPkgInfo = command.NewCommand(DpkgQuery, pkgInfoArgs)
-		out := apt.QueryPkgInfo.Run()
-		defer out.Close()
+		am.cmds.QueryPkgInfo.Args = append(am.cmds.QueryPkgInfo.Args, name)
+		cmdOut := am.cmds.QueryPkgInfo.Run()
+		defer cmdOut.Close()
 
-		for out.Next() {
-			line := out.Text()
+		for cmdOut.Next() {
+			line := cmdOut.Text()
 			pkgInfo, err := parseDpkgInfoOut(line)
 			if err != nil {
 				return nil, err
@@ -72,7 +76,7 @@ func (am *AptManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 			pkgInfos = append(pkgInfos, pkgInfo)
 		}
 
-		if err := out.Err(); err != nil {
+		if err := cmdOut.Err(); err != nil {
 			return nil, err
 		}
 	}

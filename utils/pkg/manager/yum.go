@@ -1,26 +1,28 @@
 package manager
 
-import (
-	"fmt"
-
-	"github.com/milosgajdos83/servpeek/utils/command"
-)
+import "github.com/milosgajdos83/servpeek/utils/command"
 
 const (
-	RpmQuery            = "rpm"
-	rpmQueryAllArgs     = "-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"
-	rpmQueryPkgInfoArgs = "-qi %s"
+	RpmQuery = "rpm"
 )
 
-var yum = Commands{
-	QueryAllInstalled: command.NewCommand(RpmQuery, rpmQueryAllArgs),
-}
+var (
+	// cli flags passed to rpm
+	rpmQueryAllArgs     = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
+	rpmQueryPkgInfoArgs = []string{"-qi"}
+	// commands provided by yum package manager
+	yum = Commands{
+		QueryAllInstalled: command.NewCommand(RpmQuery, rpmQueryAllArgs...),
+		QueryPkgInfo:      command.NewCommand(RpmQuery, rpmQueryPkgInfoArgs...),
+	}
+)
 
 // AptManger embeds PkgManager and implements Manager interface
 type YumManager struct {
 	BasePkgManager
 }
 
+// NewYumManager returns PkgManager or fails with error
 func NewYumManager() (PkgManager, error) {
 	return &YumManager{
 		BasePkgManager: BasePkgManager{
@@ -30,25 +32,24 @@ func NewYumManager() (PkgManager, error) {
 }
 
 func (ym YumManager) QueryAllInstalled() ([]*PkgInfo, error) {
-	pkgs := make([]*PkgInfo, 0)
-	out := yum.QueryAllInstalled.Run()
+	pkgInfos := make([]*PkgInfo, 0)
+	cmdOut := ym.cmds.QueryAllInstalled.Run()
+	defer cmdOut.Close()
 
-	// TODO: parse dpkg output
-	fmt.Printf("%v", out)
-	return pkgs, nil
+	// TODO: parse cmdOut rpm output
+	return pkgInfos, nil
 }
 
 func (ym *YumManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
-	pkgs := make([]*PkgInfo, 0)
+	pkgInfos := make([]*PkgInfo, 0)
 	for _, name := range pkgName {
-		pkgInfoArgs := fmt.Sprintf(rpmQueryPkgInfoArgs, name)
-		yum.QueryPkgInfo = command.NewCommand(DpkgQuery, pkgInfoArgs)
-		out := yum.QueryPkgInfo.Run()
+		ym.cmds.QueryPkgInfo.Args = append(ym.cmds.QueryPkgInfo.Args, name)
+		cmdOut := ym.cmds.QueryPkgInfo.Run()
+		defer cmdOut.Close()
 
-		// TODO: parse dpkg output
-		fmt.Printf("%v", out)
+		// TODO: parse cmdOut rpm output
 	}
-	return pkgs, nil
+	return pkgInfos, nil
 }
 
 func parseRpmInstalledOut(line string) (*PkgInfo, error) {

@@ -9,18 +9,10 @@ import (
 	"sync"
 )
 
-type Command struct {
-	*exec.Cmd
-}
-
-func NewCommand(cmd string, args ...string) *Command {
-	return &Command{exec.Command(cmd, args...)}
-}
-
 // Run executes a command with arbitrary number of arguments passed in
 // as the function's parameter and returns combined stdout and stderr
 func RunCombined(command string, args ...string) (string, error) {
-	cmd := NewCommand(command, args...)
+	cmd := exec.Command(command, args...)
 	out, err := cmd.CombinedOutput()
 	output := string(out)
 	if err != nil {
@@ -29,8 +21,25 @@ func RunCombined(command string, args ...string) (string, error) {
 	return output, nil
 }
 
+// Command provides an interface to command and its arguments
+type Command struct {
+	Cmd  string
+	Args []string
+}
+
+// NewCommand returns pointer to Command
+func NewCommand(cmd string, args ...string) *Command {
+	return &Command{
+		Cmd:  cmd,
+		Args: args,
+	}
+}
+
+// Run executes a command and returns Result object that can be used
+// to collect the results of the run command
 func (c *Command) Run() *Result {
-	cmdStdout, err := c.StdoutPipe()
+	cmd := exec.Command(c.Cmd, c.Args...)
+	cmdStdout, err := cmd.StdoutPipe()
 	res := &Result{
 		lines:  make(chan string, 1),
 		reader: cmdStdout,
@@ -43,7 +52,7 @@ func (c *Command) Run() *Result {
 
 	go func() {
 		defer close(res.lines)
-		if err := c.Start(); err != nil {
+		if err := cmd.Start(); err != nil {
 			res.mu.Lock()
 			defer res.mu.Unlock()
 			res.err = err
@@ -62,7 +71,7 @@ func (c *Command) Run() *Result {
 			return
 		}
 
-		if err := c.Wait(); err != nil {
+		if err := cmd.Wait(); err != nil {
 			res.mu.Lock()
 			defer res.mu.Unlock()
 			res.err = err
@@ -72,6 +81,8 @@ func (c *Command) Run() *Result {
 	return res
 }
 
+// Result contains all the information about the result of the executed
+// Command. It provides a simple API to interact with the result
 type Result struct {
 	closed bool
 	reader io.ReadCloser
@@ -81,21 +92,25 @@ type Result struct {
 	err    error
 }
 
+// Next returns next line from result output or false if there is none
 func (r *Result) Next() (ok bool) {
 	r.line, ok = <-r.lines
 	return !r.closed && r.err == nil && ok
 }
 
+// Returns a single line of streamed command output
 func (r *Result) Text() string {
 	return r.line
 }
 
+// Err returns the last encountered error of the executed command
 func (r *Result) Err() error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.err
 }
 
+// Close closes Result's standard output reader
 func (r *Result) Close() error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
