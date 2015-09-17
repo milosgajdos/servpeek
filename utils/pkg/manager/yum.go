@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	RpmQuery = "rpm"
+	RpmQuery            = "rpm"
+	rpmQueryAllArgs     = "-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"
+	rpmQueryPkgInfoArgs = "-qi %s"
 )
 
-var yumCmds = Commands{
-	QueryAllInstalled: command.Build(RpmQuery, "-qa"),
-	QueryPkgInfo:      command.Build(RpmQuery, "-qi %s"),
+var yum = Commands{
+	QueryAllInstalled: command.NewCommand(RpmQuery, rpmQueryAllArgs),
 }
 
 // AptManger embeds PkgManager and implements Manager interface
@@ -23,19 +24,16 @@ type YumManager struct {
 func NewYumManager() (PkgManager, error) {
 	return &YumManager{
 		BasePkgManager: BasePkgManager{
-			cmds: yumCmds,
+			cmds: yum,
 		},
 	}, nil
 }
 
 func (ym YumManager) QueryAllInstalled() ([]*PkgInfo, error) {
 	pkgs := make([]*PkgInfo, 0)
-	out, err := command.Run(yumCmds.QueryAllInstalled)
-	if err != nil {
-		return nil, err
-	}
+	out := yum.QueryAllInstalled.Run()
 
-	// TODO: parse rpm output
+	// TODO: parse dpkg output
 	fmt.Printf("%v", out)
 	return pkgs, nil
 }
@@ -43,14 +41,20 @@ func (ym YumManager) QueryAllInstalled() ([]*PkgInfo, error) {
 func (ym *YumManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 	pkgs := make([]*PkgInfo, 0)
 	for _, name := range pkgName {
-		yumCmd := fmt.Sprintf(yumCmds.QueryPkgInfo, name)
-		out, err := command.Run(yumCmd)
-		if err != nil {
-			return nil, err
-		}
-		// TODO: parse rpm output
+		pkgInfoArgs := fmt.Sprintf(rpmQueryPkgInfoArgs, name)
+		yum.QueryPkgInfo = command.NewCommand(DpkgQuery, pkgInfoArgs)
+		out := yum.QueryPkgInfo.Run()
+
+		// TODO: parse dpkg output
 		fmt.Printf("%v", out)
 	}
-
 	return pkgs, nil
+}
+
+func parseRpmInstalledOut(line string) (*PkgInfo, error) {
+	return nil, nil
+}
+
+func parseRpmInfoOut(line string) (*PkgInfo, error) {
+	return nil, nil
 }

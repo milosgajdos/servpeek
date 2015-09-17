@@ -2,7 +2,11 @@
 // this sounds kind of silly redundant, so ignore the naming
 package manager
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/milosgajdos83/servpeek/utils/command"
+)
 
 // PkgManager defines package manager interface
 type PkgManager interface {
@@ -15,9 +19,9 @@ type PkgManager interface {
 // Commands defines package manager commands
 type Commands struct {
 	// Query all Installed packages
-	QueryAllInstalled string
+	QueryAllInstalled *command.Command
 	// QueryInstalled queries installed packages
-	QueryPkgInfo string
+	QueryPkgInfo *command.Command
 }
 
 // PkgInfo

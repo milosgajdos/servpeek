@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	DpkgQuery = "dpkg-query"
+	DpkgQuery            = "dpkg-query"
+	dpkgQueryAllArgs     = "-l"
+	dpkgQueryPkgInfoArgs = "-W -f '${Status} ${Version}' %s"
 )
 
-var aptCmds = Commands{
-	QueryAllInstalled: command.Build(DpkgQuery, "-l"),
-	QueryPkgInfo:      command.Build(DpkgQuery, "-W -f '${Status} ${Version}' %s"),
+var apt = Commands{
+	QueryAllInstalled: command.NewCommand(DpkgQuery, dpkgQueryAllArgs),
 }
 
 // AptManger embeds PkgManager and implements Manager interface
@@ -24,17 +25,14 @@ type AptManager struct {
 func NewAptManager() (PkgManager, error) {
 	return &AptManager{
 		BasePkgManager: BasePkgManager{
-			cmds: aptCmds,
+			cmds: apt,
 		},
 	}, nil
 }
 
 func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
 	pkgs := make([]*PkgInfo, 0)
-	out, err := command.Run(aptCmds.QueryAllInstalled)
-	if err != nil {
-		return nil, err
-	}
+	out := apt.QueryAllInstalled.Run()
 
 	// TODO: parse dpkg output
 	fmt.Printf("%v", out)
@@ -44,13 +42,20 @@ func (am *AptManager) QueryAllInstalled() ([]*PkgInfo, error) {
 func (am *AptManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 	pkgs := make([]*PkgInfo, 0)
 	for _, name := range pkgName {
-		aptCmd := fmt.Sprintf(aptCmds.QueryPkgInfo, name)
-		out, err := command.Run(aptCmd)
-		if err != nil {
-			return nil, err
-		}
+		pkgInfoArgs := fmt.Sprintf(dpkgQueryPkgInfoArgs, name)
+		apt.QueryPkgInfo = command.NewCommand(DpkgQuery, pkgInfoArgs)
+		out := apt.QueryPkgInfo.Run()
+
 		// TODO: parse dpkg output
 		fmt.Printf("%v", out)
 	}
 	return pkgs, nil
+}
+
+func parseDpkgInstalledOut(line string) (*PkgInfo, error) {
+	return nil, nil
+}
+
+func parseDpkgInfoOut(line string) (*PkgInfo, error) {
+	return nil, nil
 }

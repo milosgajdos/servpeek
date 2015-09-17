@@ -14,20 +14,20 @@ type Pkg struct {
 	Type    string
 }
 
-// IsInstalled return true if the package is installed
+// IsInstalled return true if the package is Installed
 func (p *Pkg) IsInstalled() (bool, error) {
 	pkgMgr, err := manager.NewPkgManager(p.Type)
 	if err != nil {
 		return false, err
 	}
 
-	pkgs, err := pkgMgr.QueryInstalled(p.Name)
+	inPkgs, err := pkgMgr.QueryInstalled(p.Name)
 	if err != nil {
 		return false, err
 	}
 
-	for _, pkg := range pkgs {
-		if pkg.Name == p.Name {
+	for _, inPkg := range inPkgs {
+		if inPkg.Name == p.Name {
 			return true, nil
 		}
 	}
@@ -35,20 +35,20 @@ func (p *Pkg) IsInstalled() (bool, error) {
 	return false, fmt.Errorf("Package %s not found", p.Name)
 }
 
-// IsInstalledVersion returns true installed package has the given version
+// IsInstalledVersion returns true Installed package has the given version
 func (p *Pkg) IsInstalledVersion() (bool, error) {
 	pkgMgr, err := manager.NewPkgManager(p.Type)
 	if err != nil {
 		return false, err
 	}
 
-	pkgs, err := pkgMgr.QueryInstalled(p.Name)
+	inPkgs, err := pkgMgr.QueryInstalled(p.Name)
 	if err != nil {
 		return false, err
 	}
 
-	for _, pkg := range pkgs {
-		if pkg.Version == p.Version {
+	for _, inPkg := range inPkgs {
+		if inPkg.Version == p.Version {
 			return true, nil
 		}
 	}
