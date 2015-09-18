@@ -21,7 +21,7 @@ func (p *Pkg) IsInstalled() (bool, error) {
 		return false, err
 	}
 
-	inPkgs, err := pkgMgr.QueryInstalled(p.Name)
+	inPkgs, err := pkgMgr.QueryPkgs(p.Name)
 	if err != nil {
 		return false, err
 	}
@@ -42,7 +42,7 @@ func (p *Pkg) IsInstalledVersion() (bool, error) {
 		return false, err
 	}
 
-	inPkgs, err := pkgMgr.QueryInstalled(p.Name)
+	inPkgs, err := pkgMgr.QueryPkgs(p.Name)
 	if err != nil {
 		return false, err
 	}
