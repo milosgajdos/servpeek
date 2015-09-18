@@ -9,7 +9,7 @@ const (
 var (
 	// cli arguments passed to dpkg-query
 	ListPkgsArgs  = []string{"-l"}
-	QueryPkgsArgs = []string{"-W", "-f '${Version}'"}
+	QueryPkgsArgs = []string{"-W", "-f '${Status} ${Version}'"}
 	// apt parseHints
 	ParseHints = &utils.ParseHints{
 		ListPrefix:      "ii",
