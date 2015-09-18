@@ -68,12 +68,14 @@ func (am *AptManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 
 		for cmdOut.Next() {
 			line := cmdOut.Text()
-			pkgInfo, err := parseDpkgInfoOut(line)
-			if err != nil {
-				return nil, err
+			if strings.HasPrefix(line, "") {
+				pkgInfo, err := parseDpkgInfoOut(line)
+				if err != nil {
+					return nil, err
+				}
+				pkgInfo.Name = name
+				pkgInfos = append(pkgInfos, pkgInfo)
 			}
-			pkgInfo.Name = name
-			pkgInfos = append(pkgInfos, pkgInfo)
 		}
 
 		if err := cmdOut.Err(); err != nil {

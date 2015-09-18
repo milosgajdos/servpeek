@@ -1,6 +1,11 @@
 package manager
 
-import "github.com/milosgajdos83/servpeek/utils/command"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/milosgajdos83/servpeek/utils/command"
+)
 
 const (
 	RpmQuery = "rpm"
@@ -36,7 +41,21 @@ func (ym YumManager) QueryAllInstalled() ([]*PkgInfo, error) {
 	cmdOut := ym.cmds.QueryAllInstalled.Run()
 	defer cmdOut.Close()
 
-	// TODO: parse cmdOut rpm output
+	for cmdOut.Next() {
+		line := cmdOut.Text()
+		if strings.HasPrefix(line, "") {
+			pkgInfo, err := parseDpkgInstalledOut(line)
+			if err != nil {
+				return nil, err
+			}
+			pkgInfos = append(pkgInfos, pkgInfo)
+		}
+	}
+
+	if err := cmdOut.Err(); err != nil {
+		return nil, err
+	}
+
 	return pkgInfos, nil
 }
 
@@ -47,15 +66,45 @@ func (ym *YumManager) QueryInstalled(pkgName ...string) ([]*PkgInfo, error) {
 		cmdOut := ym.cmds.QueryPkgInfo.Run()
 		defer cmdOut.Close()
 
-		// TODO: parse cmdOut rpm output
+		for cmdOut.Next() {
+			line := cmdOut.Text()
+			if strings.HasPrefix(line, "Version") {
+				pkgInfo, err := parseDpkgInfoOut(line)
+				if err != nil {
+					return nil, err
+				}
+				pkgInfo.Name = name
+				pkgInfos = append(pkgInfos, pkgInfo)
+			}
+		}
+
+		if err := cmdOut.Err(); err != nil {
+			return nil, err
+		}
 	}
+
 	return pkgInfos, nil
 }
 
 func parseRpmInstalledOut(line string) (*PkgInfo, error) {
-	return nil, nil
+	fields := strings.Fields(line)
+	if len(fields) < 2 {
+		return nil, fmt.Errorf("Could not parse rpm info: %s", line)
+	}
+
+	return &PkgInfo{
+		Name:    fields[0],
+		Version: fields[1],
+	}, nil
 }
 
 func parseRpmInfoOut(line string) (*PkgInfo, error) {
-	return nil, nil
+	fields := strings.Fields(line)
+	if len(fields) < 3 {
+		return nil, fmt.Errorf("Could not parse dpkg info: %s", line)
+	}
+
+	return &PkgInfo{
+		Version: fields[2],
+	}, nil
 }
