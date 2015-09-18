@@ -15,11 +15,6 @@ var (
 	// cli flags passed to rpm
 	rpmQueryAllArgs     = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
 	rpmQueryPkgInfoArgs = []string{"-qi"}
-	// commands provided by yum package manager
-	yum = Commands{
-		QueryAllInstalled: command.NewCommand(RpmQuery, rpmQueryAllArgs...),
-		QueryPkgInfo:      command.NewCommand(RpmQuery, rpmQueryPkgInfoArgs...),
-	}
 )
 
 // AptManger embeds PkgManager and implements Manager interface
@@ -29,6 +24,12 @@ type YumManager struct {
 
 // NewYumManager returns PkgManager or fails with error
 func NewYumManager() (PkgManager, error) {
+	// commands provided by yum package manager
+	yum := Commands{
+		QueryAllInstalled: command.NewCommand(RpmQuery, rpmQueryAllArgs...),
+		QueryPkgInfo:      command.NewCommand(RpmQuery, rpmQueryPkgInfoArgs...),
+	}
+
 	return &YumManager{
 		BasePkgManager: BasePkgManager{
 			cmds: yum,

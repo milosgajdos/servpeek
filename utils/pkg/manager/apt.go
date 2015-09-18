@@ -15,11 +15,6 @@ var (
 	// cli flags passed to dpkg-query
 	dpkgQueryAllArgs     = []string{"-l"}
 	dpkgQueryPkgInfoArgs = []string{"-W", "-f '${Status} ${Version}'"}
-	// commands provided by apt package manager
-	apt = Commands{
-		QueryAllInstalled: command.NewCommand(DpkgQuery, dpkgQueryAllArgs...),
-		QueryPkgInfo:      command.NewCommand(DpkgQuery, dpkgQueryPkgInfoArgs...),
-	}
 )
 
 // AptManger embeds PkgManager and implements Manager interface
@@ -29,6 +24,12 @@ type AptManager struct {
 
 // NewAptManager returns PkgManager or fails with error
 func NewAptManager() (PkgManager, error) {
+	// commands provided by apt package manager
+	apt := Commands{
+		QueryAllInstalled: command.NewCommand(DpkgQuery, dpkgQueryAllArgs...),
+		QueryPkgInfo:      command.NewCommand(DpkgQuery, dpkgQueryPkgInfoArgs...),
+	}
+
 	return &AptManager{
 		BasePkgManager: BasePkgManager{
 			cmds: apt,
