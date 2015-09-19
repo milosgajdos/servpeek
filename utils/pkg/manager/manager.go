@@ -144,25 +144,25 @@ func (pm *BasePkgManager) QueryPkgs(pkgName ...string) ([]*PkgInfo, error) {
 	return pkgInfos, nil
 }
 
-func parseQueryOut(line string, pHints *utils.ParseHints) (*PkgInfo, error) {
+func parseQueryOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
 	fields := strings.Fields(line)
-	if len(fields) < pHints.ListMinFields {
+	if len(fields) < ph.ListMinFields {
 		return nil, fmt.Errorf("Could not parse package info: %s", line)
 	}
 
 	return &PkgInfo{
-		Name:    fields[pHints.ListVersionIdx-1],
-		Version: fields[pHints.ListVersionIdx],
+		Name:    fields[ph.ListVersionIdx-1],
+		Version: fields[ph.ListVersionIdx],
 	}, nil
 }
 
-func parseInstalledOut(line string, pHints *utils.ParseHints) (*PkgInfo, error) {
+func parseInstalledOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
 	fields := strings.Fields(line)
-	if len(fields) < pHints.QueryMinFields {
+	if len(fields) < ph.QueryMinFields {
 		return nil, fmt.Errorf("Could not parse package info: %s", line)
 	}
 
 	return &PkgInfo{
-		Version: fields[pHints.QueryVersionIdx],
+		Version: fields[ph.QueryVersionIdx],
 	}, nil
 }

@@ -1,5 +1,5 @@
-// package command wraps exec.CombinedOutput to provide a convenient
-// way to execute a command and return stdout and stderr
+// package command wraps exec.Command to provide a convenient
+// way to execute a command and receive its stdout output line by line
 package command
 
 import (
