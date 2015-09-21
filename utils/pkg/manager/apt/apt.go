@@ -1,6 +1,10 @@
 package apt
 
-import "github.com/milosgajdos83/servpeek/utils"
+import (
+	"regexp"
+
+	"github.com/milosgajdos83/servpeek/utils"
+)
 
 const (
 	QueryCmd = "dpkg-query"
@@ -12,11 +16,9 @@ var (
 	QueryPkgsArgs = []string{"-W", "-f '${Status} ${Version}'"}
 	// apt parseHints
 	ParseHints = &utils.ParseHints{
-		ListPrefix:      "ii",
-		ListMinFields:   3,
-		ListVersionIdx:  2,
-		QueryPrefix:     "",
-		QueryMinFields:  4,
-		QueryVersionIdx: 3,
+		ListFilter:  regexp.MustCompile(`^ii`),
+		ListMatch:   regexp.MustCompile(`^ii\s+(?P<name>\w+)\s+(?P<version>\S+)\s+.*`),
+		QueryFilter: regexp.MustCompile(`^[A-Za-z]`),
+		QueryMatch:  regexp.MustCompile(`^\w+\s+\w+\s+\w+\s+(\S+)$`),
 	}
 )

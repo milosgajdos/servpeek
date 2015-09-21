@@ -1,15 +1,17 @@
 package utils
 
-import "github.com/milosgajdos83/servpeek/utils/command"
+import (
+	"regexp"
 
-// Ugly hack to parse pkgQueryInfo
+	"github.com/milosgajdos83/servpeek/utils/command"
+)
+
+// Ugly hack to parse Command outpyt into *PkgInfo
 type ParseHints struct {
-	ListPrefix      string
-	ListMinFields   int
-	ListVersionIdx  int
-	QueryPrefix     string
-	QueryMinFields  int
-	QueryVersionIdx int
+	ListFilter  *regexp.Regexp
+	ListMatch   *regexp.Regexp
+	QueryFilter *regexp.Regexp
+	QueryMatch  *regexp.Regexp
 }
 
 // Builds Command from cmd name and arguments

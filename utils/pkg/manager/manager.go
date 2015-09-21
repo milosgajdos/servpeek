@@ -5,11 +5,11 @@ package manager
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/milosgajdos83/servpeek/utils"
 	"github.com/milosgajdos83/servpeek/utils/command"
 	"github.com/milosgajdos83/servpeek/utils/pkg/manager/apt"
+	"github.com/milosgajdos83/servpeek/utils/pkg/manager/pip"
 	"github.com/milosgajdos83/servpeek/utils/pkg/manager/yum"
 )
 
@@ -51,6 +51,8 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 		return NewAptManager()
 	case "rpm", "yum":
 		return NewYumManager()
+	case "pip":
+		return NewPipManager()
 	}
 	return nil, fmt.Errorf("Unsupported package type")
 }
@@ -91,6 +93,24 @@ func NewYumManager() (PkgManager, error) {
 	}, nil
 }
 
+// YumManager implements Yum package manager
+type PipManager struct {
+	BasePkgManager
+}
+
+// NewYumManager returns PkgManager or fails with error
+func NewPipManager() (PkgManager, error) {
+	return &PipManager{
+		BasePkgManager: BasePkgManager{
+			cmds: Commands{
+				ListPkgs:  utils.BuildCmd(pip.QueryCmd, pip.ListPkgsArgs...),
+				QueryPkgs: utils.BuildCmd(pip.QueryCmd, pip.QueryPkgsArgs...),
+			},
+			parseHints: pip.ParseHints,
+		},
+	}, nil
+}
+
 // ListPkgs queries packages manager for installed packages and returns then in slice
 // It fails if either the command fails or command output parser fails
 func (pm *BasePkgManager) ListPkgs() ([]*PkgInfo, error) {
@@ -100,8 +120,8 @@ func (pm *BasePkgManager) ListPkgs() ([]*PkgInfo, error) {
 
 	for cmdOut.Next() {
 		line := cmdOut.Text()
-		if strings.HasPrefix(line, pm.parseHints.ListPrefix) {
-			pkgInfo, err := parseInstalledOut(line, pm.parseHints)
+		if pm.parseHints.ListFilter.MatchString(line) {
+			pkgInfo, err := parseListOut(line, pm.parseHints)
 			if err != nil {
 				return nil, err
 			}
@@ -127,7 +147,7 @@ func (pm *BasePkgManager) QueryPkgs(pkgName ...string) ([]*PkgInfo, error) {
 
 		for cmdOut.Next() {
 			line := cmdOut.Text()
-			if strings.HasPrefix(line, pm.parseHints.QueryPrefix) {
+			if pm.parseHints.QueryFilter.MatchString(line) {
 				pkgInfo, err := parseQueryOut(line, pm.parseHints)
 				if err != nil {
 					return nil, err
@@ -144,25 +164,23 @@ func (pm *BasePkgManager) QueryPkgs(pkgName ...string) ([]*PkgInfo, error) {
 	return pkgInfos, nil
 }
 
-func parseQueryOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
-	fields := strings.Fields(line)
-	if len(fields) < ph.ListMinFields {
-		return nil, fmt.Errorf("Could not parse package info: %s", line)
+func parseListOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
+	match := ph.ListMatch.FindStringSubmatch(line)
+	if match == nil || len(match) < 3 {
+		return nil, fmt.Errorf("Unable to parse package info")
 	}
-
 	return &PkgInfo{
-		Name:    fields[ph.ListVersionIdx-1],
-		Version: fields[ph.ListVersionIdx],
+		Version: match[2],
+		Name:    match[1],
 	}, nil
 }
 
-func parseInstalledOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
-	fields := strings.Fields(line)
-	if len(fields) < ph.QueryMinFields {
-		return nil, fmt.Errorf("Could not parse package info: %s", line)
+func parseQueryOut(line string, ph *utils.ParseHints) (*PkgInfo, error) {
+	match := ph.QueryMatch.FindStringSubmatch(line)
+	if match == nil || len(match) < 2 {
+		return nil, fmt.Errorf("Unable to parse package info")
 	}
-
 	return &PkgInfo{
-		Version: fields[ph.QueryVersionIdx],
+		Version: match[1],
 	}, nil
 }

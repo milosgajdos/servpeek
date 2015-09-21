@@ -1,6 +1,10 @@
 package yum
 
-import "github.com/milosgajdos83/servpeek/utils"
+import (
+	"regexp"
+
+	"github.com/milosgajdos83/servpeek/utils"
+)
 
 const (
 	QueryCmd = "rpm"
@@ -12,11 +16,9 @@ var (
 	QueryPkgsArgs = []string{"-qi"}
 	// yum parse hints
 	ParseHints = &utils.ParseHints{
-		ListPrefix:      "",
-		ListMinFields:   2,
-		ListVersionIdx:  1,
-		QueryPrefix:     "Version",
-		QueryMinFields:  3,
-		QueryVersionIdx: 2,
+		ListFilter:  regexp.MustCompile(`^[A-Za-z]`),
+		ListMatch:   regexp.MustCompile(`^(?P<name>\S+)\s+(?P<version>\S+).*`),
+		QueryFilter: regexp.MustCompile(`^Version`),
+		QueryMatch:  regexp.MustCompile(`^Version\s+:\s+(?P<version>\S+).*`),
 	}
 )
