@@ -9,6 +9,7 @@ import (
 	"github.com/milosgajdos83/servpeek/utils"
 	"github.com/milosgajdos83/servpeek/utils/command"
 	"github.com/milosgajdos83/servpeek/utils/pkg/manager/apt"
+	"github.com/milosgajdos83/servpeek/utils/pkg/manager/gem"
 	"github.com/milosgajdos83/servpeek/utils/pkg/manager/pip"
 	"github.com/milosgajdos83/servpeek/utils/pkg/manager/yum"
 )
@@ -53,6 +54,8 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 		return NewYumManager()
 	case "pip":
 		return NewPipManager()
+	case "gem":
+		return NewGemManager()
 	}
 	return nil, fmt.Errorf("Unsupported package type")
 }
@@ -93,12 +96,12 @@ func NewYumManager() (PkgManager, error) {
 	}, nil
 }
 
-// YumManager implements Yum package manager
+// PipManager implements pip package manager
 type PipManager struct {
 	BasePkgManager
 }
 
-// NewYumManager returns PkgManager or fails with error
+// NewPipManager returns PkgManager or fails with error
 func NewPipManager() (PkgManager, error) {
 	return &PipManager{
 		BasePkgManager: BasePkgManager{
@@ -107,6 +110,24 @@ func NewPipManager() (PkgManager, error) {
 				QueryPkgs: utils.BuildCmd(pip.QueryCmd, pip.QueryPkgsArgs...),
 			},
 			parseHints: pip.ParseHints,
+		},
+	}, nil
+}
+
+// GemManager implements gem package manager
+type GemManager struct {
+	BasePkgManager
+}
+
+// NewGemManager returns PkgManager or fails with error
+func NewGemManager() (PkgManager, error) {
+	return &GemManager{
+		BasePkgManager: BasePkgManager{
+			cmds: Commands{
+				ListPkgs:  utils.BuildCmd(gem.QueryCmd, gem.ListPkgsArgs...),
+				QueryPkgs: utils.BuildCmd(gem.QueryCmd, gem.QueryPkgsArgs...),
+			},
+			parseHints: gem.ParseHints,
 		},
 	}, nil
 }

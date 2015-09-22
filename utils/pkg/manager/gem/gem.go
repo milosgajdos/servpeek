@@ -13,12 +13,10 @@ const (
 var (
 	ListPkgsArgs  = []string{"list", "--local"}
 	QueryPkgsArgs = []string{"list", "--local"}
-	ParseHints    = &utils.ParseHints{}
+	ParseHints    = &utils.ParseHints{
+		ListFilter:  regexp.MustCompile(`^[A-Za-z]`),
+		ListMatch:   regexp.MustCompile(`^(?P<name>\S+)\s+\((?P<version>\S+)\)$`),
+		QueryFilter: regexp.MustCompile(`^[A-Za-z]`),
+		QueryMatch:  regexp.MustCompile(`^\S+\s+\((?P<version>\S+)\)$`),
+	}
 )
-
-func init() {
-	ParseHints.ListFilter = regexp.MustCompile("")
-	ParseHints.ListMatch = regexp.MustCompile("")
-	ParseHints.QueryFilter = regexp.MustCompile("")
-	ParseHints.QueryMatch = regexp.MustCompile("")
-}
