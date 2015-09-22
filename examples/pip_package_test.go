@@ -6,7 +6,7 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
-func Test_Package(t *testing.T) {
+func Test_Pip_Package(t *testing.T) {
 	testPkg := &pkg.Pkg{
 		Name:    "setuptools",
 		Version: "3.3",
