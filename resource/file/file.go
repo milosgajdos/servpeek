@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
 	"os/user"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/milosgajdos83/servpeek/utils/group"
 )
 
 func withOsFileContext(path string, fn func(file *os.File) (bool, error)) (bool, error) {
@@ -25,6 +28,9 @@ func withOsFileContext(path string, fn func(file *os.File) (bool, error)) (bool,
 
 type File struct {
 	fi os.FileInfo
+	// fi.Name() returns base path :-/
+	// so it's better to keep the ref to provided path
+	path string
 }
 
 func NewFile(path string) (*File, error) {
@@ -34,8 +40,13 @@ func NewFile(path string) (*File, error) {
 	}
 
 	return &File{
-		fi: fi,
+		fi:   fi,
+		path: path,
 	}, nil
+}
+
+func (f *File) String() string {
+	return fmt.Sprintf("%s", f.path)
 }
 
 func (f *File) IsRegular() bool {
@@ -82,11 +93,16 @@ func (f *File) IsOwnedBy(username string) (bool, error) {
 	return f.fi.Sys().(*syscall.Stat_t).Uid == uint32(uid), nil
 }
 
-// FIXME: Golang can't do full user gids lookups :-/
-// https://github.com/golang/go/issues/2617
-// For the time being you can only match against gid
-func (f *File) IsGrupedInto(gid uint32) bool {
-	return f.fi.Sys().(*syscall.Stat_t).Gid == gid
+func (f *File) IsGrupedInto(groupname string) (bool, error) {
+	g, err := group.Lookup(groupname)
+	if err != nil {
+		return false, err
+	}
+	gid, err := strconv.ParseUint(g.Gid, 10, 32)
+	if err != nil {
+		return false, err
+	}
+	return f.fi.Sys().(*syscall.Stat_t).Gid == uint32(gid), nil
 }
 
 func (f *File) LinksTo(path string) (bool, error) {
@@ -98,7 +114,7 @@ func (f *File) LinksTo(path string) (bool, error) {
 }
 
 func (f *File) Md5(sum string) (bool, error) {
-	return withOsFileContext(f.fi.Name(), func(file *os.File) (bool, error) {
+	return withOsFileContext(f.path, func(file *os.File) (bool, error) {
 		hasher := md5.New()
 		if _, err := io.Copy(hasher, file); err != nil {
 			return false, nil
@@ -108,7 +124,7 @@ func (f *File) Md5(sum string) (bool, error) {
 }
 
 func (f *File) Sha256(sum string) (bool, error) {
-	return withOsFileContext(f.fi.Name(), func(file *os.File) (bool, error) {
+	return withOsFileContext(f.path, func(file *os.File) (bool, error) {
 		hasher := sha256.New()
 		if _, err := io.Copy(hasher, file); err != nil {
 			return false, nil
