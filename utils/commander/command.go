@@ -1,6 +1,4 @@
-// package command wraps exec.Command to provide a convenient
-// way to execute a command and receive its stdout output line by line
-package command
+package commander
 
 import (
 	"bufio"
@@ -9,7 +7,7 @@ import (
 	"sync"
 )
 
-// Run executes a command with arbitrary number of arguments passed in
+// RunCombined executes a command with arbitrary number of arguments passed in
 // as the function's parameter and returns combined stdout and stderr
 func RunCombined(command string, args ...string) (string, error) {
 	cmd := exec.Command(command, args...)
@@ -21,7 +19,7 @@ func RunCombined(command string, args ...string) (string, error) {
 	return output, nil
 }
 
-// Command provides an interface to command and its arguments
+// Command is an external commands with arguments
 type Command struct {
 	Cmd  string
 	Args []string
@@ -35,12 +33,12 @@ func NewCommand(cmd string, args ...string) *Command {
 	}
 }
 
-// Run executes a command and returns Result object that can be used
-// to collect the results of the run command
-func (c *Command) Run() *Result {
+// Run executes command and returns Out object that can be used
+// to collect the results of the command run
+func (c *Command) Run() *Out {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	cmdStdout, err := cmd.StdoutPipe()
-	res := &Result{
+	res := &Out{
 		lines:  make(chan string, 1),
 		reader: cmdStdout,
 		err:    err,
@@ -81,9 +79,9 @@ func (c *Command) Run() *Result {
 	return res
 }
 
-// Result contains all the information about the result of the executed
+// Out contains all the information about the result of executed
 // Command. It provides a simple API to interact with the result
-type Result struct {
+type Out struct {
 	closed bool
 	reader io.ReadCloser
 	lines  chan string
@@ -93,30 +91,30 @@ type Result struct {
 }
 
 // Next returns next line from result output or false if there is none
-func (r *Result) Next() (ok bool) {
-	r.line, ok = <-r.lines
-	return !r.closed && r.err == nil && ok
+func (o *Out) Next() (ok bool) {
+	o.line, ok = <-o.lines
+	return !o.closed && o.err == nil && ok
 }
 
 // Returns a single line of streamed command output
-func (r *Result) Text() string {
-	return r.line
+func (o *Out) Text() string {
+	return o.line
 }
 
 // Err returns the last encountered error of the executed command
-func (r *Result) Err() error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return r.err
+func (o *Out) Err() error {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	return o.err
 }
 
-// Close closes Result's standard output reader
-func (r *Result) Close() error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if r.closed {
+// Close closes Out's standard output reader
+func (o *Out) Close() error {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	if o.closed {
 		return nil
 	}
-	r.closed = true
-	return r.reader.Close()
+	o.closed = true
+	return o.reader.Close()
 }
