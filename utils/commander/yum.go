@@ -6,8 +6,8 @@ const (
 
 var (
 	// cli arguments passed to rpm
-	rpmListPkgsArgs  = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
-	rpmQueryPkgsArgs = []string{"-qi"}
+	rpmListPkgsArgs = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
+	rpmQueryPkgArgs = []string{"-qi"}
 )
 
 type YumCommander struct {
@@ -15,9 +15,9 @@ type YumCommander struct {
 }
 
 // yum manager commands
-func YumCommander() *Commander {
+func NewYumCommander() *Commander {
 	return &Commander{
-		ListPkgs:  BuildCmd(rpm, rpmListPkgsArgs),
-		QueryPkgs: BuildCmd(rpm, rpmQueryPkgsArgs),
+		ListPkgs: BuildCmd(rpm, rpmListPkgsArgs...),
+		QueryPkg: BuildCmd(rpm, rpmQueryPkgArgs...),
 	}
 }

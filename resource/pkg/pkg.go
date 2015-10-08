@@ -3,77 +3,69 @@ package pkg
 import (
 	"fmt"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/manager"
 	"github.com/milosgajdos83/servpeek/utils/parser"
 )
 
-// Pkg is a generic software package which has a name, version
-// and is managed via a package manager
-type Pkg struct {
-	// package name
-	Name string
-	// package version
-	Version string
-	// package type
-	Type string
-}
+// IsInstalled return true if all the supplied packages are installed
+func IsInstalled(pkgs ...resource.Pkg) (bool, error) {
+	for _, p := range pkgs {
+		pkgMgr, err := manager.NewPkgManager(p.Type)
+		if err != nil {
+			return false, err
+		}
 
-// IsInstalled return true if the package is Installed
-func (p *Pkg) IsInstalled() (bool, error) {
-	pkgMgr, err := manager.NewPkgManager(p.Type)
-	if err != nil {
-		return false, err
-	}
+		cmdParser, err := parser.NewParser(p.Type)
+		if err != nil {
+			return false, err
+		}
 
-	cmdParser, err := parser.NewParser(p.Type)
-	if err != nil {
-		return false, err
-	}
+		queryOut := pkgMgr.QueryPkg(p.Name)
+		inPkgs, err := cmdParser.ParseQuery(queryOut)
+		if err != nil {
+			return false, err
+		}
 
-	queryOut := pkgMgr.QueryPkg(p.Name)
-	inPkgs, err := cmdParser.ParseQuery(queryOut)
-	if err != nil {
-		return false, err
-	}
-
-	if len(inPkgs) > 0 {
-		return true, nil
-	}
-
-	return false, fmt.Errorf("Package %s not found", p.Name)
-}
-
-// IsInstalledVersion returns true if the installed package
-// has the required version
-func (p *Pkg) IsInstalledVersion() (bool, error) {
-	pkgMgr, err := manager.NewPkgManager(p.Type)
-	if err != nil {
-		return false, err
-	}
-
-	cmdParser, err := parser.NewParser(p.Type)
-	if err != nil {
-		return false, err
-	}
-
-	queryOut := pkgMgr.QueryPkg(p.Name)
-	inPkgs, err := cmdParser.ParseQuery(queryOut)
-	if err != nil {
-		return false, err
-	}
-
-	for _, inPkg := range inPkgs {
-		if inPkg.Version == p.Version {
+		if len(inPkgs) > 0 {
 			return true, nil
 		}
-	}
 
-	return false, fmt.Errorf("Package %s verion %s not found", p.Name, p.Version)
+	}
+	return false, fmt.Errorf("Error looking up installed pacakges")
+}
+
+// IsInstalledVersion returns true if all the supplied packages
+// are installed with the required version
+func IsInstalledVersion(pkgs ...resource.Pkg) (bool, error) {
+	for _, p := range pkgs {
+		pkgMgr, err := manager.NewPkgManager(p.Type)
+		if err != nil {
+			return false, err
+		}
+
+		cmdParser, err := parser.NewParser(p.Type)
+		if err != nil {
+			return false, err
+		}
+
+		queryOut := pkgMgr.QueryPkg(p.Name)
+		inPkgs, err := cmdParser.ParseQuery(queryOut)
+		if err != nil {
+			return false, err
+		}
+
+		for _, inPkg := range inPkgs {
+			if inPkg.Version == p.Version {
+				return true, nil
+			}
+		}
+	}
+	return false, fmt.Errorf("Error looking up package version")
 }
 
 // ListPackages lists all installed packages or returns error
-// It infers package type if provided pkgMgr type is empty
-func ListInstalled(pkgType string) ([]*Pkg, error) {
+func ListInstalled(pkgType string) ([]*resource.Pkg, error) {
 	pkgMgr, err := manager.NewPkgManager(pkgType)
 	if err != nil {
 		return nil, err

@@ -6,8 +6,8 @@ const (
 
 var (
 	// cli arguments passed to dpkg-query
-	dpkgListPkgsArgs  = []string{"-l"}
-	dpkgQueryPkgsArgs = []string{"-W", "-f '${Status} ${Version}'"}
+	dpkgListPkgsArgs = []string{"-l"}
+	dpkgQueryPkgArgs = []string{"-W", "-f '${Status} ${Version}'"}
 )
 
 type AptCommander struct {
@@ -17,7 +17,7 @@ type AptCommander struct {
 // aptitude manager commands
 func NewAptCommander() *Commander {
 	return &Commander{
-		ListPkgs:  BuildCmd(dpkg, dpkgListPkgsArgs),
-		QueryPkgs: BuildCmd(dpkg, dpkgQueryPkgsArgs),
+		ListPkgs: BuildCmd(dpkg, dpkgListPkgsArgs...),
+		QueryPkg: BuildCmd(dpkg, dpkgQueryPkgArgs...),
 	}
 }

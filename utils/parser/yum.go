@@ -3,29 +3,33 @@ package parser
 import (
 	"regexp"
 
-	"github.com/milosgajdos83/servpeek/resource/pkg"
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/commander"
 )
 
-type YumParser struct {
-	ph *parseHints
+type yumParser struct {
+	hinter *baseHinter
 }
 
 func NewYumParser() Parser {
-	return &YumParser{
-		ph: &parseHints{
-			listFilter:  regexp.MustCompile(`^[A-Za-z]`),
-			listMatch:   regexp.MustCompile(`^(\S+)\s+(\S+).*`),
-			queryFilter: regexp.MustCompile(`^Version`),
-			queryMatch:  regexp.MustCompile(`^Version\s+:\s+(\S+).*`),
+	return &yumParser{
+		hinter: &baseHinter{
+			list: &hints{
+				filter:  regexp.MustCompile(`^[A-Za-z]`),
+				matcher: regexp.MustCompile(`^(\S+)\s+(\S+).*`),
+			},
+			query: &hints{
+				filter:  regexp.MustCompile(`^Version`),
+				matcher: regexp.MustCompile(`^Version\s+:\s+(\S+).*`),
+			},
 		},
 	}
 }
 
-func (yp *YumParser) ParseList(out *commander.Out) ([]*pkg.Pkg, error) {
-	return parseStream(out, yumListFilterRE, yumListMatchRE, parseListOut)
+func (yp *yumParser) ParseList(out *commander.Out) ([]*resource.Pkg, error) {
+	return parseStream(out, parseListOut, yp.hinter.list, "yum")
 }
 
-func (yp *YumParser) ParseQuery(out *commander.Out) ([]*pkg.Pkg, error) {
-	return parseStream(out, yumQueryFilterRE, yumQueryMatchRE, parseQueryOut)
+func (yp *yumParser) ParseQuery(out *commander.Out) ([]*resource.Pkg, error) {
+	return parseStream(out, parseQueryOut, yp.hinter.query, "yum")
 }

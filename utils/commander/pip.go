@@ -6,14 +6,18 @@ const (
 
 var (
 	// cli arguments passed to gem
-	pipListPkgsArgs  = []string{"list"}
-	pipQueryPkgsArgs = []string{"show"}
+	pipListPkgsArgs = []string{"list"}
+	pipQueryPkgArgs = []string{"show"}
 )
 
+type PipCommand struct {
+	*Commander
+}
+
 // pip manager commands
-func PipCommander() *Commander {
+func NewPipCommander() *Commander {
 	return &Commander{
-		ListPkgs:  BuildCmd(pip, pipListPkgsArgs),
-		QueryPkgs: BuildCmd(pip, pipQueryPkgsArgs),
+		ListPkgs: BuildCmd(pip, pipListPkgsArgs...),
+		QueryPkg: BuildCmd(pip, pipQueryPkgArgs...),
 	}
 }

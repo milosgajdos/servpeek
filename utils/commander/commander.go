@@ -14,13 +14,13 @@ type Commander struct {
 func NewCommander(pkgType string) (*Commander, error) {
 	switch pkgType {
 	case "apt", "dpkg":
-		return AptCommander()
+		return NewAptCommander(), nil
 	case "rpm", "yum":
-		return YumCommander()
+		return NewYumCommander(), nil
 	case "pip":
-		return PipCommander()
+		return NewPipCommander(), nil
 	case "gem":
-		return GemCommander()
+		return NewGemCommander(), nil
 	}
 	return nil, fmt.Errorf("Unsupported package type")
 }

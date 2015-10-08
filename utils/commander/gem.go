@@ -6,8 +6,8 @@ const (
 
 var (
 	// cli arguments to gem
-	gemListPkgsArgs  = []string{"list", "--local"}
-	gemQueryPkgsArgs = []string{"list", "--local"}
+	gemListPkgsArgs = []string{"list", "--local"}
+	gemQueryPkgArgs = []string{"list", "--local"}
 )
 
 type GemCommander struct {
@@ -15,9 +15,9 @@ type GemCommander struct {
 }
 
 // gem manager commands
-func GemCommander() *Commander {
+func NewGemCommander() *Commander {
 	return &Commander{
-		ListPkgs:  BuildCmd(gem, gemListPkgsArgs),
-		QueryPkgs: BuildCmd(gem, gemQueryPkgsArgs),
+		ListPkgs: BuildCmd(gem, gemListPkgsArgs...),
+		QueryPkg: BuildCmd(gem, gemQueryPkgArgs...),
 	}
 }

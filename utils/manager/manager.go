@@ -104,6 +104,6 @@ func (bpm *BasePkgManager) ListPkgs() *commander.Out {
 // QueryPkg runs a command which queries a package and returns
 // the output of the command
 func (bpm *BasePkgManager) QueryPkg(pkgName string) *commander.Out {
-	bpm.cmd.QueryPkg.Args = append(bpm.QueryPkg.Args, pkgName)
+	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
 	return bpm.cmd.QueryPkg.Run()
 }

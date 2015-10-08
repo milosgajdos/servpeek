@@ -4,34 +4,28 @@ package parser
 
 import (
 	"fmt"
-	"regexp"
 
-	"github.com/milosgajdos83/servpeek/resource/pkg"
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/commander"
 )
 
 // PkgParser parses Commander package commands
 type Parser interface {
-	ParseList(out *commander.Out) ([]*pkg.Pkg, error)
-	ParseQuery(out *commander.Out) ([]*pkg.Pkg, error)
-}
-
-type Hinter interface {
-	Filter() *regexp.Regexp
-	Matcher() *regexp.Regexp
+	ParseList(out *commander.Out) ([]*resource.Pkg, error)
+	ParseQuery(out *commander.Out) ([]*resource.Pkg, error)
 }
 
 // NewPkgParser returns PkgParser
-func NewPkgParser(pkgType string) (Parser, error) {
+func NewParser(pkgType string) (Parser, error) {
 	switch pkgType {
 	case "apt", "dpkg":
-		return NewAptParser()
+		return NewAptParser(), nil
 	case "rpm", "yum":
-		return NewYumParser()
+		return NewYumParser(), nil
 	case "pip":
-		return NewPipParser()
+		return NewPipParser(), nil
 	case "gem":
-		return NewGemParser()
+		return NewGemParser(), nil
 	}
 	return nil, fmt.Errorf("Can't create Parser: Unsupported package type")
 }
