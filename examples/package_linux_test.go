@@ -15,6 +15,6 @@ func Test_Package(t *testing.T) {
 	}
 
 	if ok, err := pkg.IsInstalled(testPkg); !ok {
-		t.Errorf("Package %s : %s not installed: %s", testPkg.Name, testPkg.Version, err)
+		t.Errorf("%s not installed: %s", testPkg, err)
 	}
 }

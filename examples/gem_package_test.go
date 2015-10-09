@@ -15,6 +15,6 @@ func Test_Gem_Package(t *testing.T) {
 	}
 
 	if ok, err := pkg.IsInstalled(testPkg); !ok {
-		t.Errorf("%s package %s not installed: %s", testPkg.Type, testPkg.Name, err)
+		t.Errorf("%s not installed: %s", testPkg, err)
 	}
 }

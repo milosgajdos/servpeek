@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"os"
 	"os/user"
@@ -14,10 +13,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/group"
 )
 
-func withOsFileContext(path string, fn func(file *os.File) (bool, error)) (bool, error) {
+func withOsFile(path string, fn func(file *os.File) (bool, error)) (bool, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return false, err
@@ -26,95 +26,100 @@ func withOsFileContext(path string, fn func(file *os.File) (bool, error)) (bool,
 	return fn(file)
 }
 
-type File struct {
-	fi os.FileInfo
-	// fi.Name() returns base path :-/
-	// so it's better to keep the ref to provided path
-	path string
-}
-
-func NewFile(path string) (*File, error) {
+func withFileInfo(path string, fn func(fi os.FileInfo) (bool, error)) (bool, error) {
 	fi, err := os.Stat(path)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-
-	return &File{
-		fi:   fi,
-		path: path,
-	}, nil
+	return fn(fi)
 }
 
-func (f *File) String() string {
-	return fmt.Sprintf("%s", f.path)
+func IsRegular(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode().IsRegular(), nil
+	})
 }
 
-func (f *File) IsRegular() bool {
-	return f.fi.Mode().IsRegular()
+func IsDirectory(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.IsDir(), nil
+	})
 }
 
-func (f *File) IsDirectory() bool {
-	return f.fi.IsDir()
+func IsBlockDevice(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&os.ModeDevice != 0, nil
+	})
 }
 
-func (f *File) IsBlockDevice() bool {
-	return f.fi.Mode()&os.ModeDevice != 0
+func IsCharDevice(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&os.ModeCharDevice != 0, nil
+	})
 }
 
-func (f *File) IsCharDevice() bool {
-	return f.fi.Mode()&os.ModeCharDevice != 0
+func IsPipe(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&os.ModeNamedPipe != 0, nil
+	})
 }
 
-func (f *File) IsPipe() bool {
-	return f.fi.Mode()&os.ModeNamedPipe != 0
+func IsSocket(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&os.ModeSocket != 0, nil
+	})
 }
 
-func (f *File) IsSocket() bool {
-	return f.fi.Mode()&os.ModeSocket != 0
+func IsSymlink(f *resource.File) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&os.ModeSymlink != 0, nil
+	})
 }
 
-func (f *File) IsSymlink() bool {
-	return f.fi.Mode()&os.ModeSymlink != 0
+func IsMode(f *resource.File, mode os.FileMode) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Mode()&mode != 0, nil
+	})
 }
 
-func (f *File) IsMode(mode os.FileMode) bool {
-	return f.fi.Mode()&mode != 0
+func IsOwnedBy(f *resource.File, username string) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		u, err := user.Lookup(username)
+		if err != nil {
+			return false, err
+		}
+		uid, err := strconv.ParseUint(u.Uid, 10, 32)
+		if err != nil {
+			return false, err
+		}
+		return fi.Sys().(*syscall.Stat_t).Uid == uint32(uid), nil
+	})
 }
 
-func (f *File) IsOwnedBy(username string) (bool, error) {
-	u, err := user.Lookup(username)
+func IsGrupedInto(f *resource.File, groupname string) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		g, err := group.Lookup(groupname)
+		if err != nil {
+			return false, err
+		}
+		gid, err := strconv.ParseUint(g.Gid, 10, 32)
+		if err != nil {
+			return false, err
+		}
+		return fi.Sys().(*syscall.Stat_t).Gid == uint32(gid), nil
+	})
+}
+
+func LinksTo(f *resource.File, path string) (bool, error) {
+	dst, err := os.Readlink(path)
 	if err != nil {
 		return false, err
 	}
-	uid, err := strconv.ParseUint(u.Uid, 10, 32)
-	if err != nil {
-		return false, err
-	}
-	return f.fi.Sys().(*syscall.Stat_t).Uid == uint32(uid), nil
+	return dst == f.Path, nil
 }
 
-func (f *File) IsGrupedInto(groupname string) (bool, error) {
-	g, err := group.Lookup(groupname)
-	if err != nil {
-		return false, err
-	}
-	gid, err := strconv.ParseUint(g.Gid, 10, 32)
-	if err != nil {
-		return false, err
-	}
-	return f.fi.Sys().(*syscall.Stat_t).Gid == uint32(gid), nil
-}
-
-func (f *File) LinksTo(path string) (bool, error) {
-	_, err := os.Readlink(path)
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (f *File) Md5(sum string) (bool, error) {
-	return withOsFileContext(f.path, func(file *os.File) (bool, error) {
+func Md5(f *resource.File, sum string) (bool, error) {
+	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		hasher := md5.New()
 		if _, err := io.Copy(hasher, file); err != nil {
 			return false, nil
@@ -123,8 +128,8 @@ func (f *File) Md5(sum string) (bool, error) {
 	})
 }
 
-func (f *File) Sha256(sum string) (bool, error) {
-	return withOsFileContext(f.path, func(file *os.File) (bool, error) {
+func Sha256(f *resource.File, sum string) (bool, error) {
+	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		hasher := sha256.New()
 		if _, err := io.Copy(hasher, file); err != nil {
 			return false, nil
@@ -133,16 +138,20 @@ func (f *File) Sha256(sum string) (bool, error) {
 	})
 }
 
-func (f *File) Size(size int64) bool {
-	return f.fi.Size() == size
+func Size(f *resource.File, size int64) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.Size() == size, nil
+	})
 }
 
-func (f *File) ModTimeAfter(mtime time.Time) bool {
-	return f.fi.ModTime().After(mtime)
+func ModTimeAfter(f *resource.File, mtime time.Time) (bool, error) {
+	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
+		return fi.ModTime().After(mtime), nil
+	})
 }
 
-func (f *File) Contains(content regexp.Regexp) (bool, error) {
-	return withOsFileContext(f.fi.Name(), func(file *os.File) (bool, error) {
+func Contains(f *resource.File, content regexp.Regexp) (bool, error) {
+	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			if content.Match(scanner.Bytes()) {
