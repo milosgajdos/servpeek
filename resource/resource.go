@@ -16,7 +16,7 @@ type Pkg struct {
 
 // Implement Stringer interface
 func (p *Pkg) String() string {
-	return fmt.Sprintf("[Package] Name: %s, Version: %s, Type: %s", p.Name, p.Version, p.Type)
+	return fmt.Sprintf("[Package] Type: %s Name: %s Version: %s", p.Type, p.Name, p.Version)
 }
 
 // File is an operating system file
@@ -27,5 +27,5 @@ type File struct {
 
 // Implement Stringer interface
 func (f *File) String() string {
-	return fmt.Sprintf("[File] Path: %s", f.Path)
+	return fmt.Sprintf("[File] %s", f.Path)
 }

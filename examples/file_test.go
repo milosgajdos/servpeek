@@ -15,7 +15,7 @@ func Test_File(t *testing.T) {
 	if ok, err := file.IsRegular(f); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
-			t.Errorf("File %s is not a regular file", f)
+			t.Errorf("%s is not a regular file", f)
 		}
 	}
 
@@ -25,21 +25,21 @@ func Test_File(t *testing.T) {
 	if ok, err := file.IsOwnedBy(f, owner); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
-			t.Errorf("File %s not owned by %s", f, owner)
+			t.Errorf("%s not owned by %s", f, owner)
 		}
 	}
 
 	if ok, err := file.IsGrupedInto(f, group); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
-			t.Errorf("File %s not grouped into %s", f, group)
+			t.Errorf("%s not grouped into %s", f, group)
 		}
 	}
 
 	if ok, err := file.Md5(f, md5); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
-			t.Errorf("Incorrect MD5 sum of file %s: %s", f, md5)
+			t.Errorf("%s incorrect MD5 sum of file: %s", f, md5)
 		}
 	}
 }
