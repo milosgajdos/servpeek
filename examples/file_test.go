@@ -3,37 +3,40 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/resource/file"
 )
 
 func Test_File(t *testing.T) {
-	f, err := file.NewFile("/etc/hosts")
-	if err != nil {
-		t.Fatalf("Could not read file %s: %s", f, err)
+	f := &resource.File{
+		Path: "/etc/hosts",
 	}
 
-	if !f.IsRegular() {
-		t.Errorf("File %s is not a regular file", f)
+	if ok, err := file.IsRegular(f); err != nil {
+		t.Errorf("Error: %s", err)
+		if !ok {
+			t.Errorf("File %s is not a regular file", f)
+		}
 	}
 
 	owner := "root"
 	group := "wheel"
-	md5 := "SOME_MD5SUM_YOU"
-	if ok, err := f.IsOwnedBy(owner); err != nil {
+	md5 := "YOUR_MD5SUM_HERE"
+	if ok, err := file.IsOwnedBy(f, owner); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
 			t.Errorf("File %s not owned by %s", f, owner)
 		}
 	}
 
-	if ok, err := f.IsGrupedInto(group); err != nil {
+	if ok, err := file.IsGrupedInto(f, group); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
 			t.Errorf("File %s not grouped into %s", f, group)
 		}
 	}
 
-	if ok, err := f.Md5(md5); err != nil {
+	if ok, err := file.Md5(f, md5); err != nil {
 		t.Errorf("Error: %s", err)
 		if !ok {
 			t.Errorf("Incorrect MD5 sum of file %s: %s", f, md5)

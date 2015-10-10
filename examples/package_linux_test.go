@@ -3,17 +3,18 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
 func Test_Package(t *testing.T) {
-	testPkg := &pkg.Pkg{
+	testPkg := resource.Pkg{
 		Name:    "docker-engine",
 		Version: "1.8.2-0~trusty",
 		Type:    "apt",
 	}
 
-	if ok, err := testPkg.IsInstalled(); !ok {
-		t.Errorf("Package %s : %s not installed: %s", testPkg.Name, testPkg.Version, err)
+	if ok, err := pkg.IsInstalled(testPkg); !ok {
+		t.Errorf("%s not installed: %s", testPkg, err)
 	}
 }
