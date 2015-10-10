@@ -8,18 +8,6 @@ import (
 	"sync"
 )
 
-// RunCombined executes a command with arbitrary number of arguments passed in
-// as parameteris and returns combined stdout and stderr as a string
-func RunCombined(command string, args ...string) (string, error) {
-	cmd := exec.Command(command, args...)
-	out, err := cmd.CombinedOutput()
-	output := string(out)
-	if err != nil {
-		return output, err
-	}
-	return output, nil
-}
-
 // Command is an external command with arguments
 type Command struct {
 	Cmd  string
@@ -78,6 +66,19 @@ func (c *Command) Run() *Out {
 	}()
 
 	return res
+}
+
+// RunCombined executes Command and returns combined stdout and stderr as a string
+// The difference betweent RunCombined and Run is that Run returns a stream of lines
+// ie. stream of strings. RunCombined returns full Stdout/Stderr output in one string
+func (c *Command) RunCombined() (string, error) {
+	cmd := exec.Command(c.Cmd, c.Args...)
+	out, err := cmd.CombinedOutput()
+	output := string(out)
+	if err != nil {
+		return output, err
+	}
+	return output, nil
 }
 
 // Out contains all the information about the result of executed
