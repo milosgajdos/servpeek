@@ -6,22 +6,22 @@ package manager
 import (
 	"fmt"
 
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos83/servpeek/utils/packaging/commander"
 )
 
-// PkgManager defines generic package manager interface
+// PkgManager provides package manager interface
 type PkgManager interface {
-	// ListPkgs returns list pacakges command output
-	ListPkgs() *commander.Out
-	// QueryPkg returns query package command output
-	QueryPkg(pkgName string) *commander.Out
+	// ListPkgs runs command that lists installed packages
+	ListPkgs() *command.Out
+	// QueryPkg runs command that queries info about installed package
+	QueryPkg(pkgName string) *command.Out
 }
 
-// BasePkgManager is a package manager that implements
-// basic package manager commander
+// BasePkgManager implements basic package manager commands
 type BasePkgManager struct {
-	// commander provides package commander
-	cmd *commander.Commander
+	// cmd provides package commander
+	cmd *commander.PkgCommander
 }
 
 // NewPkgManager returns PkgManager based on the package type
@@ -39,42 +39,42 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 	return nil, fmt.Errorf("Unsupported package type")
 }
 
-// AptManager implements Apt package manager
-type AptManager struct {
+// aptManager implements Apt package manager
+type aptManager struct {
 	BasePkgManager
 }
 
 // NewAptManager returns PkgManager or fails with error
 func NewAptManager() (PkgManager, error) {
-	return &AptManager{
+	return &aptManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewAptCommander(),
 		},
 	}, nil
 }
 
-// YumManager implements Yum package manager
-type YumManager struct {
+// yumManager implements Yum package manager
+type yumManager struct {
 	BasePkgManager
 }
 
 // NewYumManager returns PkgManager or fails with error
 func NewYumManager() (PkgManager, error) {
-	return &YumManager{
+	return &yumManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewYumCommander(),
 		},
 	}, nil
 }
 
-// PipManager implements pip package manager
-type PipManager struct {
+// pipManager implements pip package manager
+type pipManager struct {
 	BasePkgManager
 }
 
 // NewPipManager returns PkgManager or fails with error
 func NewPipManager() (PkgManager, error) {
-	return &PipManager{
+	return &pipManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewPipCommander(),
 		},
@@ -82,28 +82,28 @@ func NewPipManager() (PkgManager, error) {
 }
 
 // GemManager implements gem package manager
-type GemManager struct {
+type gemManager struct {
 	BasePkgManager
 }
 
 // NewGemManager returns PkgManager or fails with error
 func NewGemManager() (PkgManager, error) {
-	return &GemManager{
+	return &gemManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewGemCommander(),
 		},
 	}, nil
 }
 
-// ListPkgs runs a command which queries installed packages and returns
-// the output of the command
-func (bpm *BasePkgManager) ListPkgs() *commander.Out {
+// ListPkgs runs a command which queries installed packages
+// It returns its output that can be parsed
+func (bpm *BasePkgManager) ListPkgs() *command.Out {
 	return bpm.cmd.ListPkgs.Run()
 }
 
-// QueryPkg runs a command which queries a package and returns
-// the output of the command
-func (bpm *BasePkgManager) QueryPkg(pkgName string) *commander.Out {
+// QueryPkg runs a command which queries a package
+// It returns the output that can be parsed
+func (bpm *BasePkgManager) QueryPkg(pkgName string) *command.Out {
 	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
 	return bpm.cmd.QueryPkg.Run()
 }

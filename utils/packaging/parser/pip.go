@@ -4,14 +4,15 @@ import (
 	"regexp"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
 type pipParser struct {
 	hinter *baseHinter
 }
 
-func NewPipParser() Parser {
+// NewPipParser returns PkgParser that parses pip PkgManager commands outputs
+func NewPipParser() PkgParser {
 	return &pipParser{
 		hinter: &baseHinter{
 			list: &hints{
@@ -26,10 +27,14 @@ func NewPipParser() Parser {
 	}
 }
 
-func (pp *pipParser) ParseList(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseList parses output of pip list command
+// It returns slice of list packages or error
+func (pp *pipParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, pp.hinter.list, "pip")
 }
 
-func (pp *pipParser) ParseQuery(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseQuery parses output of pip show command
+// It returns slice of queried packages or error
+func (pp *pipParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, pp.hinter.query, "pip")
 }

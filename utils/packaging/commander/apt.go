@@ -10,13 +10,14 @@ var (
 	dpkgQueryPkgArgs = []string{"-W", "-f '${Status} ${Version}'"}
 )
 
+// AptCommander provides aptitude command manager commands
 type AptCommander struct {
-	*Commander
+	*PkgCommander
 }
 
-// aptitude manager commands
-func NewAptCommander() *Commander {
-	return &Commander{
+// NewAptCommander returns aptitude command manager
+func NewAptCommander() *PkgCommander {
+	return &PkgCommander{
 		ListPkgs: BuildCmd(dpkg, dpkgListPkgsArgs...),
 		QueryPkg: BuildCmd(dpkg, dpkgQueryPkgArgs...),
 	}

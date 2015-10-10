@@ -5,29 +5,22 @@ import (
 	"regexp"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
-type Hinter interface {
+type hinter interface {
 	Filter() *regexp.Regexp
 	Matcher() *regexp.Regexp
 }
 
 type baseHinter struct {
-	list  Hinter
-	query Hinter
+	list  hinter
+	query hinter
 }
 
 type hints struct {
 	filter  *regexp.Regexp
 	matcher *regexp.Regexp
-}
-
-func newHinter(f *regexp.Regexp, m *regexp.Regexp) Hinter {
-	return &hints{
-		filter:  f,
-		matcher: m,
-	}
 }
 
 func (h *hints) Filter() *regexp.Regexp {
@@ -40,8 +33,8 @@ func (h *hints) Matcher() *regexp.Regexp {
 
 type parseFunc func(string, *regexp.Regexp) (*resource.Pkg, error)
 
-func parseStream(out *commander.Out, fn parseFunc,
-	h Hinter, pkgType string) ([]*resource.Pkg, error) {
+func parseStream(out *command.Out, fn parseFunc,
+	h hinter, pkgType string) ([]*resource.Pkg, error) {
 	pkgs := make([]*resource.Pkg, 0)
 	for out.Next() {
 		line := out.Text()

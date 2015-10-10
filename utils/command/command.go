@@ -1,4 +1,5 @@
-package commander
+// package command allows to run external commands
+package command
 
 import (
 	"bufio"
@@ -8,7 +9,7 @@ import (
 )
 
 // RunCombined executes a command with arbitrary number of arguments passed in
-// as the function's parameter and returns combined stdout and stderr
+// as parameteris and returns combined stdout and stderr as a string
 func RunCombined(command string, args ...string) (string, error) {
 	cmd := exec.Command(command, args...)
 	out, err := cmd.CombinedOutput()
@@ -19,7 +20,7 @@ func RunCombined(command string, args ...string) (string, error) {
 	return output, nil
 }
 
-// Command is an external commands with arguments
+// Command is an external command with arguments
 type Command struct {
 	Cmd  string
 	Args []string
@@ -90,13 +91,13 @@ type Out struct {
 	err    error
 }
 
-// Next returns next line from result output or false if there is none
+// Next returns next line from Command output or false if there is none
 func (o *Out) Next() (ok bool) {
 	o.line, ok = <-o.lines
 	return !o.closed && o.err == nil && ok
 }
 
-// Returns a single line of streamed command output
+// Returns a single line of command output
 func (o *Out) Text() string {
 	return o.line
 }
@@ -108,7 +109,7 @@ func (o *Out) Err() error {
 	return o.err
 }
 
-// Close closes Out's standard output reader
+// Close closes standard output reader
 func (o *Out) Close() error {
 	o.mu.Lock()
 	defer o.mu.Unlock()

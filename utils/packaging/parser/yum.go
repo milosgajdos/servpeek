@@ -4,14 +4,15 @@ import (
 	"regexp"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
 type yumParser struct {
 	hinter *baseHinter
 }
 
-func NewYumParser() Parser {
+// NewYumParser returs PkgParser that parses yum PkgManager commands outputs
+func NewYumParser() PkgParser {
 	return &yumParser{
 		hinter: &baseHinter{
 			list: &hints{
@@ -26,10 +27,14 @@ func NewYumParser() Parser {
 	}
 }
 
-func (yp *yumParser) ParseList(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseList parses output of rpm -qa --qf %{NAME}%20{VERSION}-%{RELEASE}
+// It returns slice of installed packages or error
+func (yp *yumParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, yp.hinter.list, "yum")
 }
 
-func (yp *yumParser) ParseQuery(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseQuery parses output of rpm -qi command
+// It returns slice of packages or error
+func (yp *yumParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, yp.hinter.query, "yum")
 }

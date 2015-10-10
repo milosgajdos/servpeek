@@ -10,13 +10,14 @@ var (
 	rpmQueryPkgArgs = []string{"-qi"}
 )
 
+// YumCommander provides yum command manager commands
 type YumCommander struct {
-	*Commander
+	*PkgCommander
 }
 
-// yum manager commands
-func NewYumCommander() *Commander {
-	return &Commander{
+// NewYumCommander returns yum command manager
+func NewYumCommander() *PkgCommander {
+	return &PkgCommander{
 		ListPkgs: BuildCmd(rpm, rpmListPkgsArgs...),
 		QueryPkg: BuildCmd(rpm, rpmQueryPkgArgs...),
 	}

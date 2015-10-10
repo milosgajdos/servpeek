@@ -4,14 +4,15 @@ import (
 	"regexp"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
 type aptParser struct {
 	hinter *baseHinter
 }
 
-func NewAptParser() Parser {
+// NewAptParser returs PkgParser that parses aptitude PkgManager commands outputs
+func NewAptParser() PkgParser {
 	return &aptParser{
 		hinter: &baseHinter{
 			list: &hints{
@@ -26,10 +27,14 @@ func NewAptParser() Parser {
 	}
 }
 
-func (ap *aptParser) ParseList(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseList parses output of dpkg-query -l command
+// It returns slice of installed packages or error
+func (ap *aptParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, ap.hinter.list, "apt")
 }
 
-func (ap *aptParser) ParseQuery(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseQuery parses output of dpkg-quer -W -f '${Status} ${Version} command
+// It returns slice of packages or error
+func (ap *aptParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, ap.hinter.query, "apt")
 }

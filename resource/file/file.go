@@ -1,3 +1,5 @@
+// package file implements various functions that provide helpers
+// to query various aspects of operating system files
 package file
 
 import (
@@ -34,54 +36,72 @@ func withFileInfo(path string, fn func(fi os.FileInfo) (bool, error)) (bool, err
 	return fn(fi)
 }
 
+// IsRegular checks if provided file is a regular file
+// It returns error if os.Stat returns error
 func IsRegular(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode().IsRegular(), nil
 	})
 }
 
+// IsDirectory checks if provided file is a directory
+// It returns error if os.Stat returns error
 func IsDirectory(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.IsDir(), nil
 	})
 }
 
+// IsBlockDevice checks if provided file is a block device file
+// It returns error if os.Stat returns error
 func IsBlockDevice(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&os.ModeDevice != 0, nil
 	})
 }
 
+// IsCharDevice checks if provided file is a character device file
+// It returns error if os.Stat returns error
 func IsCharDevice(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&os.ModeCharDevice != 0, nil
 	})
 }
 
+// IsPipe checks if provided file is a named pipe file
+// It returns error if os.Stat returns error
 func IsPipe(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&os.ModeNamedPipe != 0, nil
 	})
 }
 
+// IsSocket checks if provided file is a socket
+// It returns error if os.Stat returns error
 func IsSocket(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&os.ModeSocket != 0, nil
 	})
 }
 
+// IsSymlink checks if provided file is a symbolic link
+// It returns error if os.Stat returns error
 func IsSymlink(f *resource.File) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&os.ModeSymlink != 0, nil
 	})
 }
 
+// IsMode checks if the provided file has the same mode as the one passed in via paramter
+// It returns error if os.Stat returns error
 func IsMode(f *resource.File, mode os.FileMode) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Mode()&mode != 0, nil
 	})
 }
 
+// IsOwnedBy checks if the provided file is owned by username user
+// It returns an error if os.Stat returns error
 func IsOwnedBy(f *resource.File, username string) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		u, err := user.Lookup(username)
@@ -96,6 +116,8 @@ func IsOwnedBy(f *resource.File, username string) (bool, error) {
 	})
 }
 
+// IsGrupedInto checks if the provided file is owned by groupname group
+// It returns an error if os.Stat returns error
 func IsGrupedInto(f *resource.File, groupname string) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		g, err := group.Lookup(groupname)
@@ -110,6 +132,8 @@ func IsGrupedInto(f *resource.File, groupname string) (bool, error) {
 	})
 }
 
+// LinksTo checks if the provided file is a symlink which links to path
+// It returs error if the link can't be read
 func LinksTo(f *resource.File, path string) (bool, error) {
 	dst, err := os.Readlink(path)
 	if err != nil {
@@ -118,6 +142,8 @@ func LinksTo(f *resource.File, path string) (bool, error) {
 	return dst == f.Path, nil
 }
 
+// Md5 checks if the provided file md5 checksum is the same as the one passed in as paramter
+// It returs error if the provided file can't be open
 func Md5(f *resource.File, sum string) (bool, error) {
 	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		hasher := md5.New()
@@ -128,6 +154,8 @@ func Md5(f *resource.File, sum string) (bool, error) {
 	})
 }
 
+// Sha256 checks if the provided file sha256 checksum is the same as the one passed in as paramter
+// It returs error if the provided file can't be open
 func Sha256(f *resource.File, sum string) (bool, error) {
 	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		hasher := sha256.New()
@@ -138,18 +166,24 @@ func Sha256(f *resource.File, sum string) (bool, error) {
 	})
 }
 
+// Size checks if the provided file byte size is the same as the one passed in as paramter
+// It returns error if os.Stat returns error
 func Size(f *resource.File, size int64) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.Size() == size, nil
 	})
 }
 
+// ModTimeAfter checks if the provided file modification time is older than the one passed in as paramter
+// It returns error if os.Stat returns error
 func ModTimeAfter(f *resource.File, mtime time.Time) (bool, error) {
 	return withFileInfo(f.Path, func(fi os.FileInfo) (bool, error) {
 		return fi.ModTime().After(mtime), nil
 	})
 }
 
+// Contains checks if the provided file content can be matched with the regexp passed in as paramter
+// It returs error if the provided file can't be open
 func Contains(f *resource.File, content regexp.Regexp) (bool, error) {
 	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		scanner := bufio.NewScanner(file)

@@ -10,13 +10,14 @@ var (
 	pipQueryPkgArgs = []string{"show"}
 )
 
+// PipCommand provides gem command manager commands
 type PipCommand struct {
-	*Commander
+	*PkgCommander
 }
 
-// pip manager commands
-func NewPipCommander() *Commander {
-	return &Commander{
+// NewPipCommander returns pip command manager
+func NewPipCommander() *PkgCommander {
+	return &PkgCommander{
 		ListPkgs: BuildCmd(pip, pipListPkgsArgs...),
 		QueryPkg: BuildCmd(pip, pipQueryPkgArgs...),
 	}

@@ -4,14 +4,15 @@ import (
 	"regexp"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/commander"
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
 type gemParser struct {
 	hinter *baseHinter
 }
 
-func NewGemParser() Parser {
+// NewGemParser returns PkgParser that parses gem PkgManager commands outputs
+func NewGemParser() PkgParser {
 	return &gemParser{
 		hinter: &baseHinter{
 			list: &hints{
@@ -26,10 +27,14 @@ func NewGemParser() Parser {
 	}
 }
 
-func (gp *gemParser) ParseList(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseList parses output of gem list --local
+// It returns slice of installed packages or error
+func (gp *gemParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, gp.hinter.list, "gem")
 }
 
-func (gp *gemParser) ParseQuery(out *commander.Out) ([]*resource.Pkg, error) {
+// ParseQuery parses output of gem list --local
+// It returns slice of queried packages or error
+func (gp *gemParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, gp.hinter.query, "gem")
 }

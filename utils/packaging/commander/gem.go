@@ -10,13 +10,14 @@ var (
 	gemQueryPkgArgs = []string{"list", "--local"}
 )
 
+// GemCommander provides gem command manager commands
 type GemCommander struct {
-	*Commander
+	*PkgCommander
 }
 
-// gem manager commands
-func NewGemCommander() *Commander {
-	return &Commander{
+// NewGemCommander returns gem command manager
+func NewGemCommander() *PkgCommander {
+	return &PkgCommander{
 		ListPkgs: BuildCmd(gem, gemListPkgsArgs...),
 		QueryPkg: BuildCmd(gem, gemQueryPkgArgs...),
 	}

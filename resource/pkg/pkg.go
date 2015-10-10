@@ -1,11 +1,12 @@
+// package pkg provides function that check various package aspect
 package pkg
 
 import (
 	"fmt"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/manager"
-	"github.com/milosgajdos83/servpeek/utils/parser"
+	"github.com/milosgajdos83/servpeek/utils/packaging/manager"
+	"github.com/milosgajdos83/servpeek/utils/packaging/parser"
 )
 
 // IsInstalled return true if all the supplied packages are installed
@@ -64,7 +65,7 @@ func IsInstalledVersion(pkgs ...resource.Pkg) (bool, error) {
 	return false, fmt.Errorf("Error looking up package version")
 }
 
-// ListPackages lists all installed packages or returns error
+// ListInstalled lists all installed packages or returns error
 func ListInstalled(pkgType string) ([]*resource.Pkg, error) {
 	pkgMgr, err := manager.NewPkgManager(pkgType)
 	if err != nil {
