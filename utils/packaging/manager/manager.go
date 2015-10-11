@@ -31,6 +31,8 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 		return NewAptManager()
 	case "rpm", "yum":
 		return NewYumManager()
+	case "apk":
+		return NewApkManager()
 	case "pip":
 		return NewPipManager()
 	case "gem":
@@ -77,6 +79,20 @@ func NewPipManager() (PkgManager, error) {
 	return &pipManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewPipCommander(),
+		},
+	}, nil
+}
+
+// apkManager implements apk package manager
+type apkManager struct {
+	BasePkgManager
+}
+
+// NewApkManager returns PkgManager or fails with error
+func NewApkManager() (PkgManager, error) {
+	return &apkManager{
+		BasePkgManager: BasePkgManager{
+			cmd: commander.NewApkCommander(),
 		},
 	}, nil
 }

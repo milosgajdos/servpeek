@@ -33,7 +33,7 @@ func (ap *aptParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, ap.hinter.list, "apt")
 }
 
-// ParseQuery parses output of dpkg-quer -W -f '${Status} ${Version} command
+// ParseQuery parses output of dpkg-query -W -f '${Status} ${Version} command
 // It returns slice of packages or error
 func (ap *aptParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, ap.hinter.query, "apt")
