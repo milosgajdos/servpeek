@@ -78,7 +78,7 @@ func ListInstalled(pkgType string) ([]*resource.Pkg, error) {
 	}
 
 	listOut := pkgMgr.ListPkgs()
-	pkgs, err := cmdParser.ParseQuery(listOut)
+	pkgs, err := cmdParser.ParseList(listOut)
 	if err != nil {
 		return nil, err
 	}
