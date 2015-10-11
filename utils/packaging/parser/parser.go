@@ -23,6 +23,8 @@ func NewParser(pkgType string) (PkgParser, error) {
 		return NewAptParser(), nil
 	case "rpm", "yum":
 		return NewYumParser(), nil
+	case "apk":
+		return NewApkParser(), nil
 	case "pip":
 		return NewPipParser(), nil
 	case "gem":

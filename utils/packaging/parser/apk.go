@@ -16,12 +16,12 @@ func NewApkParser() PkgParser {
 	return &apkParser{
 		hinter: &baseHinter{
 			list: &hints{
-				filter:  regexp.MustCompile(`^WARNING`),
+				filter:  regexp.MustCompile(`^[^W].*`),
 				matcher: regexp.MustCompile(`^(\S+)-(\d\S+)$`),
 			},
 			query: &hints{
-				filter:  regexp.MustCompile(`^WARNING`),
-				matcher: regexp.MustCompile(`^\S+-(\d\S+)\s+description$`),
+				filter:  regexp.MustCompile(`.*description:$`),
+				matcher: regexp.MustCompile(`^\S+-(\d\S+)\s+description:$`),
 			},
 		},
 	}
