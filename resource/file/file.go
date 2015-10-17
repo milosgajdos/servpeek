@@ -184,7 +184,7 @@ func ModTimeAfter(f *resource.File, mtime time.Time) (bool, error) {
 
 // Contains checks if the provided file content can be matched with the regexp passed in as paramter
 // It returs error if the provided file can't be open
-func Contains(f *resource.File, content regexp.Regexp) (bool, error) {
+func Contains(f *resource.File, content *regexp.Regexp) (bool, error) {
 	return withOsFile(f.Path, func(file *os.File) (bool, error) {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
