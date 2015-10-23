@@ -10,14 +10,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/user"
 	"regexp"
-	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/utils/group"
+	"github.com/milosgajdos83/servpeek/utils"
 )
 
 func withOsFile(path string, fn func(file *os.File) error) error {
@@ -129,11 +127,7 @@ func IsMode(f *resource.File, mode os.FileMode) error {
 // It returns an error if os.Stat returns error
 func IsOwnedBy(f *resource.File, username string) error {
 	return withFileInfo(f.Path, func(fi os.FileInfo) error {
-		u, err := user.Lookup(username)
-		if err != nil {
-			return err
-		}
-		uid, err := strconv.ParseUint(u.Uid, 10, 32)
+		uid, err := utils.RoleToId("user", username)
 		if err != nil {
 			return err
 		}
@@ -148,11 +142,7 @@ func IsOwnedBy(f *resource.File, username string) error {
 // It returns an error if os.Stat returns error
 func IsGrupedInto(f *resource.File, groupname string) error {
 	return withFileInfo(f.Path, func(fi os.FileInfo) error {
-		g, err := group.Lookup(groupname)
-		if err != nil {
-			return err
-		}
-		gid, err := strconv.ParseUint(g.Gid, 10, 32)
+		gid, err := utils.RoleToId("group", groupname)
 		if err != nil {
 			return err
 		}

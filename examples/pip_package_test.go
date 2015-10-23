@@ -14,7 +14,7 @@ func Test_Pip_Package(t *testing.T) {
 		Type:    "pip",
 	}
 
-	if ok, err := pkg.IsInstalled(testPkg); !ok {
-		t.Errorf("%s not installed: %s", testPkg, err)
+	if err := pkg.IsInstalled(testPkg); err != nil {
+		t.Errorf("Error: %s", err)
 	}
 }

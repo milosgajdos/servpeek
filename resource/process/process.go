@@ -6,13 +6,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
+	"github.com/milosgajdos83/servpeek/utils"
 	"github.com/prometheus/procfs"
 )
 
-func withAllProcs(fn func(procfs.Procs) error) error {
+func withRunningProcs(fn func(procfs.Procs) error) error {
 	// Mount /proc FS
 	procFS, err := procfs.NewFS(procfs.DefaultMountPoint)
 	if err != nil {
@@ -27,7 +27,7 @@ func withAllProcs(fn func(procfs.Procs) error) error {
 }
 
 func withProcessCmd(cmd string, fn func([]*procfs.Proc) error) error {
-	return withAllProcs(func(procs procfs.Procs) error {
+	return withRunningProcs(func(procs procfs.Procs) error {
 		ps := make([]*procfs.Proc, 0)
 		// Search for the ones that match passed command
 		for _, proc := range procs {
@@ -44,19 +44,18 @@ func withProcessCmd(cmd string, fn func([]*procfs.Proc) error) error {
 }
 
 func withProcessPid(pid int, fn func(*procfs.Proc) error) error {
-	return withAllProcs(func(procs procfs.Procs) error {
+	return withRunningProcs(func(procs procfs.Procs) error {
 		for _, proc := range procs {
 			if pid == proc.PID {
 				return fn(&proc)
 			}
 		}
-		return fmt.Errorf("Could not find %d process on the host", pid)
+		return fmt.Errorf("%d process not found on the host", pid)
 	})
 }
 
-func processUidGid(p *procfs.Proc) (map[string][]int, error) {
-	guidRE := regexp.MustCompile(`^[GU]id:.*`)
-	procUidGidMap := make(map[string][]int)
+func processPrivileges(p *procfs.Proc, privRole string) ([]int, error) {
+	// Process status path
 	statusPath := fmt.Sprintf("%s/%d/status", procfs.DefaultMountPoint, p.PID)
 	// open process status info file
 	file, err := os.Open(statusPath)
@@ -64,26 +63,23 @@ func processUidGid(p *procfs.Proc) (map[string][]int, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	// Parse Real and Effective uid/gid
 	var info string
 	var realId, effId, sSet, fsId int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		match := guidRE.FindStringSubmatch(line)
-		if match == nil || len(match) < 5 {
-			return nil, fmt.Errorf("Unable to parse process %v status", p)
+		if strings.HasPrefix(line, privRole+":") {
+			fmt.Sscanf(line, "%s %d %d %d %d", info, realId, effId, sSet, fsId)
+			return []int{realId, effId}, nil
 		}
-		fmt.Sscanf(line, "%s %d %d %d %d", info, realId, effId, sSet, fsId)
-		procUidGidMap[strings.ToLower(info)] = []int{realId, effId}
 	}
-
+	// file scanner failed
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
 
-	return procUidGidMap, nil
+	return nil, fmt.Errorf("Could not parse %v process status", p)
 }
 
 // IsCmdRunning checks if there is at least one process started with cmd command running
@@ -110,8 +106,21 @@ func IsRunningPid(pid int) error {
 // are running it with provided effective Uid
 // It returns error if either at least one process is running running with a different uid
 // or no process with given cmd has been found
-func IsRunningCmdWithUid(cmd string) error {
+func IsRunningCmdWithUid(cmd string, username string) error {
 	return withProcessCmd(cmd, func(procs []*procfs.Proc) error {
+		uid, err := utils.RoleToId("user", username)
+		if err != nil {
+			return err
+		}
+		for _, proc := range procs {
+			uids, err := processPrivileges(proc, "Uid")
+			if err != nil {
+				return err
+			}
+			if int(uid) != uids[1] {
+				return fmt.Errorf("Incorrect process uid: %d found", uids[1])
+			}
+		}
 		return nil
 	})
 }
@@ -120,8 +129,21 @@ func IsRunningCmdWithUid(cmd string) error {
 // are running it with provided effective Gid
 // It returns error if either at least one process is running running with a different gid
 // or no process with given cmd has been found
-func IsRunningCmdWithGid(cmd string) error {
+func IsRunningCmdWithGid(cmd string, groupname string) error {
 	return withProcessCmd(cmd, func(procs []*procfs.Proc) error {
+		gid, err := utils.RoleToId("group", groupname)
+		if err != nil {
+			return err
+		}
+		for _, proc := range procs {
+			gids, err := processPrivileges(proc, "Gid")
+			if err != nil {
+				return err
+			}
+			if int(gid) != gids[1] {
+				return fmt.Errorf("Incorrect process gid: %d found", gids[1])
+			}
+		}
 		return nil
 	})
 }
