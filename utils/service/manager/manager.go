@@ -50,8 +50,8 @@ func (bsm *BaseSvcManager) Stop(svcName string) error {
 // This method implements *SYSV INIT* and *UPSTART* status commands.
 // You will have to override this method for other service managers
 func (bsm *BaseSvcManager) Status(svcName string) (service.Status, error) {
-	bsm.cmd.Status.Args = append(bsm.cmd.Status.Args, svcName)
-	status, err := bsm.cmd.Stop.RunCombined()
+	bsm.cmd.Status.Args = append([]string{svcName}, bsm.cmd.Status.Args...)
+	status, err := bsm.cmd.Status.RunCombined()
 	if err != nil {
 		return service.Unknown, err
 	}

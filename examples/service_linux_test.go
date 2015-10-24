@@ -3,11 +3,16 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/resource/svc"
 )
 
 func Test_Service(t *testing.T) {
-	if err := svc.IsRunning("docker"); err != nil {
+	dockerSvc := &resource.Svc{
+		Name: "docker",
+		Type: "upstart",
+	}
+	if err := svc.IsRunning(dockerSvc); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }
