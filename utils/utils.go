@@ -13,13 +13,13 @@ import (
 func RoleToId(role string, name string) (uint64, error) {
 	var id string
 	switch role {
-	case "user":
+	case "user", "User":
 		user, err := user.Lookup(name)
 		if err != nil {
 			return 0, err
 		}
 		id = user.Uid
-	case "group":
+	case "group", "Group":
 		group, err := group.Lookup(name)
 		if err != nil {
 			return 0, err
