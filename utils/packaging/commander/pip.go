@@ -1,5 +1,7 @@
 package commander
 
+import "github.com/milosgajdos83/servpeek/utils/command"
+
 const (
 	pip = "pip"
 )
@@ -18,7 +20,7 @@ type PipCommand struct {
 // NewPipCommander returns pip command manager
 func NewPipCommander() *PkgCommander {
 	return &PkgCommander{
-		ListPkgs: BuildCmd(pip, pipListPkgsArgs...),
-		QueryPkg: BuildCmd(pip, pipQueryPkgArgs...),
+		ListPkgs: command.NewCommand(pip, pipListPkgsArgs...),
+		QueryPkg: command.NewCommand(pip, pipQueryPkgArgs...),
 	}
 }

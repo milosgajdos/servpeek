@@ -1,5 +1,4 @@
-// package process provides functions to perform various checks
-// of various Linux process attributes
+// package process provides functions to query OS processes
 package process
 
 import (
@@ -8,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils"
 	"github.com/prometheus/procfs"
 )
@@ -133,4 +133,28 @@ func IsRunningCmdWithGid(cmd string, groupname string) error {
 			return checkProcsPrivileges(procs, id, "Group")
 		})
 	})
+}
+
+// ListRunning returns a slice of all running processes
+// It returns an error of a process status could not be obtained
+func ListRunning() ([]*resource.Process, error) {
+	ps := make([]*resource.Process, 0)
+	err := withRunningProcs(func(procs procfs.Procs) error {
+		for _, proc := range procs {
+			pstat, err := proc.NewStat()
+			if err != nil {
+				return err
+			}
+			ps = append(ps, &resource.Process{
+				Pid: proc.PID,
+				Cmd: pstat.Comm,
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return ps, nil
 }

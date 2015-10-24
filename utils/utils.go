@@ -5,10 +5,17 @@ import (
 	"os/user"
 	"strconv"
 
+	"github.com/milosgajdos83/servpeek/utils/command"
 	"github.com/milosgajdos83/servpeek/utils/group"
 )
 
-// Converts username/groupname to their numeric representations
+// BuildCmd builds Command from cmd name and arguments
+func BuildCmd(cmd string, args ...string) *command.Command {
+	return command.NewCommand(cmd, args...)
+
+}
+
+// Converts username/groupname to their numeric id representations: uid/gid
 // Returns error if the role is not supported, usernamd/groupname have not been found
 func RoleToId(role string, name string) (uint64, error) {
 	var id string

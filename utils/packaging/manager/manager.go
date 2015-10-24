@@ -24,7 +24,21 @@ type BasePkgManager struct {
 	cmd *commander.PkgCommander
 }
 
+// ListPkgs runs a command which queries installed packages
+// It returns its output that can be parsed
+func (bpm *BasePkgManager) ListPkgs() *command.Out {
+	return bpm.cmd.ListPkgs.Run()
+}
+
+// QueryPkg runs a command which queries a package
+// It returns the output that can be parsed
+func (bpm *BasePkgManager) QueryPkg(pkgName string) *command.Out {
+	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
+	return bpm.cmd.QueryPkg.Run()
+}
+
 // NewPkgManager returns PkgManager based on the package type
+// It returns error if the PkgManager could not be created or required package type is not supported
 func NewPkgManager(pkgType string) (PkgManager, error) {
 	switch pkgType {
 	case "apt", "dpkg":
@@ -38,7 +52,7 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 	case "gem":
 		return NewGemManager()
 	}
-	return nil, fmt.Errorf("Unsupported package type")
+	return nil, fmt.Errorf("Unsupported package type: %s", pkgType)
 }
 
 // aptManager implements Apt package manager
@@ -109,17 +123,4 @@ func NewGemManager() (PkgManager, error) {
 			cmd: commander.NewGemCommander(),
 		},
 	}, nil
-}
-
-// ListPkgs runs a command which queries installed packages
-// It returns its output that can be parsed
-func (bpm *BasePkgManager) ListPkgs() *command.Out {
-	return bpm.cmd.ListPkgs.Run()
-}
-
-// QueryPkg runs a command which queries a package
-// It returns the output that can be parsed
-func (bpm *BasePkgManager) QueryPkg(pkgName string) *command.Out {
-	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
-	return bpm.cmd.QueryPkg.Run()
 }

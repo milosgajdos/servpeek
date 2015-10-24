@@ -1,5 +1,7 @@
 package commander
 
+import "github.com/milosgajdos83/servpeek/utils/command"
+
 const (
 	apk = "apk"
 )
@@ -18,7 +20,7 @@ type ApkCommander struct {
 // NewApkCommander returns aptitude command manager
 func NewApkCommander() *PkgCommander {
 	return &PkgCommander{
-		ListPkgs: BuildCmd(apk, apkListPkgsArgs...),
-		QueryPkg: BuildCmd(apk, apkQueryPkgArgs...),
+		ListPkgs: command.NewCommand(apk, apkListPkgsArgs...),
+		QueryPkg: command.NewCommand(apk, apkQueryPkgArgs...),
 	}
 }
