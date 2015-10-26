@@ -9,8 +9,8 @@ import (
 
 func Test_Service(t *testing.T) {
 	dockerSvc := &resource.Svc{
-		Name: "docker",
-		Type: "upstart",
+		Name:    "docker",
+		SysInit: "upstart",
 	}
 	if err := svc.IsRunning(dockerSvc); err != nil {
 		t.Errorf("Error: %s", err)

@@ -1,5 +1,5 @@
-// package manager implements service manager commands
-package manager
+// package init implements service manager commands
+package sysinit
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/service/commander"
 )
 
-// SvcManager provides service manager interface
-type SvcManager interface {
+// SvcInit provides service management commands
+type SvcInit interface {
 	// Start starts service or returns error if the service can not be started
 	Start(string) error
 	// Stop stops service or returns error if the service can not be stopped
@@ -19,14 +19,14 @@ type SvcManager interface {
 	Status(string) (service.Status, error)
 }
 
-// BaseSvcManager implements basic service manager commands
-type BaseSvcManager struct {
+// BaseSvcInit implements basic service manager commands
+type BaseSvcInit struct {
 	// cmd provides service commands
 	cmd *commander.SvcCommander
 }
 
 // Start starts required service. It returns error if the service fails to start
-func (bsm *BaseSvcManager) Start(svcName string) error {
+func (bsm *BaseSvcInit) Start(svcName string) error {
 	bsm.cmd.Start.Args = append([]string{svcName}, bsm.cmd.Start.Args...)
 	_, err := bsm.cmd.Start.RunCombined()
 	if err != nil {
@@ -36,7 +36,7 @@ func (bsm *BaseSvcManager) Start(svcName string) error {
 }
 
 // Stop stops required service. It returns error if the service fails to stop
-func (bsm *BaseSvcManager) Stop(svcName string) error {
+func (bsm *BaseSvcInit) Stop(svcName string) error {
 	bsm.cmd.Stop.Args = append([]string{svcName}, bsm.cmd.Stop.Args...)
 	_, err := bsm.cmd.Stop.RunCombined()
 	if err != nil {
@@ -49,7 +49,7 @@ func (bsm *BaseSvcManager) Stop(svcName string) error {
 // It returns error if the service status could not be queried.
 // This method implements *SYSV INIT* and *UPSTART* status commands.
 // You will have to override this method for other service managers
-func (bsm *BaseSvcManager) Status(svcName string) (service.Status, error) {
+func (bsm *BaseSvcInit) Status(svcName string) (service.Status, error) {
 	bsm.cmd.Status.Args = append([]string{svcName}, bsm.cmd.Status.Args...)
 	status, err := bsm.cmd.Status.RunCombined()
 	if err != nil {
@@ -64,35 +64,35 @@ func (bsm *BaseSvcManager) Status(svcName string) (service.Status, error) {
 	return service.Unknown, fmt.Errorf("Unable to determine %s status", svcName)
 }
 
-// NewSvcManager returns SvcManager based on the service type
-// It returns error if the SvcManager could not be created or required service type is not supported
-func NewSvcManager(svcType string) (SvcManager, error) {
-	switch svcType {
-	case "init":
-		return NewInitManager()
+// NewSvcInit returns NewSvcInit based on the system init type passed in as argument
+// It returns error if the SvcInit could not be created or required service type is not supported
+func NewSvcInit(sysInit string) (SvcInit, error) {
+	switch sysInit {
+	case "sysv":
+		return NewSysVInit()
 	case "upstart":
-		return NewUpstartManager()
+		return NewUpstartInit()
 	case "systemd":
-		return NewSystemdManager()
+		return NewSystemdInit()
 	}
-	return nil, fmt.Errorf("Unsupported service type: %s", svcType)
+	return nil, fmt.Errorf("Unsupported service type: %s", sysInit)
 }
 
-// NewUpstartManager returns SvcManager or error
-func NewInitManager() (SvcManager, error) {
-	return &BaseSvcManager{
-		cmd: commander.NewInitCommander(),
+// NewUpstartInit returns SvcInit or error
+func NewSysVInit() (SvcInit, error) {
+	return &BaseSvcInit{
+		cmd: commander.NewSysVCommander(),
 	}, nil
 }
 
-// NewUpstartManager returns SvcManager or error
-func NewUpstartManager() (SvcManager, error) {
-	return &BaseSvcManager{
+// NewUpstartInit returns SvcInit or error
+func NewUpstartInit() (SvcInit, error) {
+	return &BaseSvcInit{
 		cmd: commander.NewUpstartCommander(),
 	}, nil
 }
 
-// NewUpstartManager returns SvcManager or error
-func NewSystemdManager() (SvcManager, error) {
-	return &SystemdManager{}, nil
+// NewSystemdInit returns SvcInit or error
+func NewSystemdInit() (SvcInit, error) {
+	return &SystemdInit{}, nil
 }

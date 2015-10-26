@@ -5,17 +5,17 @@ import (
 
 	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/service"
-	"github.com/milosgajdos83/servpeek/utils/service/manager"
+	"github.com/milosgajdos83/servpeek/utils/service/sysinit"
 )
 
 // IsRunning checks if the service is running
 func IsRunning(svc *resource.Svc) error {
-	svcMgr, err := manager.NewSvcManager(svc.Type)
+	svcInit, err := sysinit.NewSvcInit(svc.SysInit)
 	if err != nil {
 		return err
 	}
 	// Check the service status
-	status, err := svcMgr.Status(svc.Name)
+	status, err := svcInit.Status(svc.Name)
 	if err != nil {
 		return err
 	}
@@ -23,6 +23,5 @@ func IsRunning(svc *resource.Svc) error {
 	if status != service.Running {
 		return fmt.Errorf("Service %s not running", svc.Name)
 	}
-
 	return nil
 }

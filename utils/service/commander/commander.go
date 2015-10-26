@@ -22,12 +22,12 @@ type SvcCommander struct {
 }
 
 // NewSvcCommander returns SvcCommander or error if the required service typ is unsupported
-func NewSvcCommander(svcType string) (*SvcCommander, error) {
-	switch svcType {
+func NewSvcCommander(sysInit string) (*SvcCommander, error) {
+	switch sysInit {
 	case "upstart":
 		return NewUpstartCommander(), nil
-	case "init":
-		return NewInitCommander(), nil
+	case "sysv":
+		return NewSysVCommander(), nil
 	}
-	return nil, fmt.Errorf("Unsupported service type: %s", svcType)
+	return nil, fmt.Errorf("Unsupported system init type: %s", sysInit)
 }

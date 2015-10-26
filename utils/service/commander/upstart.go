@@ -2,7 +2,7 @@ package commander
 
 import "github.com/milosgajdos83/servpeek/utils/command"
 
-// UpstartCommander provides upstart service manager commands
+// UpstartCommander provides upstart sys init commands
 type UpstartCommander struct {
 	*SvcCommander
 }

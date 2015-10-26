@@ -1,4 +1,4 @@
-package manager
+package sysinit
 
 import (
 	"fmt"
@@ -15,10 +15,10 @@ const (
 ///////////////////////////////////
 // TODO: re-implement using dbus //
 ///////////////////////////////////
-type SystemdManager struct{}
+type SystemdInit struct{}
 
 // Start starts systemd service. It returns error if the service fails to be started
-func (sm *SystemdManager) Start(svcName string) error {
+func (sm *SystemdInit) Start(svcName string) error {
 	startCmd := command.NewCommand(systemctl, []string{"start", svcName + ".service"}...)
 	_, err := startCmd.RunCombined()
 	if err != nil {
@@ -28,7 +28,7 @@ func (sm *SystemdManager) Start(svcName string) error {
 }
 
 // Stop stops systemd service. It returns error if the service fails to be stopped
-func (sm *SystemdManager) Stop(svcName string) error {
+func (sm *SystemdInit) Stop(svcName string) error {
 	stopCmd := command.NewCommand(systemctl, []string{"stop", svcName + ".service"}...)
 	_, err := stopCmd.RunCombined()
 	if err != nil {
@@ -39,7 +39,7 @@ func (sm *SystemdManager) Stop(svcName string) error {
 
 // Status queries status of systemd service and returns it.
 // It returns error if the status of the queried service could not be determined
-func (sm *SystemdManager) Status(svcName string) (service.Status, error) {
+func (sm *SystemdInit) Status(svcName string) (service.Status, error) {
 	statusCmd := command.NewCommand(systemctl, []string{"status", svcName + ".service"}...)
 	status, err := statusCmd.RunCombined()
 	if err != nil {
