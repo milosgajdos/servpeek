@@ -1,5 +1,7 @@
 package commander
 
+import "github.com/milosgajdos83/servpeek/utils/command"
+
 const (
 	dpkg = "dpkg-query"
 )
@@ -18,7 +20,7 @@ type AptCommander struct {
 // NewAptCommander returns aptitude command manager
 func NewAptCommander() *PkgCommander {
 	return &PkgCommander{
-		ListPkgs: BuildCmd(dpkg, dpkgListPkgsArgs...),
-		QueryPkg: BuildCmd(dpkg, dpkgQueryPkgArgs...),
+		ListPkgs: command.NewCommand(dpkg, dpkgListPkgsArgs...),
+		QueryPkg: command.NewCommand(dpkg, dpkgQueryPkgArgs...),
 	}
 }

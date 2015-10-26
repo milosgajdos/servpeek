@@ -10,59 +10,59 @@ import (
 )
 
 // IsInstalled return true if all the supplied packages are installed
-func IsInstalled(pkgs ...resource.Pkg) (bool, error) {
+func IsInstalled(pkgs ...resource.Pkg) error {
 	for _, p := range pkgs {
 		pkgMgr, err := manager.NewPkgManager(p.Type)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		cmdParser, err := parser.NewParser(p.Type)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		queryOut := pkgMgr.QueryPkg(p.Name)
 		inPkgs, err := cmdParser.ParseQuery(queryOut)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		if len(inPkgs) > 0 {
-			return true, nil
+			return nil
 		}
 
 	}
-	return false, fmt.Errorf("Error looking up installed pacakges")
+	return fmt.Errorf("Error looking up installed pacakges")
 }
 
 // IsInstalledVersion returns true if all the supplied packages
 // are installed with the required version
-func IsInstalledVersion(pkgs ...resource.Pkg) (bool, error) {
+func IsInstalledVersion(pkgs ...resource.Pkg) error {
 	for _, p := range pkgs {
 		pkgMgr, err := manager.NewPkgManager(p.Type)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		cmdParser, err := parser.NewParser(p.Type)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		queryOut := pkgMgr.QueryPkg(p.Name)
 		inPkgs, err := cmdParser.ParseQuery(queryOut)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		for _, inPkg := range inPkgs {
 			if inPkg.Version == p.Version {
-				return true, nil
+				return nil
 			}
 		}
 	}
-	return false, fmt.Errorf("Error looking up package version")
+	return fmt.Errorf("Error looking up package version")
 }
 
 // ListInstalled lists all installed packages or returns error

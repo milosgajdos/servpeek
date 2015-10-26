@@ -14,7 +14,7 @@ func Test_Package(t *testing.T) {
 		Type:    "apt",
 	}
 
-	if ok, err := pkg.IsInstalled(testPkg); !ok {
-		t.Errorf("%s not installed: %s", testPkg, err)
+	if err := pkg.IsInstalled(testPkg); err != nil {
+		t.Errorf("Error: %s", err)
 	}
 }

@@ -1,5 +1,7 @@
 package commander
 
+import "github.com/milosgajdos83/servpeek/utils/command"
+
 const (
 	rpm = "rpm"
 )
@@ -18,7 +20,7 @@ type YumCommander struct {
 // NewYumCommander returns yum command manager
 func NewYumCommander() *PkgCommander {
 	return &PkgCommander{
-		ListPkgs: BuildCmd(rpm, rpmListPkgsArgs...),
-		QueryPkg: BuildCmd(rpm, rpmQueryPkgArgs...),
+		ListPkgs: command.NewCommand(rpm, rpmListPkgsArgs...),
+		QueryPkg: command.NewCommand(rpm, rpmQueryPkgArgs...),
 	}
 }

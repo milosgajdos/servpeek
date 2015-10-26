@@ -1,5 +1,7 @@
 package commander
 
+import "github.com/milosgajdos83/servpeek/utils/command"
+
 const (
 	gem = "gem"
 )
@@ -18,7 +20,7 @@ type GemCommander struct {
 // NewGemCommander returns gem command manager
 func NewGemCommander() *PkgCommander {
 	return &PkgCommander{
-		ListPkgs: BuildCmd(gem, gemListPkgsArgs...),
-		QueryPkg: BuildCmd(gem, gemQueryPkgArgs...),
+		ListPkgs: command.NewCommand(gem, gemListPkgsArgs...),
+		QueryPkg: command.NewCommand(gem, gemQueryPkgArgs...),
 	}
 }

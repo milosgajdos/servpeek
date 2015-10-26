@@ -27,5 +27,5 @@ func NewPkgCommander(pkgType string) (*PkgCommander, error) {
 	case "gem":
 		return NewGemCommander(), nil
 	}
-	return nil, fmt.Errorf("Unsupported package type")
+	return nil, fmt.Errorf("Unsupported package type: %s", pkgType)
 }
