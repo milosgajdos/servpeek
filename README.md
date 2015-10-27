@@ -44,8 +44,8 @@ func Test_Gem_Package(t *testing.T) {
 		Type:    "gem",
 	}
 
-	if ok, err := pkg.IsInstalled(testPkg); !ok {
-		t.Errorf("%s not installed: %s", testPkg, err)
+	if err := pkg.IsInstalled(testPkg); err !=nil {
+		t.Errorf("Error: %s", err)
 	}
 }
 ```
@@ -59,4 +59,4 @@ ok  	command-line-arguments	0.330s
 TOD:
 - A LOT more resources
 - Better logging and error statements
-- redisgn if possible :-)
+- redesign if possible :-)
