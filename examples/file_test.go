@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/milosgajdos83/servpeek/resource"
@@ -28,6 +29,11 @@ func Test_File(t *testing.T) {
 	}
 
 	if err := file.Md5(f, md5); err != nil {
+		t.Errorf("Error: %s", err)
+	}
+
+	content := regexp.MustCompile(`localhost`)
+	if err := file.Contains(f, content); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }

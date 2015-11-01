@@ -218,16 +218,18 @@ func ModTimeAfter(f *resource.File, mtime time.Time) error {
 	})
 }
 
-// Contains checks if the provided file content can be matched with the regexp passed in as paramter
-// It returs error if the provided file can't be open
-func Contains(f *resource.File, content *regexp.Regexp) error {
+// Contains checks if the provided file content can be matched with any of the regexps
+// passed in as paramter. It returs error if the provided file can't be open
+func Contains(f *resource.File, contents ...*regexp.Regexp) error {
 	return withOsFile(f.Path, func(file *os.File) error {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			if content.Match(scanner.Bytes()) {
-				return nil
+			for _, content := range contents {
+				if content.Match(scanner.Bytes()) {
+					return nil
+				}
 			}
 		}
-		return nil
+		return fmt.Errorf("%s does not match any provided regular expression", f)
 	})
 }
