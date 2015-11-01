@@ -1,4 +1,4 @@
-// package init implements service manager commands
+// Package sysinit implements various system init utility commands to control OS services
 package sysinit
 
 import (
@@ -78,7 +78,7 @@ func NewSvcInit(sysInit string) (SvcInit, error) {
 	return nil, fmt.Errorf("Unsupported service type: %s", sysInit)
 }
 
-// NewUpstartInit returns SvcInit or error
+// NewSysVInit returns SvcInit or error
 func NewSysVInit() (SvcInit, error) {
 	return &BaseSvcInit{
 		cmd: commander.NewSysVCommander(),

@@ -1,4 +1,4 @@
-// package pkg provides function that check various package aspect
+// Package pkg provides function that check various package aspect
 package pkg
 
 import (

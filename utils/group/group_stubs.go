@@ -19,6 +19,6 @@ func lookupGroup(groupname string) (*Group, error) {
 	return nil, fmt.Errorf("user: LookupGroup not implemented on %s/%s", runtime.GOOS, runtime.GOARCH)
 }
 
-func lookupGroupId(int) (*Group, error) {
+func lookupGroupID(int) (*Group, error) {
 	return nil, fmt.Errorf("user: LookupGroupId not implemented on %s/%s", runtime.GOOS, runtime.GOARCH)
 }

@@ -1,6 +1,5 @@
-// package manager provides an implementation of a software
-// package manager. Description sounds kind of silly redundant
-// due to unfortunate naming convention classh in Go :-)
+// Package manager provides an implementation of a software package manager.
+// Description sounds kind of silly redundant due to unfortunate naming convention clash in Go :-)
 package manager
 
 import (

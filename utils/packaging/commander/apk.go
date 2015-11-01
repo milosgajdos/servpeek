@@ -1,3 +1,5 @@
+// build linux
+
 package commander
 
 import "github.com/milosgajdos83/servpeek/utils/command"

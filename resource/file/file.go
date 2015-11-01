@@ -1,4 +1,4 @@
-// package file implements various functions that provide helpers
+// Package file implements various functions that provide helpers
 // to query various aspects of operating system files
 package file
 
@@ -127,7 +127,7 @@ func IsMode(f *resource.File, mode os.FileMode) error {
 // It returns an error if os.Stat returns error
 func IsOwnedBy(f *resource.File, username string) error {
 	return withFileInfo(f.Path, func(fi os.FileInfo) error {
-		uid, err := utils.RoleToId("user", username)
+		uid, err := utils.RoleToID("user", username)
 		if err != nil {
 			return err
 		}
@@ -142,7 +142,7 @@ func IsOwnedBy(f *resource.File, username string) error {
 // It returns an error if os.Stat returns error
 func IsGrupedInto(f *resource.File, groupname string) error {
 	return withFileInfo(f.Path, func(fi os.FileInfo) error {
-		gid, err := utils.RoleToId("group", groupname)
+		gid, err := utils.RoleToID("group", groupname)
 		if err != nil {
 			return err
 		}

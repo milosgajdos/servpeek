@@ -1,3 +1,5 @@
+// Package group provides utility functions that deal with OS groups
+
 // Copyright 2011 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -11,20 +13,23 @@ import "os/user"
 
 var implemented = true
 
+// Group is an OS group
 type Group struct {
 	Gid  string // group id
 	Name string // group name
 }
 
+// Members returns a slice of OS groups
+// It returns error if the group lookup fails or is unsupported
 func (g *Group) Members() ([]string, error) {
 	return groupMembers(g)
 }
 
-// UnknownGroupIdError is returned by LookupGroupId when
+// UnknownGroupIDError is returned by LookupGroupId when
 // a group cannot be found.
-type UnknownGroupIdError string
+type UnknownGroupIDError string
 
-func (e UnknownGroupIdError) Error() string {
+func (e UnknownGroupIDError) Error() string {
 	return "group: unknown groupid " + string(e)
 }
 
@@ -36,21 +41,21 @@ func (e UnknownGroupError) Error() string {
 	return "group: unknown group " + string(e)
 }
 
-// CurrentGroup returns the current group.
+// Current returns the current group.
 func Current() (*Group, error) {
 	return currentGroup()
 }
 
-// LookupGroup looks up a group by name. If the group cannot be found, the
+// Lookup looks up a group by name. If the group cannot be found, the
 // returned error is of type UnknownGroupError.
 func Lookup(groupname string) (*Group, error) {
 	return lookupGroup(groupname)
 }
 
-// LookupGroupId looks up a group by groupid. If the group cannot be found, the
-// returned error is of type UnknownGroupIdError.
-func LookupId(gid string) (*Group, error) {
-	return lookupGroupId(gid)
+// LookupID looks up a group by groupid. If the group cannot be found, the
+// returned error is of type UnknownGroupIDError.
+func LookupID(gid string) (*Group, error) {
+	return lookupGroupID(gid)
 }
 
 // UserInGroup reports whether the user is a member of the given group.

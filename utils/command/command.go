@@ -1,4 +1,4 @@
-// package command allows to run external commands
+// Package command allows to run external commands
 package command
 
 import (
@@ -98,7 +98,7 @@ func (o *Out) Next() (ok bool) {
 	return !o.closed && o.err == nil && ok
 }
 
-// Returns a single line of command output
+// Text returns a single line of command output
 func (o *Out) Text() string {
 	return o.line
 }

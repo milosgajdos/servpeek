@@ -1,3 +1,4 @@
+// Package utils provides useful utility functions
 package utils
 
 import (
@@ -15,9 +16,9 @@ func BuildCmd(cmd string, args ...string) *command.Command {
 
 }
 
-// Converts username/groupname to their numeric id representations: uid/gid
+// RoleToID converts username/groupname to their numeric id representations: uid/gid
 // Returns error if the role is not supported, usernamd/groupname have not been found
-func RoleToId(role string, name string) (uint64, error) {
+func RoleToID(role string, name string) (uint64, error) {
 	var id string
 	switch role {
 	case "user", "User":
@@ -36,10 +37,10 @@ func RoleToId(role string, name string) (uint64, error) {
 		return 0, fmt.Errorf("Unsupported role: %s", role)
 	}
 	// Parse uid/gid
-	numId, err := strconv.ParseUint(id, 10, 32)
+	numID, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {
 		return 0, err
 	}
 
-	return numId, nil
+	return numID, nil
 }
