@@ -11,7 +11,7 @@ func Test_Process(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 
-	if err := process.IsRunningCmdWithUid("docker", "root"); err != nil {
+	if err := process.IsRunningCmdWithUID("docker", "root"); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }

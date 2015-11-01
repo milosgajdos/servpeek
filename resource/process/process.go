@@ -89,7 +89,7 @@ func checkProcsPrivileges(procs []*procfs.Proc, id int, role string) error {
 		if err := scanner.Err(); err != nil {
 			return err
 		}
-		if id != effId {
+		if id != effID {
 			return fmt.Errorf("Expected PID: %d, Found PID: %d", id, proc.PID)
 		}
 	}
