@@ -35,7 +35,7 @@ type parseFunc func(string, *regexp.Regexp) (*resource.Pkg, error)
 
 func parseStream(out *command.Out, fn parseFunc,
 	h hinter, pkgType string) ([]*resource.Pkg, error) {
-	pkgs := make([]*resource.Pkg, 0)
+	var pkgs []*resource.Pkg
 	for out.Next() {
 		line := out.Text()
 		if h.Filter().MatchString(line) {

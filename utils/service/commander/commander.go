@@ -1,4 +1,4 @@
-// package commander implements service commander commands
+// Package commander implements service commander commands
 package commander
 
 import (

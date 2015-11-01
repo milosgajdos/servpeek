@@ -1,4 +1,4 @@
-// package parser impplements package manager command output parsers
+// Package parser impplements package manager command output parsers
 package parser
 
 import (
@@ -16,7 +16,7 @@ type PkgParser interface {
 	ParseQuery(out *command.Out) ([]*resource.Pkg, error)
 }
 
-// NewPkgParser returns PkgParser
+// NewParser returns PkgParser
 func NewParser(pkgType string) (PkgParser, error) {
 	switch pkgType {
 	case "apt", "dpkg":

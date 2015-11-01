@@ -1,8 +1,12 @@
+// Package service implements utlity functions to interact with various service managers
 package service
 
 const (
+	// Running service status
 	Running Status = iota + 1
+	// Stopped service status
 	Stopped
+	// Unknown service status
 	Unknown
 )
 

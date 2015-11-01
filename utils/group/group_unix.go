@@ -53,7 +53,7 @@ func lookupGroup(groupname string) (*Group, error) {
 	return lookupUnixGroup(-1, groupname, true, buildGroup)
 }
 
-func lookupGroupId(gid string) (*Group, error) {
+func lookupGroupID(gid string) (*Group, error) {
 	i, e := strconv.Atoi(gid)
 	if e != nil {
 		return nil, e
@@ -98,7 +98,7 @@ func lookupUnixGroup(gid int, groupname string, lookupByName bool, f func(*C.str
 			return nil, fmt.Errorf("group: lookup groupid %d: %s", gid, syscall.Errno(rv))
 		}
 		if result == nil {
-			return nil, UnknownGroupIdError(gid)
+			return nil, UnknownGroupIDError(gid)
 		}
 	}
 	g := f(&grp)

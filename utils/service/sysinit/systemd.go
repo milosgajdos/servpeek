@@ -1,3 +1,5 @@
+// build linux
+
 package sysinit
 
 import (
@@ -15,6 +17,8 @@ const (
 ///////////////////////////////////
 // TODO: re-implement using dbus //
 ///////////////////////////////////
+
+// SystemdInit provides systemd init commands
 type SystemdInit struct{}
 
 // Start starts systemd service. It returns error if the service fails to be started

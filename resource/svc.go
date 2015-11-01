@@ -2,7 +2,7 @@ package resource
 
 import "fmt"
 
-// Svc provides OS service
+// Svc is OS service
 type Svc struct {
 	// Name of the service
 	Name string

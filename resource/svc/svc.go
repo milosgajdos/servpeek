@@ -1,5 +1,7 @@
 package svc
 
+//build linux
+
 import (
 	"fmt"
 

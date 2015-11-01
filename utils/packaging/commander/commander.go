@@ -20,6 +20,8 @@ func NewPkgCommander(pkgType string) (*PkgCommander, error) {
 	switch pkgType {
 	case "apt", "dpkg":
 		return NewAptCommander(), nil
+	case "apk":
+		return NewApkCommander(), nil
 	case "rpm", "yum":
 		return NewYumCommander(), nil
 	case "pip":
