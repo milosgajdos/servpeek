@@ -4,9 +4,7 @@ package commander
 
 import "github.com/milosgajdos83/servpeek/utils/command"
 
-const (
-	apk = "apk"
-)
+const apk = "apk"
 
 var (
 	// cli arguments passed to dpkg-query

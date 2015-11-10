@@ -16,11 +16,11 @@ func Test_Docker(t *testing.T) {
 		Name: "pensive_mahavira",
 	}
 
-	if ok, err := container.IsDockerImgPresent(testImg); !ok {
+	if err := container.IsDockerImgPresent(testImg); err != nil {
 		t.Errorf("%s", err)
 	}
 
-	if ok, err := container.IsDockerContainerPresent(testContainer); !ok {
+	if err := container.IsDockerContainerPresent(testContainer); err != nil {
 		t.Errorf("%s", err)
 	}
 }

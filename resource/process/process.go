@@ -155,9 +155,5 @@ func ListRunning() ([]*resource.Process, error) {
 		}
 		return nil
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return ps, nil
+	return ps, err
 }
