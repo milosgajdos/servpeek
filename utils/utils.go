@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/user"
 	"strconv"
+	"strings"
 
 	"github.com/milosgajdos83/servpeek/utils/command"
 	"github.com/milosgajdos83/servpeek/utils/group"
@@ -20,14 +21,14 @@ func BuildCmd(cmd string, args ...string) *command.Command {
 // Returns error if the role is not supported, usernamd/groupname have not been found
 func RoleToID(role string, name string) (uint64, error) {
 	var id string
-	switch role {
-	case "user", "User":
+	switch strings.ToLower(role) {
+	case "user":
 		user, err := user.Lookup(name)
 		if err != nil {
 			return 0, err
 		}
 		id = user.Uid
-	case "group", "Group":
+	case "group":
 		group, err := group.Lookup(name)
 		if err != nil {
 			return 0, err

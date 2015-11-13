@@ -32,13 +32,12 @@ func (c *Command) Run() *Out {
 		reader: cmdStdout,
 		err:    err,
 	}
+	defer close(res.lines)
 	if err != nil {
-		close(res.lines)
 		return res
 	}
 
 	go func() {
-		defer close(res.lines)
 		if err := cmd.Start(); err != nil {
 			res.mu.Lock()
 			defer res.mu.Unlock()
@@ -74,11 +73,7 @@ func (c *Command) Run() *Out {
 func (c *Command) RunCombined() (string, error) {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	out, err := cmd.CombinedOutput()
-	output := string(out)
-	if err != nil {
-		return output, err
-	}
-	return output, nil
+	return string(out), err
 }
 
 // Out contains all the information about the result of executed

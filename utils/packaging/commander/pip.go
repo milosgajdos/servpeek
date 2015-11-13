@@ -2,9 +2,7 @@ package commander
 
 import "github.com/milosgajdos83/servpeek/utils/command"
 
-const (
-	pip = "pip"
-)
+const pip = "pip"
 
 var (
 	// cli arguments passed to gem

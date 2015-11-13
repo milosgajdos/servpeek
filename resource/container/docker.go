@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fsouza/go-dockerclient"
+	docker "github.com/fsouza/go-dockerclient"
 	"github.com/milosgajdos83/servpeek/resource"
 )
 
@@ -15,13 +15,9 @@ func getDockerEndPoint() (dep string, err error) {
 	dockerHost := os.Getenv("DOCKER_HOST")
 	if dockerHost != "" {
 		dep = dockerHost
-	} else {
-		dep, err = docker.DefaultDockerHost()
-		if err != nil {
-			return
-		}
+		return dep, nil
 	}
-	return
+	return docker.DefaultDockerHost()
 }
 
 // Reads DOCKER_CERT_PATH environment variable and returns a slice of strings
@@ -118,25 +114,19 @@ func withDockerAPIContainer(c *resource.DockerContainer, fn func(*docker.APICont
 }
 
 // IsDockerImgPresent checks if the image is present on the Docker host
-// It returns true if the images is present or error
-func IsDockerImgPresent(img *resource.DockerImg) (bool, error) {
+// It returns an error if it was not found
+func IsDockerImgPresent(img *resource.DockerImg) error {
 	err := withDockerAPIImage(img, func(apiImg *docker.APIImages) error {
 		return nil
 	})
-	if err != nil {
-		return false, err
-	}
-	return true, nil
+	return err
 }
 
 // IsDockerContainerPresent checks if docker container is present on the host
-// It returns true if the images is present or error
-func IsDockerContainerPresent(c *resource.DockerContainer) (bool, error) {
+// It returns an error if it was not found
+func IsDockerContainerPresent(c *resource.DockerContainer) error {
 	err := withDockerAPIContainer(c, func(apiContainer *docker.APIContainers) error {
 		return nil
 	})
-	if err != nil {
-		return false, err
-	}
-	return true, nil
+	return err
 }

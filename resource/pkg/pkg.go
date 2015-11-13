@@ -33,7 +33,7 @@ func IsInstalled(pkgs ...resource.Pkg) error {
 		}
 
 	}
-	return fmt.Errorf("Error looking up installed pacakges")
+	return fmt.Errorf("Error looking up installed packages")
 }
 
 // IsInstalledVersion returns true if all the supplied packages

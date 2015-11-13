@@ -29,20 +29,14 @@ type BaseSvcInit struct {
 func (bsm *BaseSvcInit) Start(svcName string) error {
 	bsm.cmd.Start.Args = append([]string{svcName}, bsm.cmd.Start.Args...)
 	_, err := bsm.cmd.Start.RunCombined()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Stop stops required service. It returns error if the service fails to stop
 func (bsm *BaseSvcInit) Stop(svcName string) error {
 	bsm.cmd.Stop.Args = append([]string{svcName}, bsm.cmd.Stop.Args...)
 	_, err := bsm.cmd.Stop.RunCombined()
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Status queries the status of service and returns it.
@@ -56,7 +50,7 @@ func (bsm *BaseSvcInit) Status(svcName string) (service.Status, error) {
 		return service.Unknown, err
 	}
 	switch {
-	case strings.Contains(status, "is running") || strings.Contains(status, "start/running"):
+	case strings.Contains(status, "running"):
 		return service.Running, nil
 	case strings.Contains(status, "is stopped") || strings.Contains(status, "stop/waiting"):
 		return service.Stopped, nil
