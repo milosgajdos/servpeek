@@ -37,14 +37,14 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
-func Test_Gem_Package(t *testing.T) {
+func TestGemPackage(t *testing.T) {
 	testPkg := resource.Pkg{
 		Name:    "bundler",
 		Version: "1.10.6",
 		Type:    "gem",
 	}
 
-	if err := pkg.IsInstalled(testPkg); err !=nil {
+	if err := pkg.IsInstalledVersion(testPkg); err !=nil {
 		t.Errorf("Error: %s", err)
 	}
 }
