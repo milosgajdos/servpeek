@@ -47,7 +47,7 @@ func IsInstalledVersion(pkgs ...resource.Pkg) error {
 			return fmt.Errorf("Error looking up for %s", p.Name)
 		}
 
-		if p.Version == "*" {
+		if p.Version == AllVersions {
 			continue
 		}
 
