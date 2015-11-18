@@ -9,35 +9,22 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/packaging/parser"
 )
 
-// IsInstalled return true if all the supplied packages are installed
+// AllVersions is a char that specifies that the version in the package
+// doesn't really matter.
+const AllVersions = "*"
+
+// IsInstalled returns nil if the package was found. Otherwise it will return
+// an error.
 func IsInstalled(pkgs ...resource.Pkg) error {
 	for _, p := range pkgs {
-		pkgMgr, err := manager.NewPkgManager(p.Type)
-		if err != nil {
-			return err
-		}
-
-		cmdParser, err := parser.NewParser(p.Type)
-		if err != nil {
-			return err
-		}
-
-		queryOut := pkgMgr.QueryPkg(p.Name)
-		inPkgs, err := cmdParser.ParseQuery(queryOut)
-		if err != nil {
-			return err
-		}
-
-		if len(inPkgs) > 0 {
-			return nil
-		}
-
+		p.Version = AllVersions
 	}
-	return fmt.Errorf("Error looking up installed packages")
+	return IsInstalledVersion(pkgs...)
 }
 
-// IsInstalledVersion returns true if all the supplied packages
-// are installed with the required version
+// IsInstalledVersion returns nil if the versions of the given package were
+// found, otherwise it will return an error.
+// Note: the version "*" is special and means that doesn't really matter.
 func IsInstalledVersion(pkgs ...resource.Pkg) error {
 	for _, p := range pkgs {
 		pkgMgr, err := manager.NewPkgManager(p.Type)
@@ -56,13 +43,23 @@ func IsInstalledVersion(pkgs ...resource.Pkg) error {
 			return err
 		}
 
+		if len(inPkgs) == 0 {
+			return fmt.Errorf("Error looking up for %s", p.Name)
+		}
+
+		if p.Version == "*" {
+			continue
+		}
+
 		for _, inPkg := range inPkgs {
 			if inPkg.Version == p.Version {
-				return nil
+				continue
 			}
 		}
+
+		return fmt.Errorf("Error looking up for %s, version: %s", p.Name, p.Version)
 	}
-	return fmt.Errorf("Error looking up package version")
+	return nil
 }
 
 // ListInstalled lists all installed packages or returns error
