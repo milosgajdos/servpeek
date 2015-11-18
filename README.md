@@ -1,5 +1,7 @@
 # servpeek
 
+[![GoDoc](https://godoc.org/github.com/milosgajdos83/servpeek?status.svg)](https://godoc.org/github.com/milosgajdos83/servpeek)
+
 Introspective peek into your server guts
 
 ## Motivation
