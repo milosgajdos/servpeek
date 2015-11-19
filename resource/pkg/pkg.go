@@ -16,10 +16,12 @@ const AllVersions = "*"
 // IsInstalled returns nil if the package was found. Otherwise it will return
 // an error.
 func IsInstalled(pkgs ...resource.Pkg) error {
+	var ignoreVersionPkgs []resource.Pkg
 	for _, p := range pkgs {
 		p.Version = AllVersions
+		ignoreVersionPkgs = append(ignoreVersionPkgs, p)
 	}
-	return IsInstalledVersion(pkgs...)
+	return IsInstalledVersion(ignoreVersionPkgs...)
 }
 
 // IsInstalledVersion returns nil if the versions of the given package were

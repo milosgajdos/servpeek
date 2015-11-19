@@ -32,12 +32,15 @@ func (c *Command) Run() *Out {
 		reader: cmdStdout,
 		err:    err,
 	}
-	defer close(res.lines)
+
 	if err != nil {
+		close(res.lines)
 		return res
 	}
 
 	go func() {
+		defer close(res.lines)
+
 		if err := cmd.Start(); err != nil {
 			res.mu.Lock()
 			defer res.mu.Unlock()
