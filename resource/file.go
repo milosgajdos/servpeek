@@ -11,8 +11,6 @@ type Filer interface {
 	Path() string
 	// Info returns info about underlying File or fails with error
 	Info() (os.FileInfo, error)
-	// String implements Stringer interface
-	String() string
 }
 
 // File is an operating system file

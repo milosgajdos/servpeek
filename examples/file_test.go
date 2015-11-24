@@ -8,7 +8,7 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/file"
 )
 
-func Test_File(t *testing.T) {
+func TestFile(t *testing.T) {
 	f := resource.NewFile("/etc/hosts")
 
 	if err := file.IsRegular(f); err != nil {

@@ -111,7 +111,7 @@ func IsGrupedInto(f resource.Filer, groupname string) error {
 }
 
 // LinksTo checks if the provided file is a symlink which links to path
-// It returs error if the link can't be read
+// It returns error if the link can't be read
 func LinksTo(f resource.Filer, path string) error {
 	dst, err := os.Readlink(path)
 	if err != nil {
@@ -151,7 +151,7 @@ func ModTimeAfter(f resource.Filer, mtime time.Time) error {
 }
 
 // Contains checks if the provided file content can be matched by any of the RegExps
-// passed in as paramters. It returs error if the provided file can't be open
+// passed in as paramters. It returns error if the provided file can't be open
 func Contains(f resource.Filer, contents ...*regexp.Regexp) error {
 	return withFileReader(f, func(r io.Reader) error {
 		scanner := bufio.NewScanner(r)
@@ -167,7 +167,7 @@ func Contains(f resource.Filer, contents ...*regexp.Regexp) error {
 }
 
 // Md5 checks if the provided file md5 checksum is the same as the one passed in as paramter
-// It returs error if the provided file can't be opened
+// It returns error if the provided file can't be opened
 func Md5(f resource.Filer, sum string) error {
 	return withFileReader(f, func(r io.Reader) error {
 		md5sum, err := utils.HashSum("md5", r)
@@ -182,7 +182,7 @@ func Md5(f resource.Filer, sum string) error {
 }
 
 // Sha256 checks if the provided file sha256 checksum is the same as the one passed in as paramter
-// It returs error if the provided file can't be opened
+// It returns error if the provided file can't be opened
 func Sha256(f resource.Filer, sum string) error {
 	return withFileReader(f, func(r io.Reader) error {
 		sha256sum, err := utils.HashSum("sha256", r)
