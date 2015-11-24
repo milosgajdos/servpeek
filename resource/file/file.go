@@ -166,9 +166,9 @@ func Contains(f resource.Filer, contents ...*regexp.Regexp) error {
 	})
 }
 
-// Md5 checks if the provided file md5 checksum is the same as the one passed in as paramter
+// IsMd5Sum checks if the provided file md5 checksum is the same as the one passed in as paramter
 // It returns error if the provided file can't be opened
-func Md5(f resource.Filer, sum string) error {
+func IsMd5Sum(f resource.Filer, sum string) error {
 	return withFileReader(f, func(r io.Reader) error {
 		md5sum, err := utils.HashSum("md5", r)
 		if err != nil {
@@ -181,9 +181,9 @@ func Md5(f resource.Filer, sum string) error {
 	})
 }
 
-// Sha256 checks if the provided file sha256 checksum is the same as the one passed in as paramter
+// IsSha256Sum checks if the provided file sha256 checksum is the same as the one passed in as paramter
 // It returns error if the provided file can't be opened
-func Sha256(f resource.Filer, sum string) error {
+func IsSha256Sum(f resource.Filer, sum string) error {
 	return withFileReader(f, func(r io.Reader) error {
 		sha256sum, err := utils.HashSum("sha256", r)
 		if err != nil {

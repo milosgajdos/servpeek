@@ -162,7 +162,7 @@ func TestContains(t *testing.T) {
 	assert.NoError(os.Remove(file.Path()))
 }
 
-func TestMd5(t *testing.T) {
+func TestMd5Sum(t *testing.T) {
 	assert := assert.New(t)
 	data := `line1
 	line2`
@@ -173,11 +173,11 @@ func TestMd5(t *testing.T) {
 	assert.NoError(err)
 
 	file := resource.NewFile(f.Name())
-	assert.NoError(Md5(file, "3dfc125676228ddbac790f3b6d8d58be"))
+	assert.NoError(IsMd5Sum(file, "3dfc125676228ddbac790f3b6d8d58be"))
 	assert.NoError(os.Remove(file.Path()))
 }
 
-func TestSha256(t *testing.T) {
+func TestSha256Sum(t *testing.T) {
 	assert := assert.New(t)
 	data := `line1
 	line2`
@@ -189,6 +189,6 @@ func TestSha256(t *testing.T) {
 
 	file := resource.NewFile(f.Name())
 	tstSum := "2f6928c43c919915d452b6f2b90f7cf6640a7773c83412bf3d8ea1abfc699020"
-	assert.NoError(Sha256(file, tstSum))
+	assert.NoError(IsSha256Sum(file, tstSum))
 	assert.NoError(os.Remove(file.Path()))
 }
