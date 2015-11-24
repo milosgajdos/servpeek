@@ -2,8 +2,10 @@ package file
 
 import (
 	"errors"
+	"io"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"testing"
 	"time"
 
@@ -30,12 +32,14 @@ func (fi mockedFileInfo) Sys() interface{}   { return fi.sys }
 type mockedFile struct {
 	path, str string
 	info      os.FileInfo
+	reader    io.Reader
 	err       error
 }
 
 func (f mockedFile) Path() string               { return f.path }
 func (f mockedFile) String() string             { return f.str }
 func (f mockedFile) Info() (os.FileInfo, error) { return f.info, f.err }
+func (f mockedFile) Reader() io.Reader          { return f.reader }
 
 func TestCheckOrError(t *testing.T) {
 	assert := assert.New(t)
@@ -80,7 +84,7 @@ func TestIsCharDevice(t *testing.T) {
 	assert.NoError(t, IsCharDevice(f))
 }
 
-func TestIsPipeDevice(t *testing.T) {
+func TestIsPipe(t *testing.T) {
 	fi := mockedFileInfo{mode: os.ModeNamedPipe}
 	f := mockedFile{info: fi}
 	assert.NoError(t, IsPipe(f))
@@ -125,4 +129,66 @@ func TestIsModeErrorMessages(t *testing.T) {
 		assert.Error(err)
 		assert.Equal(baseErrMessage+expectedVerboseName, err.Error())
 	}
+}
+
+func TestSize(t *testing.T) {
+	fi := mockedFileInfo{size: 100}
+	f := mockedFile{info: fi}
+
+	assert.NoError(t, IsSize(f, 100))
+}
+
+func TestModTimeAfter(t *testing.T) {
+	tstTime := time.Now()
+	fi := mockedFileInfo{modTime: tstTime.Add(5 * time.Minute)}
+	f := mockedFile{info: fi}
+
+	assert.NoError(t, ModTimeAfter(f, tstTime))
+}
+
+func TestContains(t *testing.T) {
+	assert := assert.New(t)
+	data := `line1
+	line2`
+
+	f, err := ioutil.TempFile("", "regular")
+	assert.NoError(err)
+	_, err = f.Write([]byte(data))
+	assert.NoError(err)
+
+	file := resource.NewFile(f.Name())
+	re := regexp.MustCompile(`line2$`)
+	assert.NoError(Contains(file, re))
+	assert.NoError(os.Remove(file.Path()))
+}
+
+func TestMd5(t *testing.T) {
+	assert := assert.New(t)
+	data := `line1
+	line2`
+
+	f, err := ioutil.TempFile("", "regular")
+	assert.NoError(err)
+	_, err = f.Write([]byte(data))
+	assert.NoError(err)
+
+	file := resource.NewFile(f.Name())
+	assert.NoError(Md5(file, "3dfc125676228ddbac790f3b6d8d58be"))
+	assert.NoError(os.Remove(file.Path()))
+}
+
+func TestSha256(t *testing.T) {
+	assert := assert.New(t)
+	data := `line1
+	line2`
+
+	f, err := ioutil.TempFile("", "regular")
+	assert.NoError(err)
+	_, err = f.Write([]byte(data))
+	assert.NoError(err)
+
+	file := resource.NewFile(f.Name())
+	tstSum := "2f6928c43c919915d452b6f2b90f7cf6640a7773c83412bf3d8ea1abfc699020"
+	assert.NoError(Sha256(file, tstSum))
+	assert.NoError(os.Remove(file.Path()))
 }
