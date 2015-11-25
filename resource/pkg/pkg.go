@@ -1,4 +1,4 @@
-// Package pkg provides function that check various package aspect
+// Package pkg provides function that check various software package properties
 package pkg
 
 import (
@@ -13,8 +13,8 @@ import (
 // doesn't really matter.
 const AllVersions = "*"
 
-// IsInstalled returns nil if the package was found. Otherwise it will return
-// an error.
+// IsInstalled checks if all the packages passed in as parameters are installed
+// It returns error if at least supplied package is not installed
 func IsInstalled(pkgs ...resource.Pkg) error {
 	var ignoreVersionPkgs []resource.Pkg
 	for _, p := range pkgs {
@@ -24,8 +24,9 @@ func IsInstalled(pkgs ...resource.Pkg) error {
 	return IsInstalledVersion(ignoreVersionPkgs...)
 }
 
-// IsInstalledVersion returns nil if the versions of the given package were
-// found, otherwise it will return an error.
+// IsInstalledVersion checks if all the packages passed in as parameters are installed
+// with the required version. It returns error if at least one supplied package is not installed
+// or it's verstion is different from the required version.
 // Note: the version "*" is special and means that doesn't really matter.
 func IsInstalledVersion(pkgs ...resource.Pkg) error {
 	for _, p := range pkgs {
@@ -64,7 +65,9 @@ func IsInstalledVersion(pkgs ...resource.Pkg) error {
 	return nil
 }
 
-// ListInstalled lists all installed packages or returns error
+// ListInstalled lists all installed packages.
+// It returns error if either installed packages can't be listed
+// or the output of the package manager could not be parsed
 func ListInstalled(pkgType string) ([]*resource.Pkg, error) {
 	pkgMgr, err := manager.NewPkgManager(pkgType)
 	if err != nil {

@@ -13,8 +13,8 @@ type aptParser struct {
 	hinter *baseHinter
 }
 
-// NewAptParser returs PkgParser that parses aptitude PkgManager commands outputs
-func NewAptParser() PkgParser {
+// NewAptParser returs PkgOutParser that parses aptitude PkgManager commands outputs
+func NewAptParser() PkgOutParser {
 	return &aptParser{
 		hinter: &baseHinter{
 			list: &hints{
@@ -31,12 +31,12 @@ func NewAptParser() PkgParser {
 
 // ParseList parses output of dpkg-query -l command
 // It returns slice of installed packages or error
-func (ap *aptParser) ParseList(out *command.Out) ([]*resource.Pkg, error) {
+func (ap *aptParser) ParseList(out command.Outer) ([]*resource.Pkg, error) {
 	return parseStream(out, parseListOut, ap.hinter.list, "apt")
 }
 
 // ParseQuery parses output of dpkg-query -W -f '${Status} ${Version} command
 // It returns slice of packages or error
-func (ap *aptParser) ParseQuery(out *command.Out) ([]*resource.Pkg, error) {
+func (ap *aptParser) ParseQuery(out command.Outer) ([]*resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, ap.hinter.query, "apt")
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
-func Test_Package(t *testing.T) {
+func TestPackage(t *testing.T) {
 	testPkg := resource.Pkg{
 		Name:    "docker-engine",
 		Version: "1.8.2-0~trusty",

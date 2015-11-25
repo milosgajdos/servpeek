@@ -1,4 +1,4 @@
-// Package parser impplements package manager command output parsers
+// Package parser implements package manager command output parsers
 package parser
 
 import (
@@ -8,16 +8,16 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
-// PkgParser parses PkgCommander command output
-type PkgParser interface {
+// PkgOutParser parses PkgCommander command output
+type PkgOutParser interface {
 	// ParseList parses output from ListPkgs command
-	ParseList(out *command.Out) ([]*resource.Pkg, error)
+	ParseList(out command.Outer) ([]*resource.Pkg, error)
 	// ParseQuery parses output from QueryPkg command
-	ParseQuery(out *command.Out) ([]*resource.Pkg, error)
+	ParseQuery(out command.Outer) ([]*resource.Pkg, error)
 }
 
-// NewParser returns PkgParser
-func NewParser(pkgType string) (PkgParser, error) {
+// NewParser returns PkgOutParser
+func NewParser(pkgType string) (PkgOutParser, error) {
 	switch pkgType {
 	case "apt", "dpkg":
 		return NewAptParser(), nil

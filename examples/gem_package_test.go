@@ -7,7 +7,7 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
-func Test_Gem_Package(t *testing.T) {
+func TestGemPackage(t *testing.T) {
 	testPkg := resource.Pkg{
 		Name:    "bundler",
 		Version: "1.10.6",

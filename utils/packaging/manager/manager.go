@@ -1,5 +1,4 @@
-// Package manager provides an implementation of a software package manager.
-// Description sounds kind of silly redundant due to unfortunate naming convention clash in Go :-)
+// Package manager allows to use various software package managers programmatically
 package manager
 
 import (
@@ -9,12 +8,14 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/packaging/commander"
 )
 
-// PkgManager provides package manager interface
+// PkgManager provides generic software package manager interface
 type PkgManager interface {
-	// ListPkgs runs command that lists installed packages
-	ListPkgs() *command.Out
-	// QueryPkg runs command that queries info about installed package
-	QueryPkg(pkgName string) *command.Out
+	// ListPkgs runs a command which queries installed packages
+	// It returns command.Outer that can be used to parse command output
+	ListPkgs() command.Outer
+	// QueryPkg runs a command which queries a package for various package properties
+	// It returns command.Outer that can be used to parse command output
+	QueryPkg(pkgName string) command.Outer
 }
 
 // BasePkgManager implements basic package manager commands
@@ -24,20 +25,20 @@ type BasePkgManager struct {
 }
 
 // ListPkgs runs a command which queries installed packages
-// It returns its output that can be parsed
-func (bpm *BasePkgManager) ListPkgs() *command.Out {
+// It returns command.Outer that can be used to parse command output
+func (bpm *BasePkgManager) ListPkgs() command.Outer {
 	return bpm.cmd.ListPkgs.Run()
 }
 
-// QueryPkg runs a command which queries a package
-// It returns the output that can be parsed
-func (bpm *BasePkgManager) QueryPkg(pkgName string) *command.Out {
+// QueryPkg runs a command which queries package properties
+// It returns command.Outer that can be used to parse command output
+func (bpm *BasePkgManager) QueryPkg(pkgName string) command.Outer {
 	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
 	return bpm.cmd.QueryPkg.Run()
 }
 
-// NewPkgManager returns PkgManager based on the package type
-// It returns error if the PkgManager could not be created or required package type is not supported
+// NewPkgManager returns PkgManager based on the package type passed in as parameter
+// It returns error if PkgManager could not be created or if provided package type is not supported
 func NewPkgManager(pkgType string) (PkgManager, error) {
 	switch pkgType {
 	case "apt", "dpkg":

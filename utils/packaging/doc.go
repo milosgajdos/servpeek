@@ -1,8 +1,9 @@
-// Package packaging provides various utility packages that implement useful command to help to interact with
-// various software package managers
+// Package packaging provides various utility packages that allow to use
+// various software package managers programmatically
 //
-// You can query list of all installed packages or query for information about a particular software package
+// You can query list of all installed packages or make a query
+// about a particular software package property like version or name of the package
 //
-// The package itself does not implement anything
-// Actual utility packages are implemented in manager, parser and commander pacakges
+// The package itself does not implement anything. It merely provides other pacakges:
+// manager, parser and commander
 package packaging

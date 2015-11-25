@@ -22,9 +22,9 @@ func NewCommand(cmd string, args ...string) *Command {
 	}
 }
 
-// Run executes command and returns Out object that can be used
-// to collect the results of the command run
-func (c *Command) Run() *Out {
+// Run executes Command and returns Outer that can be used
+// to collect and analyse the output of the executed command
+func (c *Command) Run() Outer {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	cmdStdout, err := cmd.StdoutPipe()
 	res := &Out{
@@ -70,17 +70,29 @@ func (c *Command) Run() *Out {
 	return res
 }
 
-// RunCombined executes Command and returns combined stdout and stderr as a string
-// The difference betweent RunCombined and Run is that Run returns a stream of lines
-// ie. stream of strings. RunCombined returns full Stdout/Stderr output in one string
+// RunCombined executes Command and returns combined Stdout and Stderr as a string.
+// The difference betweent RunCombined and Run is that Run returns a Stdout stream
+// ie. stream of line strings. RunCombined returns combined Stdout/Stderr output in one string
 func (c *Command) RunCombined() (string, error) {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
 
-// Out contains all the information about the result of executed
-// Command. It provides a simple API to interact with the result
+// Outer interface defines an interface to interact with Command output
+type Outer interface {
+	// Next advances through Command output iteration per line
+	Next() bool
+	// Text returns a single line of Command output
+	Text() string
+	// Err returns the last encountered error
+	Err() error
+	// Close closes standard output of Command output
+	Close() error
+}
+
+// Out implements Outer interface to provide a simple API
+// to interact with executed Command output
 type Out struct {
 	closed bool
 	reader io.ReadCloser
@@ -90,7 +102,10 @@ type Out struct {
 	err    error
 }
 
-// Next returns next line from Command output or false if there is none
+// Next forwards the Command Stdout iteration to next line.
+// It returns true if there is any output to be processed.
+// It returns false all all of Command output has been processed or
+// an error occurred during Command execution
 func (o *Out) Next() (ok bool) {
 	o.line, ok = <-o.lines
 	return !o.closed && o.err == nil && ok
@@ -108,7 +123,7 @@ func (o *Out) Err() error {
 	return o.err
 }
 
-// Close closes standard output reader
+// Close closes Stdout of the executed command
 func (o *Out) Close() error {
 	o.mu.Lock()
 	defer o.mu.Unlock()

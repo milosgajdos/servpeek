@@ -33,7 +33,7 @@ func (h *hints) Matcher() *regexp.Regexp {
 
 type parseFunc func(string, *regexp.Regexp) (*resource.Pkg, error)
 
-func parseStream(out *command.Out, fn parseFunc,
+func parseStream(out command.Outer, fn parseFunc,
 	h hinter, pkgType string) ([]*resource.Pkg, error) {
 	var pkgs []*resource.Pkg
 	for out.Next() {

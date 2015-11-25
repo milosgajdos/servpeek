@@ -17,7 +17,7 @@ type ApkCommander struct {
 	*PkgCommander
 }
 
-// NewApkCommander returns aptitude command manager
+// NewApkCommander returns apk command manager
 func NewApkCommander() *PkgCommander {
 	return &PkgCommander{
 		ListPkgs: command.NewCommand(apk, apkListPkgsArgs...),

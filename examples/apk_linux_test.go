@@ -7,7 +7,7 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
-func Test_ApkPackage(t *testing.T) {
+func TestApkPackage(t *testing.T) {
 	testPkg := resource.Pkg{
 		Name:    "alpine-base",
 		Version: "3.2.3-r0",
