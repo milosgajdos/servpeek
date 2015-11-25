@@ -1,0 +1,16 @@
+WARNING: Ignoring APKINDEX.abd86498.tar.gz: No such file or directory
+musl-1.1.11-r2
+busybox-1.23.2-r0
+alpine-baselayout-2.3.2-r0
+openrc-0.15.1-r3
+alpine-conf-3.2.1-r6
+zlib-1.2.8-r1
+libcrypto1.0-1.0.2d-r0
+libssl1.0-1.0.2d-r0
+apk-tools-2.6.3-r0
+busybox-initscripts-2.2-r27
+scanelf-0.9.1-r0
+musl-utils-1.1.11-r2
+libc-utils-0.7-r0
+alpine-keys-1.1-r0
+alpine-base-3.2.3-r0

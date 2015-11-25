@@ -41,6 +41,5 @@ func HashSum(hashType string, r io.Reader) (string, error) {
 	if _, err := io.Copy(hasher, r); err != nil {
 		return "", err
 	}
-
 	return hex.EncodeToString(hasher.Sum(nil)), nil
 }

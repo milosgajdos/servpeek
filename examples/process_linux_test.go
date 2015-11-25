@@ -1,12 +1,14 @@
+// build linux
+
 package examples
 
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/resource/process"
+	"github.com/milosgajdos83/servpeek/process"
 )
 
-func Test_Process(t *testing.T) {
+func TestProcess(t *testing.T) {
 	if err := process.IsRunningCmd("docker"); err != nil {
 		t.Errorf("Error: %s", err)
 	}

@@ -30,23 +30,21 @@ $ go get github.com/milosgajdos83/servpeek
 Example test file could look like this:
 
 ```go
-package examples
+package example
 
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/pkg"
+	"github.com/milosgajdos83/servpeek/pkg"
 )
 
 func TestGemPackage(t *testing.T) {
-	testPkg := resource.Pkg{
-		Name:    "bundler",
-		Version: "1.10.6",
-		Type:    "gem",
+	testPkg, err := pkg.NewSwPkg("gem", "bundler", "1.10.6")
+	if err != nil {
+		t.Errorf("Error: %s", err)
 	}
 
-	if err := pkg.IsInstalledVersion(testPkg); err !=nil {
+	if err := pkg.IsInstalled(testPkg); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }
@@ -58,7 +56,6 @@ $ go test gem_package_test.go
 ok  	command-line-arguments	0.330s
 ```
 
-TOD:
+TODO:
 - A LOT more resources
 - Better logging and error statements
-- redesign if possible :-)

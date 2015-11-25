@@ -1,0 +1,21 @@
+package service
+
+import "fmt"
+
+// IsRunning checks if the supplied service is running
+func IsRunning(s Service) error {
+	sysInit, err := NewSysInit(s.SysInit())
+	if err != nil {
+		return err
+	}
+	// Check the service status
+	status, err := sysInit.Status(s.Name())
+	if err != nil {
+		return err
+	}
+	// If the service isnt running, return error
+	if status != Running {
+		return fmt.Errorf("Service %s not running", s.Name())
+	}
+	return nil
+}
