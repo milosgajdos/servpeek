@@ -8,10 +8,8 @@ import (
 	"github.com/milosgajdos83/servpeek/resource/file"
 )
 
-func Test_File(t *testing.T) {
-	f := &resource.File{
-		Path: "/etc/hosts",
-	}
+func TestFile(t *testing.T) {
+	f := resource.NewFile("/etc/hosts")
 
 	if err := file.IsRegular(f); err != nil {
 		t.Errorf("Error: %s", err)
@@ -20,6 +18,7 @@ func Test_File(t *testing.T) {
 	owner := "root"
 	group := "wheel"
 	md5 := "YOUR_MD5SUM_HERE"
+
 	if err := file.IsOwnedBy(f, owner); err != nil {
 		t.Errorf("Error: %s", err)
 	}

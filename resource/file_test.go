@@ -2,6 +2,7 @@ package resource
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,4 +23,5 @@ func TestFile(t *testing.T) {
 	fi, err := file.Info()
 	assert.NoError(err)
 	assert.NotNil(fi)
+	assert.NoError(os.Remove(file.Path()))
 }

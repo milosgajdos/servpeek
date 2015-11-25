@@ -1,27 +1,23 @@
-// Package file implements various functions that provide helpers
-// to query various aspects of operating system files
+// Package file allows to query various properties of operating system files
 package file
 
 import (
 	"bufio"
-	"crypto/md5"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
-	"syscall"
 	"time"
 
 	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils"
 )
 
+// Bit mask for regular files
 const ModeRegular = ^os.ModeType
 
-func withOsFile(path string, fn func(file *os.File) error) error {
-	file, err := os.Open(path)
+func withFileReader(f resource.Filer, fn func(r io.Reader) error) error {
+	file, err := os.Open(f.Path())
 	if err != nil {
 		return err
 	}
@@ -105,33 +101,17 @@ func IsMode(f resource.Filer, mode os.FileMode) error {
 // IsOwnedBy checks if the provided file is owned by username user
 // It returns an error if os.Stat returns error
 func IsOwnedBy(f resource.Filer, username string) error {
-	fi, err := f.Info()
-	if err != nil {
-		return nil
-	}
-	uid, err := utils.RoleToID("user", username)
-	if err != nil {
-		return err
-	}
-	return isTrueOrError(fi.Sys().(*syscall.Stat_t).Uid == uint32(uid), fmt.Errorf("%s file is not owned by %s", f, username))
+	return isOwnedBy(f, username)
 }
 
 // IsGrupedInto checks if the provided file is owned by groupname group
 // It returns an error if os.Stat returns error
 func IsGrupedInto(f resource.Filer, groupname string) error {
-	fi, err := f.Info()
-	if err != nil {
-		return err
-	}
-	gid, err := utils.RoleToID("group", groupname)
-	if err != nil {
-		return err
-	}
-	return isTrueOrError(fi.Sys().(*syscall.Stat_t).Gid == uint32(gid), fmt.Errorf("%s file is not grouped to %s", f, groupname))
+	return isGrupedInto(f, groupname)
 }
 
 // LinksTo checks if the provided file is a symlink which links to path
-// It returs error if the link can't be read
+// It returns error if the link can't be read
 func LinksTo(f resource.Filer, path string) error {
 	dst, err := os.Readlink(path)
 	if err != nil {
@@ -143,39 +123,9 @@ func LinksTo(f resource.Filer, path string) error {
 	return fmt.Errorf("%s does not link to %s", f, path)
 }
 
-// Md5 checks if the provided file md5 checksum is the same as the one passed in as paramter
-// It returs error if the provided file can't be open
-func Md5(f resource.Filer, sum string) error {
-	return withOsFile(f.Path(), func(file *os.File) error {
-		hasher := md5.New()
-		if _, err := io.Copy(hasher, file); err != nil {
-			return nil
-		}
-		if sum == hex.EncodeToString(hasher.Sum(nil)) {
-			return nil
-		}
-		return fmt.Errorf("%s md5sum does not equal to %s", f, sum)
-	})
-}
-
-// Sha256 checks if the provided file sha256 checksum is the same as the one passed in as paramter
-// It returs error if the provided file can't be open
-func Sha256(f resource.Filer, sum string) error {
-	return withOsFile(f.Path(), func(file *os.File) error {
-		hasher := sha256.New()
-		if _, err := io.Copy(hasher, file); err != nil {
-			return nil
-		}
-		if sum == hex.EncodeToString(hasher.Sum(nil)) {
-			return nil
-		}
-		return fmt.Errorf("%s sha256 does not equal to %s", f, sum)
-	})
-}
-
-// Size checks if the provided file byte size is the same as the one passed in as paramter
+// IsSize checks if the provided file byte size is the same as the one passed in as paramter
 // It returns error if os.Stat returns error
-func Size(f resource.Filer, size int64) error {
+func IsSize(f resource.Filer, size int64) error {
 	fi, err := f.Info()
 	if err != nil {
 		return err
@@ -186,8 +136,9 @@ func Size(f resource.Filer, size int64) error {
 	return fmt.Errorf("%s size is different from %d", f, size)
 }
 
-// ModTimeAfter checks if the provided file modification time is older than the one passed in as paramter
-// It returns error if os.Stat returns error
+// ModTimeAfter checks if the file modification time of the file passed in as argument
+// is older than the one passed in as paramter. It returns error if os.Stat returns error
+// or if the file has been modified before the time supplied as argument
 func ModTimeAfter(f resource.Filer, mtime time.Time) error {
 	fi, err := f.Info()
 	if err != nil {
@@ -196,14 +147,14 @@ func ModTimeAfter(f resource.Filer, mtime time.Time) error {
 	if fi.ModTime().After(mtime) {
 		return nil
 	}
-	return fmt.Errorf("%s modification time is bigger than %s", f, mtime)
+	return fmt.Errorf("%s has been modifed before: %s", f, mtime)
 }
 
-// Contains checks if the provided file content can be matched with any of the regexps
-// passed in as paramter. It returs error if the provided file can't be open
+// Contains checks if the provided file content can be matched by any of the RegExps
+// passed in as paramters. It returns error if the provided file can't be open
 func Contains(f resource.Filer, contents ...*regexp.Regexp) error {
-	return withOsFile(f.Path(), func(file *os.File) error {
-		scanner := bufio.NewScanner(file)
+	return withFileReader(f, func(r io.Reader) error {
+		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
 			for _, content := range contents {
 				if content.Match(scanner.Bytes()) {
@@ -212,5 +163,35 @@ func Contains(f resource.Filer, contents ...*regexp.Regexp) error {
 			}
 		}
 		return fmt.Errorf("%s does not match any provided regular expression", f)
+	})
+}
+
+// MD5Equal checks if the provided file md5 checksum is the same as the one passed in as paramter
+// It returns error if the provided file can't be opened
+func MD5Equal(f resource.Filer, sum string) error {
+	return withFileReader(f, func(r io.Reader) error {
+		md5sum, err := utils.HashSum("md5", r)
+		if err != nil {
+			return err
+		}
+		if md5sum == sum {
+			return nil
+		}
+		return fmt.Errorf("Expected md5 sum: %s Calculated sum: %s", sum, md5sum)
+	})
+}
+
+// IsSha256Sum checks if the provided file sha256 checksum is the same as the one passed in as paramter
+// It returns error if the provided file can't be opened
+func SHA256Equal(f resource.Filer, sum string) error {
+	return withFileReader(f, func(r io.Reader) error {
+		sha256sum, err := utils.HashSum("sha256", r)
+		if err != nil {
+			return err
+		}
+		if sha256sum == sum {
+			return nil
+		}
+		return fmt.Errorf("Expected sha256 sum: %s Calculated sum: %s", sum, sha256sum)
 	})
 }
