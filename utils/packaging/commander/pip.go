@@ -6,19 +6,19 @@ const pip = "pip"
 
 var (
 	// cli arguments passed to gem
-	pipListPkgsArgs = []string{"list"}
-	pipQueryPkgArgs = []string{"show"}
+	pipListPkgsCmdArgs = []string{"list"}
+	pipQueryPkgCmdArgs = []string{"show"}
 )
 
 // PipCommand provides gem command manager commands
 type PipCommand struct {
-	*PkgCommander
+	*BaseCommander
 }
 
-// NewPipCommander returns pip command manager
-func NewPipCommander() *PkgCommander {
-	return &PkgCommander{
-		ListPkgs: command.NewCommand(pip, pipListPkgsArgs...),
-		QueryPkg: command.NewCommand(pip, pipQueryPkgArgs...),
+// NewPipCommander returns PkgCommander that provides pip package manager commands
+func NewPipCommander() PkgCommander {
+	return &BaseCommander{
+		ListPkgsCmd: command.NewCommand(pip, pipListPkgsCmdArgs...),
+		QueryPkgCmd: command.NewCommand(pip, pipQueryPkgCmdArgs...),
 	}
 }

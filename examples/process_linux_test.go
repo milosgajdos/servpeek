@@ -3,7 +3,7 @@ package examples
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/resource/process"
+	"github.com/milosgajdos83/servpeek/matchers/process"
 )
 
 func Test_Process(t *testing.T) {

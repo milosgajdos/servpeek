@@ -8,19 +8,19 @@ const apk = "apk"
 
 var (
 	// cli arguments passed to dpkg-query
-	apkListPkgsArgs = []string{"info", "-v"}
-	apkQueryPkgArgs = []string{"info"}
+	apkListPkgsCmdArgs = []string{"info", "-v"}
+	apkQueryPkgCmdArgs = []string{"info"}
 )
 
 // ApkCommander provides apk command manager commands
 type ApkCommander struct {
-	*PkgCommander
+	*BaseCommander
 }
 
-// NewApkCommander returns apk command manager
-func NewApkCommander() *PkgCommander {
-	return &PkgCommander{
-		ListPkgs: command.NewCommand(apk, apkListPkgsArgs...),
-		QueryPkg: command.NewCommand(apk, apkQueryPkgArgs...),
+// NewApkCommander returns PkgCommander that provides apk package manager commands
+func NewApkCommander() PkgCommander {
+	return &BaseCommander{
+		ListPkgsCmd: command.NewCommand(apk, apkListPkgsCmdArgs...),
+		QueryPkgCmd: command.NewCommand(apk, apkQueryPkgCmdArgs...),
 	}
 }

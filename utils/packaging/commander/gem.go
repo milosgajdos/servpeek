@@ -6,19 +6,19 @@ const gem = "gem"
 
 var (
 	// cli arguments to gem
-	gemListPkgsArgs = []string{"list", "--local"}
-	gemQueryPkgArgs = []string{"list", "--local"}
+	gemListPkgsCmdArgs = []string{"list", "--local"}
+	gemQueryPkgCmdArgs = []string{"list", "--local"}
 )
 
 // GemCommander provides gem command manager commands
 type GemCommander struct {
-	*PkgCommander
+	*BaseCommander
 }
 
-// NewGemCommander returns gem command manager
-func NewGemCommander() *PkgCommander {
-	return &PkgCommander{
-		ListPkgs: command.NewCommand(gem, gemListPkgsArgs...),
-		QueryPkg: command.NewCommand(gem, gemQueryPkgArgs...),
+// NewGemCommander returns PkgCommander that provides gem package manager commands
+func NewGemCommander() PkgCommander {
+	return &BaseCommander{
+		ListPkgsCmd: command.NewCommand(gem, gemListPkgsCmdArgs...),
+		QueryPkgCmd: command.NewCommand(gem, gemQueryPkgCmdArgs...),
 	}
 }

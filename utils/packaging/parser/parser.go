@@ -16,7 +16,8 @@ type PkgOutParser interface {
 	ParseQuery(out command.Outer) ([]*resource.Pkg, error)
 }
 
-// NewParser returns PkgOutParser
+// NewParser returns PkgOutParser based on the requested package type passed in as parameter.
+// It returns error if PkgOutParser fails to be created or if the package type is not supported
 func NewParser(pkgType string) (PkgOutParser, error) {
 	switch pkgType {
 	case "apt", "dpkg":
@@ -30,5 +31,5 @@ func NewParser(pkgType string) (PkgOutParser, error) {
 	case "gem":
 		return NewGemParser(), nil
 	}
-	return nil, fmt.Errorf("Unable to create PkgParser for %s: Unsupported package type", pkgType)
+	return nil, fmt.Errorf("PkgParser error. Unsupported package type: %s", pkgType)
 }

@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// Filer interface defines API interface to File resource
+// Filer interface defines API interface to File
 type Filer interface {
 	// Path returns path to physical file on OS
 	Path() string

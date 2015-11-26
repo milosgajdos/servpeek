@@ -6,19 +6,17 @@ import (
 
 	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/packaging/manager"
-	"github.com/milosgajdos83/servpeek/utils/packaging/parser"
 )
 
-// AllVersions is a char that specifies that the version in the package
-// doesn't really matter.
-const AllVersions = "*"
+// IgnoreVersion is a wildcard that allows to ignore the version of the queried package
+const IgnoreVersion = "*"
 
 // IsInstalled checks if all the packages passed in as parameters are installed
 // It returns error if at least supplied package is not installed
 func IsInstalled(pkgs ...resource.Pkg) error {
 	var ignoreVersionPkgs []resource.Pkg
 	for _, p := range pkgs {
-		p.Version = AllVersions
+		p.Version = IgnoreVersion
 		ignoreVersionPkgs = append(ignoreVersionPkgs, p)
 	}
 	return IsInstalledVersion(ignoreVersionPkgs...)
@@ -35,22 +33,16 @@ func IsInstalledVersion(pkgs ...resource.Pkg) error {
 			return err
 		}
 
-		cmdParser, err := parser.NewParser(p.Type)
-		if err != nil {
-			return err
-		}
-
-		queryOut := pkgMgr.QueryPkg(p.Name)
-		inPkgs, err := cmdParser.ParseQuery(queryOut)
+		inPkgs, err := pkgMgr.ListPkgs()
 		if err != nil {
 			return err
 		}
 
 		if len(inPkgs) == 0 {
-			return fmt.Errorf("Error looking up for %s", p.Name)
+			return fmt.Errorf("Unable to look up %s", p)
 		}
 
-		if p.Version == AllVersions {
+		if p.Version == IgnoreVersion {
 			continue
 		}
 
@@ -59,8 +51,7 @@ func IsInstalledVersion(pkgs ...resource.Pkg) error {
 				continue
 			}
 		}
-
-		return fmt.Errorf("Error looking up for %s, version: %s", p.Name, p.Version)
+		return fmt.Errorf("Unable to look up %s", p)
 	}
 	return nil
 }
@@ -74,13 +65,7 @@ func ListInstalled(pkgType string) ([]*resource.Pkg, error) {
 		return nil, err
 	}
 
-	cmdParser, err := parser.NewParser(pkgType)
-	if err != nil {
-		return nil, err
-	}
-
-	listOut := pkgMgr.ListPkgs()
-	pkgs, err := cmdParser.ParseList(listOut)
+	pkgs, err := pkgMgr.ListPkgs()
 	if err != nil {
 		return nil, err
 	}

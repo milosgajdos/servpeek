@@ -12,5 +12,5 @@ type Process struct {
 
 // implement stringer interface
 func (p *Process) String() string {
-	return fmt.Sprintf("[Process] PID: %s, Cmd: %d", p.Cmd, p.Pid)
+	return fmt.Sprintf("[Process] PID: %d, Cmd: %s", p.Pid, p.Cmd)
 }

@@ -1,44 +1,27 @@
-// Package manager allows to use various software package managers programmatically
+// package manager provides functions that allow running various
+// software package manager commands
 package manager
 
 import (
 	"fmt"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos83/servpeek/resource"
 	"github.com/milosgajdos83/servpeek/utils/packaging/commander"
+	"github.com/milosgajdos83/servpeek/utils/packaging/parser"
 )
 
-// PkgManager provides generic software package manager interface
+// PkgManager provides software package manager interface
 type PkgManager interface {
-	// ListPkgs runs a command which queries installed packages
-	// It returns command.Outer that can be used to parse command output
-	ListPkgs() command.Outer
-	// QueryPkg runs a command which queries a package for various package properties
-	// It returns command.Outer that can be used to parse command output
-	QueryPkg(pkgName string) command.Outer
+	// ListPkgs allows to list all installed packages on the system
+	// It returns error if the installed packages can't be listed
+	ListPkgs() ([]*resource.Pkg, error)
+	// QueryPkg queries package database about particular package
+	// It returns error if the requested package fails to be queried
+	QueryPkg(pkgName string) ([]*resource.Pkg, error)
 }
 
-// BasePkgManager implements basic package manager commands
-type BasePkgManager struct {
-	// cmd provides package commander
-	cmd *commander.PkgCommander
-}
-
-// ListPkgs runs a command which queries installed packages
-// It returns command.Outer that can be used to parse command output
-func (bpm *BasePkgManager) ListPkgs() command.Outer {
-	return bpm.cmd.ListPkgs.Run()
-}
-
-// QueryPkg runs a command which queries package properties
-// It returns command.Outer that can be used to parse command output
-func (bpm *BasePkgManager) QueryPkg(pkgName string) command.Outer {
-	bpm.cmd.QueryPkg.Args = append(bpm.cmd.QueryPkg.Args, pkgName)
-	return bpm.cmd.QueryPkg.Run()
-}
-
-// NewPkgManager returns PkgManager based on the package type passed in as parameter
-// It returns error if PkgManager could not be created or if provided package type is not supported
+// NewPkgManager returns PkgManager based on the requested package type passed in as parameter.
+// It returns error if PkgManager could not be created or if provided package type is not supported.
 func NewPkgManager(pkgType string) (PkgManager, error) {
 	switch pkgType {
 	case "apt", "dpkg":
@@ -55,16 +38,36 @@ func NewPkgManager(pkgType string) (PkgManager, error) {
 	return nil, fmt.Errorf("Unsupported package type: %s", pkgType)
 }
 
+// BasePkgManager implements basic package manager commands
+// It implements PkgManager interface
+type BasePkgManager struct {
+	// cmd provides package commander
+	cmd commander.PkgCommander
+	// parser provides package command parser
+	p parser.PkgOutParser
+}
+
+// ListPkgs runs a command which queries installed packages.
+func (bpm *BasePkgManager) ListPkgs() ([]*resource.Pkg, error) {
+	return bpm.p.ParseList(bpm.cmd.ListPkgs())
+}
+
+// QueryPkg runs a command which queries package properties
+func (bpm *BasePkgManager) QueryPkg(pkgName string) ([]*resource.Pkg, error) {
+	return bpm.p.ParseQuery(bpm.cmd.QueryPkg(pkgName))
+}
+
 // aptManager implements Apt package manager
 type aptManager struct {
 	BasePkgManager
 }
 
-// NewAptManager returns PkgManager or fails with error
+// NewAptManager returns apt PkgManager or fails with error
 func NewAptManager() (PkgManager, error) {
 	return &aptManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewAptCommander(),
+			p:   parser.NewAptParser(),
 		},
 	}, nil
 }
@@ -74,11 +77,12 @@ type yumManager struct {
 	BasePkgManager
 }
 
-// NewYumManager returns PkgManager or fails with error
+// NewYumManager returns yum PkgManager or fails with error
 func NewYumManager() (PkgManager, error) {
 	return &yumManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewYumCommander(),
+			p:   parser.NewYumParser(),
 		},
 	}, nil
 }
@@ -88,11 +92,12 @@ type pipManager struct {
 	BasePkgManager
 }
 
-// NewPipManager returns PkgManager or fails with error
+// NewPipManager returns pip PkgManager or fails with error
 func NewPipManager() (PkgManager, error) {
 	return &pipManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewPipCommander(),
+			p:   parser.NewPipParser(),
 		},
 	}, nil
 }
@@ -102,11 +107,12 @@ type apkManager struct {
 	BasePkgManager
 }
 
-// NewApkManager returns PkgManager or fails with error
+// NewApkManager returns apk PkgManager or fails with error
 func NewApkManager() (PkgManager, error) {
 	return &apkManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewApkCommander(),
+			p:   parser.NewApkParser(),
 		},
 	}, nil
 }
@@ -116,11 +122,12 @@ type gemManager struct {
 	BasePkgManager
 }
 
-// NewGemManager returns PkgManager or fails with error
+// NewGemManager returns gem PkgManager or fails with error
 func NewGemManager() (PkgManager, error) {
 	return &gemManager{
 		BasePkgManager: BasePkgManager{
 			cmd: commander.NewGemCommander(),
+			p:   parser.NewGemParser(),
 		},
 	}, nil
 }

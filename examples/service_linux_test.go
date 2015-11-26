@@ -3,8 +3,8 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/matchers/svc"
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/svc"
 )
 
 func Test_Service(t *testing.T) {

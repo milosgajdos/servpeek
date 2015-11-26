@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/matchers/file"
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/file"
 )
 
 func TestFile(t *testing.T) {
@@ -27,7 +27,7 @@ func TestFile(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 
-	if err := file.Md5(f, md5); err != nil {
+	if err := file.MD5Equal(f, md5); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 

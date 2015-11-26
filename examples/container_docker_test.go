@@ -3,8 +3,8 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/matchers/container"
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/container"
 )
 
 func Test_Docker(t *testing.T) {

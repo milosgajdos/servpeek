@@ -8,19 +8,19 @@ const rpm = "rpm"
 
 var (
 	// cli arguments passed to rpm
-	rpmListPkgsArgs = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
-	rpmQueryPkgArgs = []string{"-qi"}
+	rpmListPkgsCmdArgs = []string{"-qa --qf '%{NAME}%20{VERSION}-%{RELEASE}\n'"}
+	rpmQueryPkgCmdArgs = []string{"-qi"}
 )
 
 // YumCommander provides yum command manager commands
 type YumCommander struct {
-	*PkgCommander
+	*BaseCommander
 }
 
-// NewYumCommander returns yum command manager
-func NewYumCommander() *PkgCommander {
-	return &PkgCommander{
-		ListPkgs: command.NewCommand(rpm, rpmListPkgsArgs...),
-		QueryPkg: command.NewCommand(rpm, rpmQueryPkgArgs...),
+// NewYumCommander returns PkgCommander that provides yum package manager commands
+func NewYumCommander() PkgCommander {
+	return &BaseCommander{
+		ListPkgsCmd: command.NewCommand(rpm, rpmListPkgsCmdArgs...),
+		QueryPkgCmd: command.NewCommand(rpm, rpmQueryPkgCmdArgs...),
 	}
 }

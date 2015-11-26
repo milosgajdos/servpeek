@@ -10,7 +10,7 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/service/sysinit"
 )
 
-// IsRunning checks if the service is running
+// IsRunning checks if the supplied service is running
 func IsRunning(svc *resource.Svc) error {
 	svcInit, err := sysinit.NewSvcInit(svc.SysInit)
 	if err != nil {

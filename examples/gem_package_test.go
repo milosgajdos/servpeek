@@ -3,8 +3,8 @@ package examples
 import (
 	"testing"
 
+	"github.com/milosgajdos83/servpeek/matchers/pkg"
 	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/pkg"
 )
 
 func TestGemPackage(t *testing.T) {

@@ -8,19 +8,19 @@ const dpkg = "dpkg-query"
 
 var (
 	// cli arguments passed to dpkg-query
-	dpkgListPkgsArgs = []string{"-l"}
-	dpkgQueryPkgArgs = []string{"-W", "-f '${Status} ${Version}'"}
+	dpkgListPkgsCmdArgs = []string{"-l"}
+	dpkgQueryPkgCmdArgs = []string{"-W", "-f '${Status} ${Version}'"}
 )
 
 // AptCommander provides aptitude command manager commands
 type AptCommander struct {
-	*PkgCommander
+	*BaseCommander
 }
 
-// NewAptCommander returns aptitude command manager
-func NewAptCommander() *PkgCommander {
-	return &PkgCommander{
-		ListPkgs: command.NewCommand(dpkg, dpkgListPkgsArgs...),
-		QueryPkg: command.NewCommand(dpkg, dpkgQueryPkgArgs...),
+// NewAptCommander returns PkgCommander that provides apt package manager commands
+func NewAptCommander() PkgCommander {
+	return &BaseCommander{
+		ListPkgsCmd: command.NewCommand(dpkg, dpkgListPkgsCmdArgs...),
+		QueryPkgCmd: command.NewCommand(dpkg, dpkgQueryPkgCmdArgs...),
 	}
 }
