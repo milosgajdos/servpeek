@@ -60,6 +60,7 @@ func TestIsRegular(t *testing.T) {
 
 	file := resource.NewFile(f.Name())
 	assert.NoError(IsRegular(file))
+	assert.NoError(os.Remove(file.Path()))
 }
 
 func TestIsDirectory(t *testing.T) {
@@ -70,6 +71,7 @@ func TestIsDirectory(t *testing.T) {
 
 	file := resource.NewFile(path)
 	assert.NoError(IsDirectory(file))
+	assert.NoError(os.Remove(file.Path()))
 }
 
 func TestIsBlockDevice(t *testing.T) {
@@ -188,7 +190,7 @@ func TestSHA256Equal(t *testing.T) {
 	assert.NoError(err)
 
 	file := resource.NewFile(f.Name())
-	tstSum := "2f6928c43c919915d452b6f2b90f7cf6640a7773c83412bf3d8ea1abfc699020"
-	assert.NoError(SHA256Equal(file, tstSum))
+	expSum := "2f6928c43c919915d452b6f2b90f7cf6640a7773c83412bf3d8ea1abfc699020"
+	assert.NoError(SHA256Equal(file, expSum))
 	assert.NoError(os.Remove(file.Path()))
 }
