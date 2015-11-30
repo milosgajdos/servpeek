@@ -10,7 +10,7 @@ import (
 )
 
 func TestApkPackage(t *testing.T) {
-	testPkg, err := resource.NewSwPkg("alpine-base", "3.2.3-r0", "apk")
+	testPkg, err := resource.NewSwPkg("apk", "alpine-base", "3.2.3-r0")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
