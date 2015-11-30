@@ -29,12 +29,12 @@ func NewGemParser() PkgOutParser {
 
 // ParseList parses output of "gem list --local" command
 // It returns slice of installed packages or error
-func (gp *gemParser) ParseList(out command.Outer) ([]*resource.Pkg, error) {
+func (gp *gemParser) ParseList(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseListOut, gp.hinter.list, "gem")
 }
 
 // ParseQuery parses output of "gem list --local" command
 // It returns slice of queried packages or error
-func (gp *gemParser) ParseQuery(out command.Outer) ([]*resource.Pkg, error) {
+func (gp *gemParser) ParseQuery(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, gp.hinter.query, "gem")
 }

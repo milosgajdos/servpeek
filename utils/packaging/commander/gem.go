@@ -12,12 +12,12 @@ var (
 
 // GemCommander provides gem command manager commands
 type GemCommander struct {
-	*BaseCommander
+	*BasePkgCommander
 }
 
 // NewGemCommander returns PkgCommander that provides gem package manager commands
 func NewGemCommander() PkgCommander {
-	return &BaseCommander{
+	return &BasePkgCommander{
 		ListPkgsCmd: command.NewCommand(gem, gemListPkgsCmdArgs...),
 		QueryPkgCmd: command.NewCommand(gem, gemQueryPkgCmdArgs...),
 	}

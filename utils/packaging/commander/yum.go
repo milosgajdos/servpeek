@@ -14,12 +14,12 @@ var (
 
 // YumCommander provides yum command manager commands
 type YumCommander struct {
-	*BaseCommander
+	*BasePkgCommander
 }
 
 // NewYumCommander returns PkgCommander that provides yum package manager commands
 func NewYumCommander() PkgCommander {
-	return &BaseCommander{
+	return &BasePkgCommander{
 		ListPkgsCmd: command.NewCommand(rpm, rpmListPkgsCmdArgs...),
 		QueryPkgCmd: command.NewCommand(rpm, rpmQueryPkgCmdArgs...),
 	}

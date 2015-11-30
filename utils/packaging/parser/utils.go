@@ -31,20 +31,18 @@ func (h *hints) Matcher() *regexp.Regexp {
 	return h.matcher
 }
 
-type parseFunc func(string, *regexp.Regexp) (*resource.Pkg, error)
+type parseFunc func(string, string, *regexp.Regexp) (resource.Pkg, error)
 
-func parseStream(out command.Outer, fn parseFunc,
-	h hinter, pkgType string) ([]*resource.Pkg, error) {
-	var pkgs []*resource.Pkg
+func parseStream(out command.Outer, fn parseFunc, h hinter, pkgType string) ([]resource.Pkg, error) {
+	var pkgs []resource.Pkg
 	for out.Next() {
 		line := out.Text()
 		if h.Filter().MatchString(line) {
-			p, err := fn(line, h.Matcher())
+			p, err := fn(pkgType, line, h.Matcher())
 			if err != nil {
 				return nil, err
 			}
 			if p != nil {
-				p.Type = pkgType
 				pkgs = append(pkgs, p)
 			}
 		}
@@ -52,23 +50,19 @@ func parseStream(out command.Outer, fn parseFunc,
 	return pkgs, nil
 }
 
-func parseListOut(line string, re *regexp.Regexp) (*resource.Pkg, error) {
+func parseListOut(pkgType, line string, re *regexp.Regexp) (resource.Pkg, error) {
 	match := re.FindStringSubmatch(line)
 	if match == nil || len(match) < 3 {
 		return nil, fmt.Errorf("Unable to parse package info")
 	}
-	return &resource.Pkg{
-		Version: match[2],
-		Name:    match[1],
-	}, nil
+	return resource.NewSwPkg(pkgType, match[1], match[2])
 }
 
-func parseQueryOut(line string, re *regexp.Regexp) (*resource.Pkg, error) {
+func parseQueryOut(pkgType, line string, re *regexp.Regexp) (resource.Pkg, error) {
 	match := re.FindStringSubmatch(line)
 	if match == nil || len(match) < 2 {
 		return nil, fmt.Errorf("Unable to parse package info")
 	}
-	return &resource.Pkg{
-		Version: match[1],
-	}, nil
+	// TODO: Match name too
+	return resource.NewSwPkg(pkgType, "", match[1])
 }

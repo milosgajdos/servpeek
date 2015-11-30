@@ -31,12 +31,12 @@ func NewYumParser() PkgOutParser {
 
 // ParseList parses output of "rpm -qa --qf %{NAME}%20{VERSION}-%{RELEASE}" command
 // It returns slice of installed packages or error
-func (yp *yumParser) ParseList(out command.Outer) ([]*resource.Pkg, error) {
+func (yp *yumParser) ParseList(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseListOut, yp.hinter.list, "yum")
 }
 
 // ParseQuery parses output of "rpm -qi" command
 // It returns slice of packages or error
-func (yp *yumParser) ParseQuery(out command.Outer) ([]*resource.Pkg, error) {
+func (yp *yumParser) ParseQuery(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, yp.hinter.query, "yum")
 }

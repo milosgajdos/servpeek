@@ -14,12 +14,12 @@ var (
 
 // AptCommander provides aptitude command manager commands
 type AptCommander struct {
-	*BaseCommander
+	*BasePkgCommander
 }
 
 // NewAptCommander returns PkgCommander that provides apt package manager commands
 func NewAptCommander() PkgCommander {
-	return &BaseCommander{
+	return &BasePkgCommander{
 		ListPkgsCmd: command.NewCommand(dpkg, dpkgListPkgsCmdArgs...),
 		QueryPkgCmd: command.NewCommand(dpkg, dpkgQueryPkgCmdArgs...),
 	}

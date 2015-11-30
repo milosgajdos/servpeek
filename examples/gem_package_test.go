@@ -8,10 +8,9 @@ import (
 )
 
 func TestGemPackage(t *testing.T) {
-	testPkg := resource.Pkg{
-		Name:    "bundler",
-		Version: "1.10.6",
-		Type:    "gem",
+	testPkg, err := resource.NewSwPkg("gem", "bundler", "1.10.6")
+	if err != nil {
+		t.Errorf("Error: %s", err)
 	}
 
 	if err := pkg.IsInstalled(testPkg); err != nil {

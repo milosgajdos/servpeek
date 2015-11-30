@@ -1,3 +1,5 @@
+// build linux
+
 package examples
 
 import (
@@ -8,10 +10,9 @@ import (
 )
 
 func TestPackage(t *testing.T) {
-	testPkg := resource.Pkg{
-		Name:    "docker-engine",
-		Version: "1.8.2-0~trusty",
-		Type:    "apt",
+	testPkg, err := resource.NewSwPkg("docker-engine", "1.8.2-0~trusty", "apt")
+	if err != nil {
+		t.Errorf("Error: %s", err)
 	}
 
 	if err := pkg.IsInstalled(testPkg); err != nil {

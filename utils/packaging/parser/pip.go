@@ -29,12 +29,12 @@ func NewPipParser() PkgOutParser {
 
 // ParseList parses output of "pip list" command
 // It returns slice of list packages or error
-func (pp *pipParser) ParseList(out command.Outer) ([]*resource.Pkg, error) {
+func (pp *pipParser) ParseList(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseListOut, pp.hinter.list, "pip")
 }
 
 // ParseQuery parses output of "pip show" command
 // It returns slice of queried packages or error
-func (pp *pipParser) ParseQuery(out command.Outer) ([]*resource.Pkg, error) {
+func (pp *pipParser) ParseQuery(out command.Outer) ([]resource.Pkg, error) {
 	return parseStream(out, parseQueryOut, pp.hinter.query, "pip")
 }

@@ -11,9 +11,9 @@ import (
 // PkgOutParser parses PkgCommander command output
 type PkgOutParser interface {
 	// ParseList parses output from ListPkgs command
-	ParseList(out command.Outer) ([]*resource.Pkg, error)
+	ParseList(out command.Outer) ([]resource.Pkg, error)
 	// ParseQuery parses output from QueryPkg command
-	ParseQuery(out command.Outer) ([]*resource.Pkg, error)
+	ParseQuery(out command.Outer) ([]resource.Pkg, error)
 }
 
 // NewParser returns PkgOutParser based on the requested package type passed in as parameter.

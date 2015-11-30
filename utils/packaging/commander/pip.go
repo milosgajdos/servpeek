@@ -12,12 +12,12 @@ var (
 
 // PipCommand provides gem command manager commands
 type PipCommand struct {
-	*BaseCommander
+	*BasePkgCommander
 }
 
 // NewPipCommander returns PkgCommander that provides pip package manager commands
 func NewPipCommander() PkgCommander {
-	return &BaseCommander{
+	return &BasePkgCommander{
 		ListPkgsCmd: command.NewCommand(pip, pipListPkgsCmdArgs...),
 		QueryPkgCmd: command.NewCommand(pip, pipQueryPkgCmdArgs...),
 	}

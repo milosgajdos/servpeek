@@ -14,12 +14,12 @@ var (
 
 // ApkCommander provides apk command manager commands
 type ApkCommander struct {
-	*BaseCommander
+	*BasePkgCommander
 }
 
 // NewApkCommander returns PkgCommander that provides apk package manager commands
 func NewApkCommander() PkgCommander {
-	return &BaseCommander{
+	return &BasePkgCommander{
 		ListPkgsCmd: command.NewCommand(apk, apkListPkgsCmdArgs...),
 		QueryPkgCmd: command.NewCommand(apk, apkQueryPkgCmdArgs...),
 	}

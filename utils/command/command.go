@@ -8,7 +8,19 @@ import (
 	"sync"
 )
 
+// Commander provides an interface to execute commands
+type Commander interface {
+	// Run executes a command and returns Outer
+	// which provides an interface to interact with
+	// output of the executed command
+	Run() Outer
+	// AppendArgs allows to append arbitrary number of
+	// extra command arguments
+	AppendArgs(...string)
+}
+
 // Command is an external command with arguments
+// Command implements Commander interface
 type Command struct {
 	Cmd  string
 	Args []string
@@ -68,6 +80,12 @@ func (c *Command) Run() Outer {
 	}()
 
 	return res
+}
+
+// AppendArgs allows to append arbitrary number of arguments to the
+// underlying command that will be executed by Run
+func (c *Command) AppendArgs(args ...string) {
+	c.Args = append(c.Args, args...)
 }
 
 // RunCombined executes Command and returns combined Stdout and Stderr as a string.

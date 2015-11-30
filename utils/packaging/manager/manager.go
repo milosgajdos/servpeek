@@ -1,4 +1,4 @@
-// package manager provides functions that allow running various
+// Package manager provides functions that allow running various
 // software package manager commands
 package manager
 
@@ -14,10 +14,10 @@ import (
 type PkgManager interface {
 	// ListPkgs allows to list all installed packages on the system
 	// It returns error if the installed packages can't be listed
-	ListPkgs() ([]*resource.Pkg, error)
+	ListPkgs() ([]resource.Pkg, error)
 	// QueryPkg queries package database about particular package
 	// It returns error if the requested package fails to be queried
-	QueryPkg(pkgName string) ([]*resource.Pkg, error)
+	QueryPkg(pkgName string) ([]resource.Pkg, error)
 }
 
 // NewPkgManager returns PkgManager based on the requested package type passed in as parameter.
@@ -48,12 +48,12 @@ type BasePkgManager struct {
 }
 
 // ListPkgs runs a command which queries installed packages.
-func (bpm *BasePkgManager) ListPkgs() ([]*resource.Pkg, error) {
+func (bpm *BasePkgManager) ListPkgs() ([]resource.Pkg, error) {
 	return bpm.p.ParseList(bpm.cmd.ListPkgs())
 }
 
 // QueryPkg runs a command which queries package properties
-func (bpm *BasePkgManager) QueryPkg(pkgName string) ([]*resource.Pkg, error) {
+func (bpm *BasePkgManager) QueryPkg(pkgName string) ([]resource.Pkg, error) {
 	return bpm.p.ParseQuery(bpm.cmd.QueryPkg(pkgName))
 }
 

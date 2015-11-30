@@ -23,7 +23,7 @@ func NewPkgCommander(pkgType string) (PkgCommander, error) {
 		return NewAptCommander(), nil
 	case "apk":
 		return NewApkCommander(), nil
-	case "rpm", "yum":
+	case "yum", "rpm":
 		return NewYumCommander(), nil
 	case "pip":
 		return NewPipCommander(), nil
@@ -33,23 +33,23 @@ func NewPkgCommander(pkgType string) (PkgCommander, error) {
 	return nil, fmt.Errorf("PkgCommander error. Unsupported package type: %s", pkgType)
 }
 
-// BaseCommander provides basic package manager commands
-type BaseCommander struct {
-	// ListPkgs provides a command to list packages
-	ListPkgsCmd *command.Command
-	// QueryPkg provides a command to query a package
-	QueryPkgCmd *command.Command
+// BasePkgCommander provides basic package manager commands
+type BasePkgCommander struct {
+	// ListPkgsCmd provides a command to list packages
+	ListPkgsCmd command.Commander
+	// QueryPkgCmd provides a command to query a package
+	QueryPkgCmd command.Commander
 }
 
 // ListPkgs runs a command that list installed package
 // It returns command.Outer that can be used to parse the command output
-func (bc *BaseCommander) ListPkgs() command.Outer {
+func (bc *BasePkgCommander) ListPkgs() command.Outer {
 	return bc.ListPkgsCmd.Run()
 }
 
 // QueryPkg runs a command that queries an installed package properties
 // It returns command.Outer that can be used to parse the command output
-func (bc *BaseCommander) QueryPkg(pkgName string) command.Outer {
-	bc.QueryPkgCmd.Args = append(bc.QueryPkgCmd.Args, pkgName)
+func (bc *BasePkgCommander) QueryPkg(pkgName string) command.Outer {
+	bc.QueryPkgCmd.AppendArgs(pkgName)
 	return bc.QueryPkgCmd.Run()
 }
