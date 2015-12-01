@@ -3,12 +3,11 @@ package examples
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/matchers/pkg"
-	"github.com/milosgajdos83/servpeek/resource"
+	"github.com/milosgajdos83/servpeek/pkg"
 )
 
 func TestPipPackage(t *testing.T) {
-	testPkg, err := resource.NewSwPkg("setuptools", "3.3", "pip")
+	testPkg, err := pkg.NewSwPkg("setuptools", "3.3", "pip")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}

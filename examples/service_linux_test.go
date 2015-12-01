@@ -3,16 +3,16 @@ package examples
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/matchers/svc"
-	"github.com/milosgajdos83/servpeek/resource"
+	"github.com/milosgajdos83/servpeek/service"
 )
 
-func Test_Service(t *testing.T) {
-	dockerSvc := &resource.Svc{
-		Name:    "docker",
-		SysInit: "upstart",
+func TestService(t *testing.T) {
+	s, err := service.NewOsSvc("docker", "upstart")
+	if err != nil {
+		t.Errorf("Error: %s", err
 	}
-	if err := svc.IsRunning(dockerSvc); err != nil {
+
+	if err := s.IsRunning(s); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }

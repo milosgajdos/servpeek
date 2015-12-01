@@ -4,12 +4,11 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/matchers/file"
-	"github.com/milosgajdos83/servpeek/resource"
+	"github.com/milosgajdos83/servpeek/file"
 )
 
 func TestFile(t *testing.T) {
-	f := resource.NewFile("/etc/hosts")
+	f := file.NewFile("/etc/hosts")
 
 	if err := file.IsRegular(f); err != nil {
 		t.Errorf("Error: %s", err)
