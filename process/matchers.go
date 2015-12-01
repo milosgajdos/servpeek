@@ -147,7 +147,7 @@ func ListRunning() ([]Process, error) {
 			}
 			p, err := NewOsProcess(proc.PID, pstat.Comm)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			ps = append(ps, p)
 		}
