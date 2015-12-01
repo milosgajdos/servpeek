@@ -7,7 +7,7 @@ import (
 )
 
 func TestPipPackage(t *testing.T) {
-	testPkg, err := pkg.NewSwPkg("setuptools", "3.3", "pip")
+	testPkg, err := pkg.NewSwPkg("pip", "setuptools", "3.3")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
