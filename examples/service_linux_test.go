@@ -12,7 +12,7 @@ func TestService(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 
-	if err := s.IsRunning(s); err != nil {
+	if err := service.IsRunning(s); err != nil {
 		t.Errorf("Error: %s", err)
 	}
 }
