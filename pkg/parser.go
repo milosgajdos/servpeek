@@ -7,16 +7,16 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
-// PkgOutParser provides an interface to parse output of package manager commands
-type PkgOutParser interface {
+// CmdOutParser provides an interface to parse output of package manager commands
+type CmdOutParser interface {
 	// ParseListOut parses parses output from list package command
 	ParseListPkgsOut(command.Outer) ([]Pkg, error)
 	// ParseQueryOut parses output from query package command
 	ParseQueryPkgOut(command.Outer) ([]Pkg, error)
 }
 
-// NewParser creates new package command output parser
-func NewPkgOutParser(pkgType string) (PkgOutParser, error) {
+// NewCmdOutParser creates new package command output parser
+func NewCmdOutParser(pkgType string) (CmdOutParser, error) {
 	switch pkgType {
 	case "apt", "dpkg":
 		return NewAptParser(), nil
@@ -29,21 +29,21 @@ func NewPkgOutParser(pkgType string) (PkgOutParser, error) {
 	case "gem":
 		return NewGemParser(), nil
 	}
-	return nil, fmt.Errorf("Could not create PkgOutParser Unsupported package type: %s", pkgType)
+	return nil, fmt.Errorf("Could not create CmdOutParser Unsupported package type: %s", pkgType)
 }
 
-type basePkgOutParser struct {
+type baseCmdOutParser struct {
 	ParseListOutFunc  ParsePkgOutFunc
 	ParseQueryOutFunc ParsePkgOutFunc
 }
 
 // ParseListPkgsOut parses output from list packages command manager command
-func (b *basePkgOutParser) ParseListPkgsOut(out command.Outer) ([]Pkg, error) {
+func (b *baseCmdOutParser) ParseListPkgsOut(out command.Outer) ([]Pkg, error) {
 	return b.ParseListOutFunc(out)
 }
 
 // ParseQueryPkgOut parses output from query package command manager command
-func (b *basePkgOutParser) ParseQueryPkgOut(out command.Outer) ([]Pkg, error) {
+func (b *baseCmdOutParser) ParseQueryPkgOut(out command.Outer) ([]Pkg, error) {
 	return b.ParseQueryOutFunc(out)
 }
 

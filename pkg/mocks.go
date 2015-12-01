@@ -1,21 +1,21 @@
 package pkg
 
-type MockPkg struct {
-	manager *MockPkgManager
+type mockPkg struct {
+	manager *mockManager
 	name    string
 	version string
 }
 
-func (m *MockPkg) Manager() PkgManager { return m.manager }
-func (m *MockPkg) Name() string        { return m.name }
-func (m *MockPkg) Version() string     { return m.version }
+func (m *mockPkg) Manager() Manager { return m.manager }
+func (m *mockPkg) Name() string     { return m.name }
+func (m *mockPkg) Version() string  { return m.version }
 
-type MockPkgManager struct {
+type mockManager struct {
 	pkgType   string
 	listPkgs  []Pkg
 	queryPkgs []Pkg
 }
 
-func (m *MockPkgManager) Type() string                           { return m.pkgType }
-func (m *MockPkgManager) ListPkgs() ([]Pkg, error)               { return m.listPkgs, nil }
-func (m *MockPkgManager) QueryPkg(pkgName string) ([]Pkg, error) { return m.queryPkgs, nil }
+func (m *mockManager) Type() string                           { return m.pkgType }
+func (m *mockManager) ListPkgs() ([]Pkg, error)               { return m.listPkgs, nil }
+func (m *mockManager) QueryPkg(pkgName string) ([]Pkg, error) { return m.queryPkgs, nil }

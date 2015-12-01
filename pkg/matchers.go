@@ -35,7 +35,7 @@ func IsInstalled(pkgs ...Pkg) error {
 // It returns error if either installed packages can't be listed
 // or the output of the package manager could not be parsed
 func ListInstalled(pkgType string) ([]Pkg, error) {
-	pkgMgr, err := NewPkgManager(pkgType)
+	pkgMgr, err := NewManager(pkgType)
 	if err != nil {
 		return nil, err
 	}

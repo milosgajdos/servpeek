@@ -6,8 +6,8 @@ import (
 	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
-// PkgCommander provides interface to software package commands
-type PkgCommander interface {
+// Commander provides interface to software package commands
+type Commander interface {
 	// ListPkgs runs a command which queries installed packages
 	// It returns command.Outer interface that can be used to parse output
 	ListPkgsOut() command.Outer
@@ -16,8 +16,8 @@ type PkgCommander interface {
 	QueryPkgOut(string) command.Outer
 }
 
-// NewPkgCommander returns package manager Commander
-func NewPkgCommander(pkgType string) (PkgCommander, error) {
+// NewCommander returns package manager Commander
+func NewCommander(pkgType string) (Commander, error) {
 	switch pkgType {
 	case "apt":
 		return NewAptCommander(), nil
@@ -30,11 +30,11 @@ func NewPkgCommander(pkgType string) (PkgCommander, error) {
 	case "gem":
 		return NewGemCommander(), nil
 	}
-	return nil, fmt.Errorf("PkgCommander error. Unsupported package type: %s", pkgType)
+	return nil, fmt.Errorf("Commander error. Unsupported package type: %s", pkgType)
 }
 
-// BasePkgCommander provides basic package manager commands
-type basePkgCommander struct {
+// BaseCommander provides basic package manager commands
+type baseCommander struct {
 	// ListPkgsCmd provides a command to list packages
 	ListPkgsCmd command.Commander
 	// QueryPkgCmd provides a command to query a package
@@ -43,13 +43,13 @@ type basePkgCommander struct {
 
 // ListPkgsOut runs a command that list installed package
 // It returns command.Outer that can be used to parse the command output
-func (b *basePkgCommander) ListPkgsOut() command.Outer {
+func (b *baseCommander) ListPkgsOut() command.Outer {
 	return b.ListPkgsCmd.Run()
 }
 
 // QueryPkgOut runs a command that queries an installed package properties
 // It returns command.Outer that can be used to parse the command output
-func (b *basePkgCommander) QueryPkgOut(pkgName string) command.Outer {
+func (b *baseCommander) QueryPkgOut(pkgName string) command.Outer {
 	b.QueryPkgCmd.AppendArgs(pkgName)
 	return b.QueryPkgCmd.Run()
 }

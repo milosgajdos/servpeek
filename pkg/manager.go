@@ -2,8 +2,8 @@ package pkg
 
 import "fmt"
 
-// PkgManager provides software package manager interface
-type PkgManager interface {
+// Manager provides software package manager interface
+type Manager interface {
 	// Type returns the type of the package the manager maintains
 	Type() string
 	// ListPkgs allows to list all installed packages on the system
@@ -14,42 +14,42 @@ type PkgManager interface {
 	QueryPkg(pkgName string) ([]Pkg, error)
 }
 
-// NewPkgManager returns PkgManager based on the requested package type passed in as parameter.
-// It returns error if PkgManager could not be created or if provided package type is not supported.
-func NewPkgManager(pkgType string) (PkgManager, error) {
+// NewManager returns Manager based on the requested package type passed in as parameter.
+// It returns error if Manager could not be created or if provided package type is not supported.
+func NewManager(pkgType string) (Manager, error) {
 	switch pkgType {
 	case "apt":
-		return NewAptManager()
+		return NewAptManager(), nil
 	case "yum":
-		return NewYumManager()
+		return NewYumManager(), nil
 	case "apk":
-		return NewApkManager()
+		return NewApkManager(), nil
 	case "pip":
-		return NewPipManager()
+		return NewPipManager(), nil
 	case "gem":
-		return NewGemManager()
+		return NewGemManager(), nil
 	}
 	return nil, fmt.Errorf("Unsupported package type: %s", pkgType)
 }
 
-// BasePkgManager provides basic package manager.
+// BaseManager provides basic package manager.
 // It has a package command it uses to execute package management commands.
-// BasePkgManager implements PkgManager interface.
-type basePkgManager struct {
-	// PkgCommander provides package commander commands
-	PkgCommander
+// BaseManager implements Manager interface.
+type baseManager struct {
+	// Commander provides package commander commands
+	Commander
 	// type of sw package this manager maintains
 	pkgType string
 }
 
 // Type returns type of package this package manager interacts with.
-func (b *basePkgManager) Type() string {
+func (b *baseManager) Type() string {
 	return b.pkgType
 }
 
 // ListPkgs runs a command which queries installed packages.
-func (b *basePkgManager) ListPkgs() ([]Pkg, error) {
-	p, err := NewPkgOutParser(b.pkgType)
+func (b *baseManager) ListPkgs() ([]Pkg, error) {
+	p, err := NewCmdOutParser(b.pkgType)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +57,8 @@ func (b *basePkgManager) ListPkgs() ([]Pkg, error) {
 }
 
 // QueryPkg runs a command which queries package properties
-func (b *basePkgManager) QueryPkg(pkgName string) ([]Pkg, error) {
-	p, err := NewPkgOutParser(b.pkgType)
+func (b *baseManager) QueryPkg(pkgName string) ([]Pkg, error) {
+	p, err := NewCmdOutParser(b.pkgType)
 	if err != nil {
 		return nil, err
 	}

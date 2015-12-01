@@ -25,28 +25,28 @@ var (
 
 // GemManager implements gem package manager
 type gemManager struct {
-	basePkgManager
+	baseManager
 }
 
-// NewGemManager returns gem PkgManager or fails with error
-func NewGemManager() (PkgManager, error) {
+// NewGemManager returns gem Manager or fails with error
+func NewGemManager() Manager {
 	return &gemManager{
-		basePkgManager: basePkgManager{
-			PkgCommander: NewGemCommander(),
-			pkgType:      "gem",
+		baseManager: baseManager{
+			Commander: NewGemCommander(),
+			pkgType:   "gem",
 		},
-	}, nil
+	}
 }
 
 // gemCommander provides gem command manager commands
 type gemCommander struct {
-	basePkgCommander
+	baseCommander
 }
 
-// NewGemCommander returns PkgCommander that provides gem package manager commands
-func NewGemCommander() PkgCommander {
+// NewGemCommander returns Commander that provides gem package manager commands
+func NewGemCommander() Commander {
 	return &gemCommander{
-		basePkgCommander: basePkgCommander{
+		baseCommander: baseCommander{
 			ListPkgsCmd: command.NewCommand(gem, gemListPkgsCmdArgs...),
 			QueryPkgCmd: command.NewCommand(gem, gemQueryPkgCmdArgs...),
 		},
@@ -55,13 +55,13 @@ func NewGemCommander() PkgCommander {
 
 // gemParser provides parser for list and query package manager commands
 type gemParser struct {
-	basePkgOutParser
+	baseCmdOutParser
 }
 
-// NewGemParser returns PkgOutParser that parses gem PkgManager commands outputs
-func NewGemParser() PkgOutParser {
+// NewGemParser returns CmdOutParser that parses gem Manager commands outputs
+func NewGemParser() CmdOutParser {
 	return &gemParser{
-		basePkgOutParser: basePkgOutParser{
+		baseCmdOutParser: baseCmdOutParser{
 			ParseListOutFunc:  genParsePkgOutFunc("gem", "list", gemListPkgsOutHints),
 			ParseQueryOutFunc: genParsePkgOutFunc("gem", "query", gemQueryPkgsOutHints),
 		},

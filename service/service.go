@@ -38,7 +38,7 @@ func (s Status) String() string {
 	}
 }
 
-// OsOsSvc is OS service
+// OsSvc is OS service
 type OsSvc struct {
 	// Name of the service
 	name string

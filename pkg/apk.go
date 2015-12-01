@@ -27,28 +27,28 @@ var (
 
 // apkManager implements apk package manager
 type apkManager struct {
-	basePkgManager
+	baseManager
 }
 
-// NewApkManager returns apk PkgManager or fails with error
-func NewApkManager() (PkgManager, error) {
+// NewApkManager returns apk Manager or fails with error
+func NewApkManager() Manager {
 	return &apkManager{
-		basePkgManager: basePkgManager{
-			PkgCommander: NewApkCommander(),
-			pkgType:      "apk",
+		baseManager: baseManager{
+			Commander: NewApkCommander(),
+			pkgType:   "apk",
 		},
-	}, nil
+	}
 }
 
 // apkCommander provides apk command manager commands
 type apkCommander struct {
-	basePkgCommander
+	baseCommander
 }
 
-// NewApkCommander returns PkgCommander that provides apk package manager commands
-func NewApkCommander() PkgCommander {
+// NewApkCommander returns Commander that provides apk package manager commands
+func NewApkCommander() Commander {
 	return &apkCommander{
-		basePkgCommander: basePkgCommander{
+		baseCommander: baseCommander{
 			ListPkgsCmd: command.NewCommand(apk, apkListPkgsCmdArgs...),
 			QueryPkgCmd: command.NewCommand(apk, apkQueryPkgCmdArgs...),
 		},
@@ -57,13 +57,13 @@ func NewApkCommander() PkgCommander {
 
 // apkParser provides parser for list and query package manager commands
 type apkParser struct {
-	basePkgOutParser
+	baseCmdOutParser
 }
 
-// NewApkParser returs PkgOutParser that parses apk PkgManager commands outputs
-func NewApkParser() PkgOutParser {
+// NewApkParser returs CmdOutParser that parses apk Manager commands outputs
+func NewApkParser() CmdOutParser {
 	return &apkParser{
-		basePkgOutParser: basePkgOutParser{
+		baseCmdOutParser: baseCmdOutParser{
 			ParseListOutFunc:  genParsePkgOutFunc("apk", "list", apkListPkgsOutHints),
 			ParseQueryOutFunc: genParsePkgOutFunc("apk", "query", apkQueryPkgsOutHints),
 		},

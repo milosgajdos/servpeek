@@ -27,28 +27,28 @@ var (
 
 // aptManager implements Apt package manager
 type aptManager struct {
-	basePkgManager
+	baseManager
 }
 
-// NewAptManager returns apt PkgManager or fails with error
-func NewAptManager() (PkgManager, error) {
+// NewAptManager returns apt Manager or fails with error
+func NewAptManager() Manager {
 	return &aptManager{
-		basePkgManager: basePkgManager{
-			PkgCommander: NewAptCommander(),
-			pkgType:      "apt",
+		baseManager: baseManager{
+			Commander: NewAptCommander(),
+			pkgType:   "apt",
 		},
-	}, nil
+	}
 }
 
 // AptCommander provides aptitude command manager commands
 type aptCommander struct {
-	basePkgCommander
+	baseCommander
 }
 
-// NewAptCommander returns PkgCommander that provides apt package manager commands
-func NewAptCommander() PkgCommander {
+// NewAptCommander returns Commander that provides apt package manager commands
+func NewAptCommander() Commander {
 	return &aptCommander{
-		basePkgCommander: basePkgCommander{
+		baseCommander: baseCommander{
 			ListPkgsCmd: command.NewCommand(dpkg, dpkgListPkgsCmdArgs...),
 			QueryPkgCmd: command.NewCommand(dpkg, dpkgQueryPkgCmdArgs...),
 		},
@@ -57,13 +57,13 @@ func NewAptCommander() PkgCommander {
 
 // aptParser provides parser for list and query package manager commands
 type aptParser struct {
-	basePkgOutParser
+	baseCmdOutParser
 }
 
-// NewAptParser returs PkgOutParser that parses aptitude PkgManager commands outputs
-func NewAptParser() PkgOutParser {
+// NewAptParser returs CmdOutParser that parses aptitude Manager commands outputs
+func NewAptParser() CmdOutParser {
 	return &aptParser{
-		basePkgOutParser: basePkgOutParser{
+		baseCmdOutParser: baseCmdOutParser{
 			ParseListOutFunc:  genParsePkgOutFunc("apt", "list", aptListPkgsOutHints),
 			ParseQueryOutFunc: genParsePkgOutFunc("apt", "query", aptQueryPkgsOutHints),
 		},

@@ -27,28 +27,28 @@ var (
 
 // yumManager implements Yum package manager
 type yumManager struct {
-	basePkgManager
+	baseManager
 }
 
-// NewYumManager returns yum PkgManager or fails with error
-func NewYumManager() (PkgManager, error) {
+// NewYumManager returns yum Manager or fails with error
+func NewYumManager() Manager {
 	return &yumManager{
-		basePkgManager: basePkgManager{
-			PkgCommander: NewYumCommander(),
-			pkgType:      "yum",
+		baseManager: baseManager{
+			Commander: NewYumCommander(),
+			pkgType:   "yum",
 		},
-	}, nil
+	}
 }
 
 // yumCommander provides yum command manager commands
 type yumCommander struct {
-	basePkgCommander
+	baseCommander
 }
 
-// NewYumCommander returns PkgCommander that provides yum package manager commands
-func NewYumCommander() PkgCommander {
+// NewYumCommander returns Commander that provides yum package manager commands
+func NewYumCommander() Commander {
 	return &yumCommander{
-		basePkgCommander: basePkgCommander{
+		baseCommander: baseCommander{
 			ListPkgsCmd: command.NewCommand(rpm, rpmListPkgsCmdArgs...),
 			QueryPkgCmd: command.NewCommand(rpm, rpmQueryPkgCmdArgs...),
 		},
@@ -56,13 +56,13 @@ func NewYumCommander() PkgCommander {
 }
 
 type yumParser struct {
-	basePkgOutParser
+	baseCmdOutParser
 }
 
-// NewYumParser returs PkgOutParser that parses yum PkgManager commands outputs
-func NewYumParser() PkgOutParser {
+// NewYumParser returs CmdOutParser that parses yum Manager commands outputs
+func NewYumParser() CmdOutParser {
 	return &yumParser{
-		basePkgOutParser: basePkgOutParser{
+		baseCmdOutParser: baseCmdOutParser{
 			ParseListOutFunc:  genParsePkgOutFunc("yum", "list", rpmListPkgsOutHints),
 			ParseQueryOutFunc: genParsePkgOutFunc("yum", "query", rpmQueryPkgsOutHints),
 		},

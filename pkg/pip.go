@@ -25,28 +25,28 @@ var (
 
 // pipManager implements pip package manager
 type pipManager struct {
-	basePkgManager
+	baseManager
 }
 
-// NewPipManager returns pip PkgManager or fails with error
-func NewPipManager() (PkgManager, error) {
+// NewPipManager returns pip Manager or fails with error
+func NewPipManager() Manager {
 	return &pipManager{
-		basePkgManager: basePkgManager{
-			PkgCommander: NewPipCommander(),
-			pkgType:      "pip",
+		baseManager: baseManager{
+			Commander: NewPipCommander(),
+			pkgType:   "pip",
 		},
-	}, nil
+	}
 }
 
 // pipCommander provides gem command manager commands
 type pipCommander struct {
-	basePkgCommander
+	baseCommander
 }
 
-// NewPipCommander returns PkgCommander that provides pip package manager commands
-func NewPipCommander() PkgCommander {
+// NewPipCommander returns Commander that provides pip package manager commands
+func NewPipCommander() Commander {
 	return &pipCommander{
-		basePkgCommander: basePkgCommander{
+		baseCommander: baseCommander{
 			ListPkgsCmd: command.NewCommand(pip, pipListPkgsCmdArgs...),
 			QueryPkgCmd: command.NewCommand(pip, pipQueryPkgCmdArgs...),
 		},
@@ -55,13 +55,13 @@ func NewPipCommander() PkgCommander {
 
 // pipParser provides parser for list and query package manager commands
 type pipParser struct {
-	basePkgOutParser
+	baseCmdOutParser
 }
 
-// NewPipParser returns PkgOutParser that parses pip PkgManager commands outputs
-func NewPipParser() PkgOutParser {
+// NewPipParser returns CmdOutParser that parses pip Manager commands outputs
+func NewPipParser() CmdOutParser {
 	return &pipParser{
-		basePkgOutParser: basePkgOutParser{
+		baseCmdOutParser: baseCmdOutParser{
 			ParseListOutFunc:  genParsePkgOutFunc("pip", "list", pipListPkgsOutHints),
 			ParseQueryOutFunc: genParsePkgOutFunc("pip", "query", pipQueryPkgsOutHints),
 		},

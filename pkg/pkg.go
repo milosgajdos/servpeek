@@ -5,7 +5,7 @@ import "fmt"
 // Pkg interface defines API to software package
 type Pkg interface {
 	// Manager returns package manager
-	Manager() PkgManager
+	Manager() Manager
 	// Name returns package name
 	Name() string
 	// Version returns package version
@@ -17,7 +17,7 @@ type Pkg interface {
 // SwPkg implements Pkg interface
 type SwPkg struct {
 	// package manager
-	mgr PkgManager
+	m Manager
 	// package name
 	name string
 	// package version
@@ -40,21 +40,21 @@ func NewSwPkg(pkgType, name, version string) (*SwPkg, error) {
 		return nil, fmt.Errorf("Package name can not be empty")
 	}
 
-	mgr, err := NewPkgManager(pkgType)
+	manager, err := NewManager(pkgType)
 	if err != nil {
 		return nil, err
 	}
 
 	return &SwPkg{
-		mgr:     mgr,
+		m:       manager,
 		name:    name,
 		version: version,
 	}, nil
 }
 
 // Manager returns package manager that maintains this type of package
-func (s *SwPkg) Manager() PkgManager {
-	return s.mgr
+func (s *SwPkg) Manager() Manager {
+	return s.m
 }
 
 // Name returns package name as returned by package manager
@@ -69,5 +69,5 @@ func (s *SwPkg) Version() string {
 
 // String implements Stringer interface
 func (s *SwPkg) String() string {
-	return fmt.Sprintf("[Pkg] Type: %s Name: %s Version: %s", s.mgr.Type(), s.name, s.version)
+	return fmt.Sprintf("[Pkg] Type: %s Name: %s Version: %s", s.m.Type(), s.name, s.version)
 }

@@ -27,13 +27,13 @@ func TestIsInstalled(t *testing.T) {
 		queryPkgs = append(queryPkgs, p)
 	}
 
-	mpkgMgr := &MockPkgManager{
+	mockMgr := &mockManager{
 		listPkgs:  listPkgs,
 		queryPkgs: queryPkgs,
 	}
 
-	mPkg := &MockPkg{
-		manager: mpkgMgr,
+	mPkg := &mockPkg{
+		manager: mockMgr,
 		name:    tstName,
 		version: tstVersion,
 	}
