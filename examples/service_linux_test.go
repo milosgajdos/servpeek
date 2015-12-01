@@ -9,7 +9,7 @@ import (
 func TestService(t *testing.T) {
 	s, err := service.NewOsSvc("docker", "upstart")
 	if err != nil {
-		t.Errorf("Error: %s", err
+		t.Errorf("Error: %s", err)
 	}
 
 	if err := s.IsRunning(s); err != nil {
