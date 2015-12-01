@@ -137,20 +137,21 @@ func IsRunningCmdWithGID(cmd string, groupname string) error {
 
 // ListRunning returns a slice of all running processes
 // It returns an error of a process status could not be obtained
-//func ListRunning() ([]*Process, error) {
-//	var ps []*Process
-//	err := withRunningProcs(func(procs procfs.Procs) error {
-//		for _, proc := range procs {
-//			pstat, err := proc.NewStat()
-//			if err != nil {
-//				return err
-//			}
-//			ps = append(ps, &Process{
-//				Pid: proc.PID,
-//				Cmd: pstat.Comm,
-//			})
-//		}
-//		return nil
-//	})
-//	return ps, err
-//}
+func ListRunning() ([]Process, error) {
+	var ps []Process
+	err := withRunningProcs(func(procs procfs.Procs) error {
+		for _, proc := range procs {
+			pstat, err := proc.NewStat()
+			if err != nil {
+				return err
+			}
+			p, err := NewOsProcess(proc.PID, pstat.Comm)
+			if err != nil {
+				return nil, err
+			}
+			ps = append(ps, p)
+		}
+		return nil
+	})
+	return ps, err
+}
