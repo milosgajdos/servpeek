@@ -19,8 +19,9 @@ const (
 type Service interface {
 	// Name returns the name of the service
 	Name() string
-	// SysInit returns the service init system
-	SysInit() string
+	// SysInit returns instance of service sysinit which you can use
+	// to control the service
+	SysInit() SysInit
 }
 
 // Status defines service status
@@ -42,8 +43,8 @@ func (s Status) String() string {
 type OsSvc struct {
 	// Name of the service
 	name string
-	// Service Init system
-	sysInit string
+	// service manager
+	sysInit SysInit
 }
 
 // NewOsSvc creates new Service or returns error if the requested service type is not supported
@@ -55,13 +56,27 @@ func NewOsSvc(name, sysInitType string) (*OsSvc, error) {
 	}
 
 	if !supported[sysInitType] {
-		return nil, fmt.Errorf("Unsupported service init type: %s", sysInitType)
+		return nil, fmt.Errorf("Unsupported sysinit type: %s", sysInitType)
+	}
+
+	if name == "" {
+		return nil, fmt.Errorf("Service name can not be empty")
+	}
+
+	s, err := NewSysInit(sysInitType)
+	if err != nil {
+		return nil, err
 	}
 
 	return &OsSvc{
 		name:    name,
-		sysInit: sysInitType,
+		sysInit: s,
 	}, nil
+}
+
+// SysInit returns system init object that allows you to control os service
+func (s *OsSvc) SysInit() SysInit {
+	return s.sysInit
 }
 
 // Name returns name of the service
@@ -69,12 +84,7 @@ func (s *OsSvc) Name() string {
 	return s.name
 }
 
-// SysInit returns name of the sysinit type
-func (s *OsSvc) SysInit() string {
-	return s.sysInit
-}
-
 // String implements stringer interface
 func (s *OsSvc) String() string {
-	return fmt.Sprintf("[OsSvc] Name: %s, SysInit: %s", s.name, s.sysInit)
+	return fmt.Sprintf("[OsSvc] Name: %s, SysInit: %s", s.name, s.sysInit.Type())
 }

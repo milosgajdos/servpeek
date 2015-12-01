@@ -14,6 +14,9 @@ type Commander interface {
 	// which provides an interface to interact with
 	// output of the executed command
 	Run() Outer
+	// RunCombined runs command and returns combined output
+	// of both stdout and stderr
+	RunCombined() (string, error)
 	// AppendArgs allows to append arbitrary number of
 	// extra command arguments
 	AppendArgs(...string)
@@ -22,7 +25,9 @@ type Commander interface {
 // Command is an external command with arguments
 // Command implements Commander interface
 type Command struct {
-	Cmd  string
+	// cli command
+	Cmd string
+	// cli command arguments
 	Args []string
 }
 

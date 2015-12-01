@@ -1,14 +1,20 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSvc(t *testing.T) {
+func TestIsRunning(t *testing.T) {
 	assert := assert.New(t)
 
-	_, err := NewOsSvc("servicetst", "systemd")
-	assert.NoError(err)
+	stoppedMock := &mockSysInit{status: Stopped, err: errors.New("tst")}
+	svcStopped := &mockService{"mysvc", stoppedMock}
+	assert.Error(IsRunning(svcStopped))
+
+	runningMock := &mockSysInit{status: Running, err: nil}
+	svcRunning := &mockService{"mysvc", runningMock}
+	assert.NoError(IsRunning(svcRunning))
 }

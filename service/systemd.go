@@ -17,16 +17,21 @@ const (
 // TODO: re-implement using dbus //
 ///////////////////////////////////
 
-// SystemdInit provides systemd init commands
-type SystemdInit struct{}
+// systemdInit provides systemd init commands
+type systemdInit struct{}
 
 // NewSystemdInit returns SysInit or error
-func NewSystemdInit() (SysInit, error) {
-	return &SystemdInit{}, nil
+func NewSystemdInit() SysInit {
+	return &systemdInit{}
+}
+
+// Type returns type of system init to control services
+func (s *systemdInit) Type() string {
+	return "systemd"
 }
 
 // Start starts systemd service. It returns error if the service fails to be started
-func (s *SystemdInit) Start(svcName string) error {
+func (s *systemdInit) Start(svcName string) error {
 	startCmd := command.NewCommand(systemctl, []string{"start", svcName + ".service"}...)
 	_, err := startCmd.RunCombined()
 	if err != nil {
@@ -36,7 +41,7 @@ func (s *SystemdInit) Start(svcName string) error {
 }
 
 // Stop stops systemd service. It returns error if the service fails to be stopped
-func (s *SystemdInit) Stop(svcName string) error {
+func (s *systemdInit) Stop(svcName string) error {
 	stopCmd := command.NewCommand(systemctl, []string{"stop", svcName + ".service"}...)
 	_, err := stopCmd.RunCombined()
 	if err != nil {
@@ -47,7 +52,7 @@ func (s *SystemdInit) Stop(svcName string) error {
 
 // Status queries status of systemd service and returns it.
 // It returns error if the status of the queried service could not be determined
-func (s *SystemdInit) Status(svcName string) (Status, error) {
+func (s *systemdInit) Status(svcName string) (Status, error) {
 	statusCmd := command.NewCommand(systemctl, []string{"status", svcName + ".service"}...)
 	status, err := statusCmd.RunCombined()
 	if err != nil {

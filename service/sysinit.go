@@ -3,10 +3,14 @@ package service
 import (
 	"fmt"
 	"strings"
+
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
 // SysInit provides service management commands
 type SysInit interface {
+	// Type returns type of system init to control services
+	Type() string
 	// Start starts a service or returns error if the service can not be started
 	Start(string) error
 	// Stop stops a service or returns error if the service can not be stopped
@@ -17,35 +21,52 @@ type SysInit interface {
 
 // NewSysInit returns NewSysInit based on the system init type passed in as argument
 // It returns error if the SysInit could not be created or required service type is not supported
-func NewSysInit(sysInit string) (SysInit, error) {
-	switch sysInit {
+func NewSysInit(sysInitType string) (SysInit, error) {
+	switch sysInitType {
 	case "sysv":
-		return NewSysVInit()
+		return NewSysVInit(), nil
 	case "upstart":
-		return NewUpstartInit()
+		return NewUpstartInit(), nil
 	case "systemd":
-		return NewSystemdInit()
+		return NewSystemdInit(), nil
 	}
-	return nil, fmt.Errorf("Unsupported service init type: %s", sysInit)
+	return nil, fmt.Errorf("Unsupported service init type: %s", sysInitType)
 }
 
-// BaseSysInit provides basic service manager commands
-type BaseSysInit struct {
-	// cmd provides service commands
-	cmd *SvcCommander
+// Commander provides service management/control commands
+type Commander struct {
+	// Start service
+	StartCmd command.Commander
+	// Stop service
+	StopCmd command.Commander
+	// Check sercice status
+	StatusCmd command.Commander
+}
+
+// baseSysInit provides basic service manager commands
+type baseSysInit struct {
+	// service manager
+	*Commander
+	// system init type
+	initType string
+}
+
+// Type returns type of the system init
+func (b *baseSysInit) Type() string {
+	return b.initType
 }
 
 // Start starts required service. It returns error if the service fails to start
-func (b *BaseSysInit) Start(svcName string) error {
-	b.cmd.Start.Args = append([]string{svcName}, b.cmd.Start.Args...)
-	_, err := b.cmd.Start.RunCombined()
+func (b *baseSysInit) Start(svcName string) error {
+	b.StartCmd.AppendArgs(svcName, "start")
+	_, err := b.StartCmd.RunCombined()
 	return err
 }
 
 // Stop stops required service. It returns error if the service fails to stop
-func (b *BaseSysInit) Stop(svcName string) error {
-	b.cmd.Stop.Args = append([]string{svcName}, b.cmd.Stop.Args...)
-	_, err := b.cmd.Stop.RunCombined()
+func (b *baseSysInit) Stop(svcName string) error {
+	b.StopCmd.AppendArgs(svcName, "stop")
+	_, err := b.StopCmd.RunCombined()
 	return err
 }
 
@@ -53,9 +74,9 @@ func (b *BaseSysInit) Stop(svcName string) error {
 // It returns error if the service status could not be queried.
 // This method implements *SYSV INIT* and *UPSTART* status commands.
 // You will have to override this method for other service managers
-func (b *BaseSysInit) Status(svcName string) (Status, error) {
-	b.cmd.Status.Args = append([]string{svcName}, b.cmd.Status.Args...)
-	status, err := b.cmd.Status.RunCombined()
+func (b *baseSysInit) Status(svcName string) (Status, error) {
+	b.StatusCmd.AppendArgs(svcName, "status")
+	status, err := b.StatusCmd.RunCombined()
 	if err != nil {
 		return Unknown, err
 	}
