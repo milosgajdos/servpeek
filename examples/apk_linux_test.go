@@ -1,20 +1,19 @@
+// build linux
+
 package examples
 
 import (
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/resource"
-	"github.com/milosgajdos83/servpeek/resource/pkg"
+	"github.com/milosgajdos83/servpeek/pkg"
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_ApkPackage(t *testing.T) {
-	testPkg := resource.Pkg{
-		Name:    "alpine-base",
-		Version: "3.2.3-r0",
-		Type:    "apk",
-	}
+func TestApkPackage(t *testing.T) {
+	assert := assert.New(t)
+	testPkg, err := pkg.NewSwPkg("apk", "alpine-base", "3.2.3-r0")
+	assert.NoError(err)
 
-	if err := pkg.IsInstalled(testPkg); err != nil {
-		t.Errorf("Error: %s", err)
-	}
+	err = pkg.IsInstalled(testPkg)
+	asert.NoError(err)
 }
