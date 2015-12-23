@@ -38,8 +38,8 @@ func TestIsInstalled(t *testing.T) {
 		cmdOut, err := ioutil.ReadFile(fixturesPath)
 		assert.NoError(err)
 		p := &mockPkg{
-			manager: &mockManager{
-				queryCmd: &mockCommander{
+			manager: &mockPkgManager{
+				queryCmd: &mockPkgCommand{
 					cmdOut: string(cmdOut),
 				},
 				parser:  parsers[pkg.pkgType],
@@ -53,8 +53,8 @@ func TestIsInstalled(t *testing.T) {
 
 	// check package that is not installed
 	p := &mockPkg{
-		manager: &mockManager{
-			queryCmd: &mockCommander{
+		manager: &mockPkgManager{
+			queryCmd: &mockPkgCommand{
 				cmdOut: "\n*** LOCAL GEMS ***\n\n\n",
 			},
 			parser:  NewGemParser(),
@@ -73,8 +73,8 @@ func TestListPkgs(t *testing.T) {
 	assert.NoError(err)
 	fixturesPath := path.Join(currentDir, "test-fixtures", "gemlist.out")
 	gemListOut, err := ioutil.ReadFile(fixturesPath)
-	pkgMgr := &mockManager{
-		listCmd: &mockCommander{
+	pkgMgr := &mockPkgManager{
+		listCmd: &mockPkgCommand{
 			cmdOut: string(gemListOut),
 		},
 		parser:  NewGemParser(),
@@ -86,8 +86,8 @@ func TestListPkgs(t *testing.T) {
 	assert.NotEmpty(pkgs)
 
 	// can't parse output from listpkgs
-	pkgMgr = &mockManager{
-		listCmd: &mockCommander{
+	pkgMgr = &mockPkgManager{
+		listCmd: &mockPkgCommand{
 			cmdOut: "garbage",
 		},
 		parser:  NewGemParser(),

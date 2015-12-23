@@ -1,17 +1,17 @@
-package examples
+package main
 
 import (
 	"regexp"
-	"testing"
 
 	"github.com/milosgajdos83/servpeek/file"
 )
 
-func TestFile(t *testing.T) {
+// CheckFiles checks various file properties.
+// It returns error if any of the checked properties fail to be satisfied.
+func CheckFiles() error {
 	f := file.NewFile("/etc/hosts")
-
 	if err := file.IsRegular(f); err != nil {
-		t.Errorf("Error: %s", err)
+		return err
 	}
 
 	owner := "root"
@@ -19,19 +19,21 @@ func TestFile(t *testing.T) {
 	md5 := "YOUR_MD5SUM_HERE"
 
 	if err := file.IsOwnedBy(f, owner); err != nil {
-		t.Errorf("Error: %s", err)
+		return err
 	}
 
 	if err := file.IsGrupedInto(f, group); err != nil {
-		t.Errorf("Error: %s", err)
+		return err
 	}
 
 	if err := file.MD5Equal(f, md5); err != nil {
-		t.Errorf("Error: %s", err)
+		return err
 	}
 
 	content := regexp.MustCompile(`localhost`)
 	if err := file.Contains(f, content); err != nil {
-		t.Errorf("Error: %s", err)
+		return err
 	}
+
+	return nil
 }

@@ -1,12 +1,8 @@
 package service
 
-//build linux
-
 import "fmt"
 
 const (
-	// service command
-	serviceCmd = "service"
 	// Running service status
 	Running Status = iota + 1
 	// Stopped service status
@@ -17,10 +13,10 @@ const (
 
 // Service provides interface to interact with OS service
 type Service interface {
-	// Name returns the name of the service
+	// Name returns the name of the OS service
 	Name() string
-	// SysInit returns the service init system
-	SysInit() string
+	// Init returns service system init
+	SysInit() SysInit
 }
 
 // Status defines service status
@@ -38,43 +34,42 @@ func (s Status) String() string {
 	}
 }
 
-// OsSvc is OS service
-type OsSvc struct {
+// Svc is OS service
+type Svc struct {
 	// Name of the service
 	name string
-	// Service Init system
-	sysInit string
+	// System init type
+	sysInit SysInit
 }
 
-// NewOsSvc creates new Service or returns error if the requested service type is not supported
-func NewOsSvc(name, sysInitType string) (*OsSvc, error) {
-	sysInitTypes := []string{"upstart", "systemd", "sysv"}
-	supported := make(map[string]bool)
-	for _, sysInitType := range sysInitTypes {
-		supported[sysInitType] = true
+// NewSvc creates new Service or returns error if the requested service type is not supported
+func NewSvc(name, sysInitType string) (*Svc, error) {
+	sysInit, err := NewSysInit(sysInitType)
+	if err != nil {
+		return nil, err
 	}
 
-	if !supported[sysInitType] {
-		return nil, fmt.Errorf("Unsupported service init type: %s", sysInitType)
+	if name == "" {
+		return nil, fmt.Errorf("Service name can not be empty")
 	}
 
-	return &OsSvc{
+	return &Svc{
 		name:    name,
-		sysInit: sysInitType,
+		sysInit: sysInit,
 	}, nil
 }
 
 // Name returns name of the service
-func (s *OsSvc) Name() string {
+func (s *Svc) Name() string {
 	return s.name
 }
 
-// SysInit returns name of the sysinit type
-func (s *OsSvc) SysInit() string {
+// SysInit returns system init object that allows you to control os service
+func (s *Svc) SysInit() SysInit {
 	return s.sysInit
 }
 
 // String implements stringer interface
-func (s *OsSvc) String() string {
-	return fmt.Sprintf("[OsSvc] Name: %s, SysInit: %s", s.name, s.sysInit)
+func (s *Svc) String() string {
+	return fmt.Sprintf("[Svc] Name: %s, SysInit: %s", s.name, s.sysInit.Type())
 }

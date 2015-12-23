@@ -1,0 +1,19 @@
+● docker.service - Docker Application Container Engine
+   Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+   Active: active (running) since Tue 2015-12-22 22:55:08 EST; 17s ago
+     Docs: https://docs.docker.com
+ Main PID: 3022 (docker)
+   CGroup: /system.slice/docker.service
+           └─3022 /usr/bin/docker daemon -H fd://
+
+Dec 22 22:55:07 ubuntu-512mb-lon1-01 systemd[1]: Starting Docker Application Container Engine...
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.048287615-05:00" level=info msg="API listen on /var/run/docker.sock"
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.092694442-05:00" level=info msg="Firewalld running: false"
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.133273177-05:00" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option ...d IP address"
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.189546674-05:00" level=warning msg="Your kernel does not support swap memory limit."
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.237184319-05:00" level=info msg="Loading containers: start."
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.237825635-05:00" level=info msg="Loading containers: done."
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.238156960-05:00" level=info msg="Daemon has completed initialization"
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 docker[3022]: time="2015-12-22T22:55:08.238396097-05:00" level=info msg="Docker daemon" commit=a34a1d5 execdriver=native-0.2 graphdriver=aufs version=1.9.1
+Dec 22 22:55:08 ubuntu-512mb-lon1-01 systemd[1]: Started Docker Application Container Engine.
+Hint: Some lines were ellipsized, use -l to show in full.

@@ -4,12 +4,8 @@ import "fmt"
 
 // IsRunning checks if the supplied service is running
 func IsRunning(s Service) error {
-	sysInit, err := NewSysInit(s.SysInit())
-	if err != nil {
-		return err
-	}
 	// Check the service status
-	status, err := sysInit.Status(s.Name())
+	status, err := s.SysInit().Status(s.Name())
 	if err != nil {
 		return err
 	}

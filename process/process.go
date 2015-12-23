@@ -1,5 +1,3 @@
-// +build linux
-
 // Package process provides functions to query OS processes
 package process
 

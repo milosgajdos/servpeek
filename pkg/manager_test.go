@@ -38,8 +38,8 @@ func TestPkgManagerListPkgs(t *testing.T) {
 		fixturesPath := path.Join(currentDir, "test-fixtures", pkgType+"list.out")
 		cmdOut, err := ioutil.ReadFile(fixturesPath)
 		assert.NoError(err)
-		mockMgr := &mockManager{
-			listCmd: &mockCommander{
+		mockMgr := &mockPkgManager{
+			listCmd: &mockPkgCommand{
 				cmdOut: string(cmdOut),
 			},
 			parser:  parser,

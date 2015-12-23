@@ -8,35 +8,38 @@ import (
 	"sync"
 )
 
-// Commander provides an interface to execute commands
-type Commander interface {
-	// Run executes a command and returns Outer
+// Command provides an interface to execute commands
+type Command interface {
+	// Run executes a command and returns Output
 	// which provides an interface to interact with
 	// output of the executed command
-	Run() Outer
+	Run() Output
+	// RunCombined executes a command and returns both
+	// stdout and stderr in combined string
+	RunCombined() (string, error)
 	// AppendArgs allows to append arbitrary number of
 	// extra command arguments
 	AppendArgs(...string)
 }
 
-// Command is an external command with arguments
-// Command implements Commander interface
-type Command struct {
+// Cmd is an external command with arguments
+// Cmd implements Commander interface
+type Cmd struct {
 	Cmd  string
 	Args []string
 }
 
-// NewCommand returns pointer to Command
-func NewCommand(cmd string, args ...string) *Command {
-	return &Command{
+// NewCommand returns Command
+func NewCommand(cmd string, args ...string) Command {
+	return &Cmd{
 		Cmd:  cmd,
 		Args: args,
 	}
 }
 
-// Run executes Command and returns Outer that can be used
+// Run executes command and returns Output that can be used
 // to collect and analyse the output of the executed command
-func (c *Command) Run() Outer {
+func (c *Cmd) Run() Output {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	cmdStdout, err := cmd.StdoutPipe()
 	res := &Out{
@@ -84,21 +87,21 @@ func (c *Command) Run() Outer {
 
 // AppendArgs allows to append arbitrary number of arguments to the
 // underlying command that will be executed by Run
-func (c *Command) AppendArgs(args ...string) {
+func (c *Cmd) AppendArgs(args ...string) {
 	c.Args = append(c.Args, args...)
 }
 
-// RunCombined executes Command and returns combined Stdout and Stderr as a string.
+// RunCombined executes command and returns combined Stdout and Stderr as a string.
 // The difference betweent RunCombined and Run is that Run returns a Stdout stream
 // ie. stream of line strings. RunCombined returns combined Stdout/Stderr output in one string
-func (c *Command) RunCombined() (string, error) {
+func (c *Cmd) RunCombined() (string, error) {
 	cmd := exec.Command(c.Cmd, c.Args...)
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
 
-// Outer interface defines an interface to interact with Command output
-type Outer interface {
+// Output interface defines an interface to interact with Command output
+type Output interface {
 	// Next advances through Command output iteration per line
 	Next() bool
 	// Text returns a single line of Command output
@@ -109,7 +112,7 @@ type Outer interface {
 	Close() error
 }
 
-// Out implements Outer interface to provide a simple API
+// Out implements Output interface to provide a simple API
 // to interact with executed Command output
 type Out struct {
 	closed bool

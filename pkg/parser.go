@@ -10,14 +10,14 @@ import (
 // CmdOutParser provides an interface to parse output of package manager commands
 type CmdOutParser interface {
 	// ParseListOut parses parses output from list package command
-	ParseListPkgsOut(command.Outer) ([]Pkg, error)
+	ParseListPkgsOut(command.Output) ([]Pkg, error)
 	// ParseQueryOut parses output from query package command
-	ParseQueryPkgOut(command.Outer) ([]Pkg, error)
+	ParseQueryPkgOut(command.Output) ([]Pkg, error)
 }
 
 // ParsePkgOutFunc parses command output and returns a slice of packages.
 // It returns error if the command output can not be parsed
-type ParsePkgOutFunc func(command.Outer) ([]Pkg, error)
+type ParsePkgOutFunc func(command.Output) ([]Pkg, error)
 
 // NewCmdOutParser creates new package command output parser
 func NewCmdOutParser(pkgMgrType string) (CmdOutParser, error) {
@@ -44,19 +44,19 @@ type baseCmdOutParser struct {
 }
 
 // ParseListPkgsOut parses output from list packages command manager command
-func (b *baseCmdOutParser) ParseListPkgsOut(out command.Outer) ([]Pkg, error) {
+func (b *baseCmdOutParser) ParseListPkgsOut(out command.Output) ([]Pkg, error) {
 	return b.ParseListOutFunc(out)
 }
 
 // ParseQueryPkgOut parses output from query package command manager command
-func (b *baseCmdOutParser) ParseQueryPkgOut(out command.Outer) ([]Pkg, error) {
+func (b *baseCmdOutParser) ParseQueryPkgOut(out command.Output) ([]Pkg, error) {
 	return b.ParseQueryOutFunc(out)
 }
 
 // GenParsePkgOutFunc generates function that can parse output of execute package manager command
 // It returns error if unsupported package type is requested
 func genParsePkgOutFunc(pkgType, cmdType string, h *hints) ParsePkgOutFunc {
-	return func(out command.Outer) ([]Pkg, error) {
+	return func(out command.Output) ([]Pkg, error) {
 		switch cmdType {
 		case "list":
 			return parseStream(out, parseListOut, h, pkgType)
@@ -82,7 +82,7 @@ func (h *hints) Matcher() *regexp.Regexp {
 	return h.matcher
 }
 
-func parseStream(out command.Outer, fn lineParseFunc, h *hints, pkgType string) ([]Pkg, error) {
+func parseStream(out command.Output, fn lineParseFunc, h *hints, pkgType string) ([]Pkg, error) {
 	var pkgs []Pkg
 	for out.Next() {
 		line := out.Text()

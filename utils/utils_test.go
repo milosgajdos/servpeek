@@ -14,7 +14,7 @@ func TestBuildCmd(t *testing.T) {
 	cmd := "foo"
 	args := []string{"bar"}
 	actCmd := BuildCmd(cmd, args...)
-	expCmd := &command.Command{
+	expCmd := &command.Cmd{
 		Cmd:  cmd,
 		Args: args,
 	}
