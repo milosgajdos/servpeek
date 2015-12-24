@@ -2,6 +2,9 @@ package service
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/milosgajdos83/servpeek/utils/command"
@@ -55,6 +58,30 @@ func (m *mockSysInit) Status(n string) (Status, error) {
 type mockSvc struct {
 	name    string
 	sysInit *mockSysInit
+}
+
+func newMockSvc(svcStatus, sysInitType, svcName string) (*mockSvc, error) {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	fileName := fmt.Sprintf("%s-%s.out", sysInitType, svcStatus)
+	fixturesPath := path.Join(currentDir, "test-fixtures", fileName)
+	cmdOut, err := ioutil.ReadFile(fixturesPath)
+	if err != nil {
+		return nil, err
+	}
+	return &mockSvc{
+		name: svcName,
+		sysInit: &mockSysInit{
+			sysInitType: sysInitType,
+			mockCommander: &mockCommander{
+				StatusCmd: &mockCmd{
+					out: string(cmdOut),
+				},
+			},
+		},
+	}, nil
 }
 
 func (m *mockSvc) Name() string     { return m.name }

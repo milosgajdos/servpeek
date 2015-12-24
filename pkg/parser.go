@@ -53,8 +53,8 @@ func (b *baseCmdOutParser) ParseQueryPkgOut(out command.Output) ([]Pkg, error) {
 	return b.ParseQueryOutFunc(out)
 }
 
-// GenParsePkgOutFunc generates function that can parse output of execute package manager command
-// It returns error if unsupported package type is requested
+// GenParsePkgOutFunc generates function that can parse output of execute package manager command type
+// It returns error if unsupported command type is requested
 func genParsePkgOutFunc(pkgType, cmdType string, h *hints) ParsePkgOutFunc {
 	return func(out command.Output) ([]Pkg, error) {
 		switch cmdType {

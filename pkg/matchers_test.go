@@ -1,9 +1,6 @@
 package pkg
 
 import (
-	"io/ioutil"
-	"os"
-	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,14 +8,6 @@ import (
 
 func TestIsInstalled(t *testing.T) {
 	assert := assert.New(t)
-	parsers := map[string]CmdOutParser{
-		"apt": NewAptParser(),
-		"yum": NewYumParser(),
-		"apk": NewApkParser(),
-		"pip": NewPipParser(),
-		"gem": NewGemParser(),
-	}
-
 	pkgs := []struct {
 		pkgType string
 		name    string
@@ -32,69 +21,32 @@ func TestIsInstalled(t *testing.T) {
 	}
 
 	for _, pkg := range pkgs {
-		currentDir, err := os.Getwd()
+		p, err := newMockPkg(pkg.pkgType, pkg.name, pkg.version, "query")
 		assert.NoError(err)
-		fixturesPath := path.Join(currentDir, "test-fixtures", pkg.pkgType+"query.out")
-		cmdOut, err := ioutil.ReadFile(fixturesPath)
-		assert.NoError(err)
-		p := &mockPkg{
-			manager: &mockPkgManager{
-				queryCmd: &mockPkgCommand{
-					cmdOut: string(cmdOut),
-				},
-				parser:  parsers[pkg.pkgType],
-				pkgType: pkg.pkgType,
-			},
-			name:    pkg.name,
-			version: pkg.version,
-		}
 		assert.NoError(IsInstalled(p))
 	}
 
 	// check package that is not installed
-	p := &mockPkg{
-		manager: &mockPkgManager{
-			queryCmd: &mockPkgCommand{
-				cmdOut: "\n*** LOCAL GEMS ***\n\n\n",
-			},
-			parser:  NewGemParser(),
-			pkgType: "gem",
-		},
-		name:    "randpkg",
-		version: "",
-	}
+	p, err := newMockPkg("gem", "randpkg", "", "bogus")
+	assert.NoError(err)
 	assert.Error(IsInstalled(p))
 }
 
 func TestListPkgs(t *testing.T) {
 	assert := assert.New(t)
-	// parse list pkgs output
-	currentDir, err := os.Getwd()
+	pkgMgr, err := newMockPkgManager("gem", "list")
 	assert.NoError(err)
-	fixturesPath := path.Join(currentDir, "test-fixtures", "gemlist.out")
-	gemListOut, err := ioutil.ReadFile(fixturesPath)
-	pkgMgr := &mockPkgManager{
-		listCmd: &mockPkgCommand{
-			cmdOut: string(gemListOut),
-		},
-		parser:  NewGemParser(),
-		pkgType: "gem",
-	}
 
+	// successfully parse output from ListPkgs
 	pkgs, err := pkgMgr.ListPkgs()
 	assert.NoError(err)
 	assert.NotEmpty(pkgs)
 
-	// can't parse output from listpkgs
-	pkgMgr = &mockPkgManager{
-		listCmd: &mockPkgCommand{
-			cmdOut: "garbage",
-		},
-		parser:  NewGemParser(),
-		pkgType: "gem",
-	}
+	// can't parse output from ListPkgs
+	pkgMgr, err = newMockPkgManager("gem", "bogus")
+	assert.NoError(err)
 
 	pkgs, err = pkgMgr.ListPkgs()
-	assert.Error(err)
+	assert.NoError(err)
 	assert.Empty(pkgs)
 }

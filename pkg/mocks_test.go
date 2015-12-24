@@ -2,6 +2,10 @@ package pkg
 
 import (
 	"bufio"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/milosgajdos83/servpeek/utils/command"
@@ -31,24 +35,66 @@ func (m *mockPkgCommand) AppendArgs(args ...string)    {}
 
 // mockPkgManager implements pkg.Manager interface
 type mockPkgManager struct {
-	listCmd  *mockPkgCommand
-	queryCmd *mockPkgCommand
-	parser   CmdOutParser
-	pkgType  string
+	cmd     *mockPkgCommand
+	parser  CmdOutParser
+	pkgType string
+}
+
+func newMockPkgManager(pkgType, cmdType string) (*mockPkgManager, error) {
+	parsers := map[string]CmdOutParser{
+		"apt": NewAptParser(),
+		"yum": NewYumParser(),
+		"apk": NewApkParser(),
+		"pip": NewPipParser(),
+		"gem": NewGemParser(),
+	}
+
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	fileName := fmt.Sprintf("%s-%s.out", pkgType, cmdType)
+	fixturesPath := path.Join(currentDir, "test-fixtures", fileName)
+	cmdOut, err := ioutil.ReadFile(fixturesPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mockPkgManager{
+		cmd: &mockPkgCommand{
+			cmdOut: string(cmdOut),
+		},
+		parser:  parsers[pkgType],
+		pkgType: pkgType,
+	}, nil
 }
 
 func (m *mockPkgManager) Type() string { return m.pkgType }
 func (m *mockPkgManager) ListPkgs() ([]Pkg, error) {
-	return m.parser.ParseListPkgsOut(m.listCmd.Run())
+	return m.parser.ParseListPkgsOut(m.cmd.Run())
 }
 func (m *mockPkgManager) QueryPkg(pkgName string) ([]Pkg, error) {
-	return m.parser.ParseQueryPkgOut(m.queryCmd.Run())
+	return m.parser.ParseQueryPkgOut(m.cmd.Run())
 }
 
 type mockPkg struct {
 	manager *mockPkgManager
 	name    string
 	version string
+}
+
+func newMockPkg(pkgType, pkgName, pkgVersion, cmdType string) (*mockPkg, error) {
+	pkgManager, err := newMockPkgManager(pkgType, cmdType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mockPkg{
+		manager: pkgManager,
+		name:    pkgName,
+		version: pkgVersion,
+	}, nil
 }
 
 func (m *mockPkg) Manager() Manager { return m.manager }
