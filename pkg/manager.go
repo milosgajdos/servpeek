@@ -41,9 +41,9 @@ func NewManager(pkgType string) (Manager, error) {
 // baseManager implements Manager interface.
 type baseManager struct {
 	// ListPkgsCmd runs command that lists installed pacakges
-	ListPkgsCmd command.Commander
+	ListPkgsCmd command.Command
 	// QueryPkgCmd runs command that queries a package
-	QueryPkgCmd command.Commander
+	QueryPkgCmd command.Command
 	// parser parses output of manager commands
 	parser CmdOutParser
 	// type of sw package this manager maintains

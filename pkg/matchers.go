@@ -26,7 +26,7 @@ func IsInstalled(pkgs ...Pkg) error {
 			if foundPkg.Version() == p.Version() {
 				continue
 			}
-			return fmt.Errorf("Incorrect package version found. Wanted: %s, Found: %s", p.Version(), foundPkg.Version())
+			return fmt.Errorf("Incorrect package version found: %s", foundPkg.Version())
 		}
 	}
 	return nil

@@ -13,7 +13,7 @@ import (
 )
 
 // BuildCmd builds Command from cmd name and arguments
-func BuildCmd(cmd string, args ...string) *command.Command {
+func BuildCmd(cmd string, args ...string) command.Command {
 	return command.NewCommand(cmd, args...)
 
 }

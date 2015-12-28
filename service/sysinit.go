@@ -3,67 +3,148 @@ package service
 import (
 	"fmt"
 	"strings"
+
+	"github.com/milosgajdos83/servpeek/utils/command"
 )
 
-// SysInit provides service management commands
+const (
+	// ServiceCmd command
+	ServiceCmd = "service"
+	// SystemCtl command
+	SystemCtl = "systemctl"
+)
+
+var svcStatusOut = map[string]map[string]string{
+	"running": map[string]string{
+		"sysv":    "running",
+		"upstart": "running",
+		"systemd": "active (running)",
+	},
+	"stopped": map[string]string{
+		"sysv":    "is stopped",
+		"upstart": "stop/waiting",
+		"systemd": "inactive (stopped)",
+	},
+}
+
+// SysInit allows to manage services of particular system init type
 type SysInit interface {
-	// Start starts a service or returns error if the service can not be started
+	// Type returns type of system init
+	Type() string
+	// Start attempts to start a service of a given name
+	// It returns error if the service could not be started
 	Start(string) error
-	// Stop stops a service or returns error if the service can not be stopped
+	// Stop attempts to stop a service of a given name
+	// It returns error if the service could not be stopped
 	Stop(string) error
-	// Status returns service status or error if the status can not be determined
+	// Status returns service status or error if the status could not not be determined
 	Status(string) (Status, error)
 }
 
 // NewSysInit returns NewSysInit based on the system init type passed in as argument
 // It returns error if the SysInit could not be created or required service type is not supported
-func NewSysInit(sysInit string) (SysInit, error) {
-	switch sysInit {
+func NewSysInit(sysInitType string) (SysInit, error) {
+	switch sysInitType {
 	case "sysv":
-		return NewSysVInit()
+		return NewSysVInit(), nil
 	case "upstart":
-		return NewUpstartInit()
+		return NewUpstartInit(), nil
 	case "systemd":
-		return NewSystemdInit()
+		return NewSystemdInit(), nil
 	}
-	return nil, fmt.Errorf("Unsupported service init type: %s", sysInit)
+	return nil, fmt.Errorf("Unsupported system init type: %s", sysInitType)
 }
 
-// BaseSysInit provides basic service manager commands
-type BaseSysInit struct {
-	// cmd provides service commands
-	cmd *SvcCommander
+// Commander provides service management/control commands
+type Commander struct {
+	// Start service command
+	StartCmd command.Command
+	// Stop service command
+	StopCmd command.Command
+	// Check sercice status command
+	StatusCmd command.Command
+}
+
+// baseSysInit provides basic service manager commands
+type baseSysInit struct {
+	// Service manager commands
+	*Commander
+	// system init type
+	sysInitType string
+}
+
+// Type returns type of the system init
+func (b *baseSysInit) Type() string {
+	return b.sysInitType
 }
 
 // Start starts required service. It returns error if the service fails to start
-func (b *BaseSysInit) Start(svcName string) error {
-	b.cmd.Start.Args = append([]string{svcName}, b.cmd.Start.Args...)
-	_, err := b.cmd.Start.RunCombined()
+func (b *baseSysInit) Start(svcName string) error {
+	b.StartCmd.AppendArgs(sysInitCmdArgs(b.sysInitType, svcName, "start")...)
+	_, err := b.StartCmd.RunCombined()
 	return err
 }
 
 // Stop stops required service. It returns error if the service fails to stop
-func (b *BaseSysInit) Stop(svcName string) error {
-	b.cmd.Stop.Args = append([]string{svcName}, b.cmd.Stop.Args...)
-	_, err := b.cmd.Stop.RunCombined()
+func (b *baseSysInit) Stop(svcName string) error {
+	b.StopCmd.AppendArgs(sysInitCmdArgs(b.sysInitType, svcName, "stop")...)
+	_, err := b.StopCmd.RunCombined()
 	return err
 }
 
 // Status queries the status of service and returns it.
 // It returns error if the service status could not be queried.
-// This method implements *SYSV INIT* and *UPSTART* status commands.
-// You will have to override this method for other service managers
-func (b *BaseSysInit) Status(svcName string) (Status, error) {
-	b.cmd.Status.Args = append([]string{svcName}, b.cmd.Status.Args...)
-	status, err := b.cmd.Status.RunCombined()
+func (b *baseSysInit) Status(svcName string) (Status, error) {
+	b.StatusCmd.AppendArgs(sysInitCmdArgs(b.sysInitType, svcName, "status")...)
+	status, err := b.StatusCmd.RunCombined()
 	if err != nil {
 		return Unknown, err
 	}
 	switch {
-	case strings.Contains(status, "running"):
+	case strings.Contains(status, svcStatusOut["running"][b.sysInitType]):
 		return Running, nil
-	case strings.Contains(status, "is stopped") || strings.Contains(status, "stop/waiting"):
+	case strings.Contains(status, svcStatusOut["stopped"][b.sysInitType]):
 		return Stopped, nil
 	}
 	return Unknown, fmt.Errorf("Unable to determine %s status", svcName)
+}
+
+func sysInitCmdArgs(syInitType, svcName, action string) []string {
+	if syInitType == "systemd" {
+		return []string{action, svcName + ".service"}
+	}
+	return []string{svcName, action}
+}
+
+// NewBaseCommander returns basic service commander
+func NewBaseCommander(ctlCmd string) *Commander {
+	return &Commander{
+		StartCmd:  command.NewCommand(ctlCmd, []string{}...),
+		StopCmd:   command.NewCommand(ctlCmd, []string{}...),
+		StatusCmd: command.NewCommand(ctlCmd, []string{}...),
+	}
+}
+
+// NewSysVInit returns SysInit which can manage SysV services
+func NewSysVInit() SysInit {
+	return &baseSysInit{
+		Commander:   NewBaseCommander(ServiceCmd),
+		sysInitType: "sysv",
+	}
+}
+
+// NewUpstartInit returns SysInit which can manage upstart services
+func NewUpstartInit() SysInit {
+	return &baseSysInit{
+		Commander:   NewBaseCommander(ServiceCmd),
+		sysInitType: "upstart",
+	}
+}
+
+// NewSystemdInit returns SysInit which can manage systemd services
+func NewSystemdInit() SysInit {
+	return &baseSysInit{
+		Commander:   NewBaseCommander(SystemCtl),
+		sysInitType: "systemd",
+	}
 }

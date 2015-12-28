@@ -1,9 +1,6 @@
 package pkg
 
 import (
-	"io/ioutil"
-	"os"
-	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,29 +21,12 @@ func TestNewPkgManager(t *testing.T) {
 
 func TestPkgManagerListPkgs(t *testing.T) {
 	assert := assert.New(t)
-	parsers := map[string]CmdOutParser{
-		"apt": NewAptParser(),
-		"yum": NewYumParser(),
-		"apk": NewApkParser(),
-		"pip": NewPipParser(),
-		"gem": NewGemParser(),
-	}
-
-	for pkgType, parser := range parsers {
-		currentDir, err := os.Getwd()
+	mgrTypes := []string{"apt", "yum", "apk", "pip", "gem"}
+	for _, mgrType := range mgrTypes {
+		pkgMgr, err := newMockPkgManager(mgrType, "list")
 		assert.NoError(err)
-		fixturesPath := path.Join(currentDir, "test-fixtures", pkgType+"list.out")
-		cmdOut, err := ioutil.ReadFile(fixturesPath)
-		assert.NoError(err)
-		mockMgr := &mockManager{
-			listCmd: &mockCommander{
-				cmdOut: string(cmdOut),
-			},
-			parser:  parser,
-			pkgType: pkgType,
-		}
 
-		pkgs, err := mockMgr.ListPkgs()
+		pkgs, err := pkgMgr.ListPkgs()
 		assert.NoError(err)
 		assert.NotEmpty(pkgs)
 	}
