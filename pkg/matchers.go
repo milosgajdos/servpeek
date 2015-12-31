@@ -18,15 +18,21 @@ func IsInstalled(pkgs ...Pkg) error {
 			return fmt.Errorf("Unable to look up %s: no package found", p)
 		}
 
-		if p.Version() == "" {
+		if p.Version() == nil {
 			continue
 		}
 
+	CheckPkgs:
 		for _, foundPkg := range foundPkgs {
-			if foundPkg.Version() == p.Version() {
-				continue
+			for _, foundPkgVersion := range foundPkg.Version() {
+				for _, pkgVersion := range p.Version() {
+					if foundPkgVersion == pkgVersion {
+						break CheckPkgs
+					}
+				}
 			}
-			return fmt.Errorf("Incorrect package version found: %s", foundPkg.Version())
+			return fmt.Errorf("Requested package versions: %v, found: %v",
+				p.Version(), foundPkg.Version())
 		}
 	}
 	return nil

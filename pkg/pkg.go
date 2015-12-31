@@ -14,8 +14,8 @@ var supportedPkgTypes = map[string]bool{
 type Pkg interface {
 	// Name returns package name
 	Name() string
-	// Version returns package version
-	Version() string
+	// Version returns slice of all package versions
+	Version() []string
 	// Manager returns package manager
 	Manager() Manager
 }
@@ -29,18 +29,18 @@ type SwPkg struct {
 	// package name
 	name string
 	// package version
-	version string
+	versions []string
 }
 
 // NewSwPkg returns *SwPkg. It returns error if either the requested package type is unsupported
 // or package name passed as parameter is empty string. If version is empty string, it is
 // ignored by matchers
-func NewSwPkg(pkgType, name, version string) (*SwPkg, error) {
+func NewSwPkg(pkgType, pkgName string, pkgVersions ...string) (*SwPkg, error) {
 	if !supportedPkgTypes[pkgType] {
 		return nil, fmt.Errorf("Unsupported package type: %s", pkgType)
 	}
 
-	if name == "" {
+	if pkgName == "" {
 		return nil, fmt.Errorf("Package name can not be empty!")
 	}
 
@@ -50,9 +50,9 @@ func NewSwPkg(pkgType, name, version string) (*SwPkg, error) {
 	}
 
 	return &SwPkg{
-		manager: manager,
-		name:    name,
-		version: version,
+		manager:  manager,
+		name:     pkgName,
+		versions: pkgVersions,
 	}, nil
 }
 
@@ -61,9 +61,10 @@ func (s *SwPkg) Name() string {
 	return s.name
 }
 
-// Version returns package version
-func (s *SwPkg) Version() string {
-	return s.version
+// Version returns a slice of all package versions
+// If the returned slice is nil, no version has been specified
+func (s *SwPkg) Version() []string {
+	return s.versions
 }
 
 // Manager returns package manager that manages this type of package
@@ -73,5 +74,6 @@ func (s *SwPkg) Manager() Manager {
 
 // String implements Stringer interface
 func (s *SwPkg) String() string {
-	return fmt.Sprintf("[SwPkg] Type: %s Name: %s Version: %s", s.manager.Type(), s.name, s.version)
+	return fmt.Sprintf("[SwPkg] Type: %s Name: %s Version: %v",
+		s.manager.Type(), s.name, s.versions)
 }

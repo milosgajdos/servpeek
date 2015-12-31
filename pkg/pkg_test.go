@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,8 @@ func TestPkg(t *testing.T) {
 	p, err := NewSwPkg("gem", "PkgName", "0.1.1")
 	assert.NoError(err)
 
-	expected := "[SwPkg] Type: " + p.Manager().Type() + " Name: " + p.Name() + " Version: " + p.Version()
+	expected := fmt.Sprintf("[SwPkg] Type: %s Name: %s Version: %v",
+		p.Manager().Type(), p.Name(), p.Version())
 	assert.Equal(expected, p.String())
 }
 
@@ -44,5 +46,6 @@ func TestVersion(t *testing.T) {
 	assert := assert.New(t)
 	p, err := NewSwPkg("pip", "PkgName", tstVersion)
 	assert.NoError(err)
-	assert.Equal(tstVersion, p.Version())
+	versions := []string{tstVersion}
+	assert.Equal(versions, p.Version())
 }
