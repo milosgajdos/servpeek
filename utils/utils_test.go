@@ -14,10 +14,7 @@ func TestBuildCmd(t *testing.T) {
 	cmd := "foo"
 	args := []string{"bar"}
 	actCmd := BuildCmd(cmd, args...)
-	expCmd := &command.Cmd{
-		Cmd:  cmd,
-		Args: args,
-	}
+	expCmd := command.NewCommand(cmd, args...)
 	assert.Exactly(t, expCmd, actCmd)
 }
 

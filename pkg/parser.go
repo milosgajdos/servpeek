@@ -3,6 +3,7 @@ package pkg
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/milosgajdos83/servpeek/utils/command"
 )
@@ -110,5 +111,10 @@ func parseQueryOut(pkgType, line string, re *regexp.Regexp) (Pkg, error) {
 	if match == nil || len(match) < 2 {
 		return nil, fmt.Errorf("Unable to parse Query package info")
 	}
-	return NewSwPkg(pkgType, "foo", match[1])
+	rawVersions := strings.Split(match[1], ",")
+	var versions []string
+	for _, v := range rawVersions {
+		versions = append(versions, strings.TrimSpace(v))
+	}
+	return NewSwPkg(pkgType, "N/A", versions...)
 }

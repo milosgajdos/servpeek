@@ -15,11 +15,11 @@ var (
 	// gem package manager parser hints
 	gemListPkgsOutHints = &hints{
 		filter:  regexp.MustCompile(`^[A-Za-z]`),
-		matcher: regexp.MustCompile(`^(\S+)\s+\((\S+)\)$`),
+		matcher: regexp.MustCompile(`^(\S+)\s+\((.+)\)$`),
 	}
 	gemQueryPkgsOutHints = &hints{
 		filter:  regexp.MustCompile(`^[A-Za-z]`),
-		matcher: regexp.MustCompile(`^\S+\s+\((\S+)\)$`),
+		matcher: regexp.MustCompile(`^\S+\s+\((.+)\)$`),
 	}
 )
 

@@ -15,11 +15,11 @@ var (
 	// pip package manager parser hints
 	pipListPkgsOutHints = &hints{
 		filter:  regexp.MustCompile(`^[A-Za-z]`),
-		matcher: regexp.MustCompile(`^(\S+)\s+\((\S+)\)$`),
+		matcher: regexp.MustCompile(`^(\S+)\s+\((.+)\)$`),
 	}
 	pipQueryPkgsOutHints = &hints{
 		filter:  regexp.MustCompile(`^Version`),
-		matcher: regexp.MustCompile(`^Version\s?:\s+(\S+).*`),
+		matcher: regexp.MustCompile(`^Version\s?:\s+(.+).*`),
 	}
 )
 

@@ -3,6 +3,7 @@ package command
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os/exec"
 	"sync"
@@ -25,22 +26,22 @@ type Command interface {
 // Cmd is an external command with arguments
 // Cmd implements Commander interface
 type Cmd struct {
-	Cmd  string
-	Args []string
+	cmd  string
+	args []string
 }
 
 // NewCommand returns Command
 func NewCommand(cmd string, args ...string) Command {
 	return &Cmd{
-		Cmd:  cmd,
-		Args: args,
+		cmd:  cmd,
+		args: args,
 	}
 }
 
 // Run executes command and returns Output that can be used
 // to collect and analyse the output of the executed command
 func (c *Cmd) Run() Output {
-	cmd := exec.Command(c.Cmd, c.Args...)
+	cmd := exec.Command(c.cmd, c.args...)
 	cmdStdout, err := cmd.StdoutPipe()
 	res := &Out{
 		lines:  make(chan string, 1),
@@ -59,6 +60,7 @@ func (c *Cmd) Run() Output {
 		if err := cmd.Start(); err != nil {
 			res.mu.Lock()
 			defer res.mu.Unlock()
+			fmt.Println("Start", err)
 			res.err = err
 			return
 		}
@@ -88,14 +90,14 @@ func (c *Cmd) Run() Output {
 // AppendArgs allows to append arbitrary number of arguments to the
 // underlying command that will be executed by Run
 func (c *Cmd) AppendArgs(args ...string) {
-	c.Args = append(c.Args, args...)
+	c.args = append(c.args, args...)
 }
 
 // RunCombined executes command and returns combined Stdout and Stderr as a string.
 // The difference betweent RunCombined and Run is that Run returns a Stdout stream
 // ie. stream of line strings. RunCombined returns combined Stdout/Stderr output in one string
 func (c *Cmd) RunCombined() (string, error) {
-	cmd := exec.Command(c.Cmd, c.Args...)
+	cmd := exec.Command(c.cmd, c.args...)
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
@@ -141,6 +143,7 @@ func (o *Out) Text() string {
 func (o *Out) Err() error {
 	o.mu.Lock()
 	defer o.mu.Unlock()
+	fmt.Println("Out", o.err)
 	return o.err
 }
 

@@ -11,9 +11,11 @@ type Manager interface {
 	// Type returns the type of the package the manager maintains
 	Type() string
 	// ListPkgs allows to list all installed packages on the system
+	// It returns a list of all installed packages found in package database
 	// It returns error if the installed packages can't be listed
 	ListPkgs() ([]Pkg, error)
 	// QueryPkg queries package database about particular package
+	// It returns a list of packages that match the name provided as argument
 	// It returns error if the requested package fails to be queried
 	QueryPkg(pkgName string) ([]Pkg, error)
 }

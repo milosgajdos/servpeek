@@ -79,24 +79,24 @@ func (m *mockPkgManager) QueryPkg(pkgName string) ([]Pkg, error) {
 }
 
 type mockPkg struct {
-	manager *mockPkgManager
-	name    string
-	version string
+	manager  *mockPkgManager
+	name     string
+	versions []string
 }
 
-func newMockPkg(pkgType, pkgName, pkgVersion, cmdType string) (*mockPkg, error) {
+func newMockPkg(pkgType, pkgName, cmdType string, pkgVersion ...string) (*mockPkg, error) {
 	pkgManager, err := newMockPkgManager(pkgType, cmdType)
 	if err != nil {
 		return nil, err
 	}
 
 	return &mockPkg{
-		manager: pkgManager,
-		name:    pkgName,
-		version: pkgVersion,
+		manager:  pkgManager,
+		name:     pkgName,
+		versions: pkgVersion,
 	}, nil
 }
 
-func (m *mockPkg) Manager() Manager { return m.manager }
-func (m *mockPkg) Name() string     { return m.name }
-func (m *mockPkg) Version() string  { return m.version }
+func (m *mockPkg) Manager() Manager   { return m.manager }
+func (m *mockPkg) Name() string       { return m.name }
+func (m *mockPkg) Versions() []string { return m.versions }
