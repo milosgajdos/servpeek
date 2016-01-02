@@ -97,6 +97,6 @@ func newMockPkg(pkgType, pkgName, cmdType string, pkgVersion ...string) (*mockPk
 	}, nil
 }
 
-func (m *mockPkg) Manager() Manager  { return m.manager }
-func (m *mockPkg) Name() string      { return m.name }
-func (m *mockPkg) Version() []string { return m.versions }
+func (m *mockPkg) Manager() Manager   { return m.manager }
+func (m *mockPkg) Name() string       { return m.name }
+func (m *mockPkg) Versions() []string { return m.versions }

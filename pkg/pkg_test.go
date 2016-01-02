@@ -13,7 +13,7 @@ func TestPkg(t *testing.T) {
 	assert.NoError(err)
 
 	expected := fmt.Sprintf("[SwPkg] Type: %s Name: %s Version: %v",
-		p.Manager().Type(), p.Name(), p.Version())
+		p.Manager().Type(), p.Name(), p.Versions())
 	assert.Equal(expected, p.String())
 }
 
@@ -41,11 +41,11 @@ func TestName(t *testing.T) {
 	assert.Error(err)
 }
 
-func TestVersion(t *testing.T) {
+func TestVersions(t *testing.T) {
 	tstVersion := "0.1.1"
 	assert := assert.New(t)
 	p, err := NewSwPkg("pip", "PkgName", tstVersion)
 	assert.NoError(err)
 	versions := []string{tstVersion}
-	assert.Equal(versions, p.Version())
+	assert.Equal(versions, p.Versions())
 }

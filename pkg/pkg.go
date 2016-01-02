@@ -14,8 +14,8 @@ var supportedPkgTypes = map[string]bool{
 type Pkg interface {
 	// Name returns package name
 	Name() string
-	// Version returns slice of all package versions
-	Version() []string
+	// Versions returns slice of all package versions
+	Versions() []string
 	// Manager returns package manager
 	Manager() Manager
 }
@@ -63,7 +63,7 @@ func (s *SwPkg) Name() string {
 
 // Version returns a slice of all package versions
 // If the returned slice is nil, no version has been specified
-func (s *SwPkg) Version() []string {
+func (s *SwPkg) Versions() []string {
 	return s.versions
 }
 
