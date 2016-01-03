@@ -1,5 +1,6 @@
 # servpeek
 
+[![circleci](https://circleci.com/gh/milosgajdos83/servpeek.svg?style=shield)](https://circleci.com/gh/milosgajdos83/servpeek)
 [![GoDoc](https://godoc.org/github.com/milosgajdos83/servpeek?status.svg)](https://godoc.org/github.com/milosgajdos83/servpeek)
 
 Introspective peek into your infrastructure guts
