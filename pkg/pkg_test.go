@@ -9,42 +9,42 @@ import (
 
 func TestPkg(t *testing.T) {
 	assert := assert.New(t)
-	p, err := NewSwPkg("gem", "PkgName", "0.1.1")
+	p, err := NewPackage("gem", "PkgName", "0.1.1")
 	assert.NoError(err)
 
-	expected := fmt.Sprintf("[SwPkg] Type: %s Name: %s Version: %v",
+	expected := fmt.Sprintf("[Package] Type: %s Name: %s Version: %v",
 		p.Manager().Type(), p.Name(), p.Versions())
 	assert.Equal(expected, p.String())
 }
 
-func TestSwPkgManagerType(t *testing.T) {
+func TestPackageManagerType(t *testing.T) {
 	assert := assert.New(t)
 	for ptype := range supportedPkgTypes {
-		p, err := NewSwPkg(ptype, "PkgName", "0.1.1")
+		p, err := NewPackage(ptype, "PkgName", "0.1.1")
 		assert.NoError(err)
 		assert.Equal(ptype, p.Manager().Type())
 	}
 	// Unsupported package manager
-	_, err := NewSwPkg("random", "PkgName", "0.1.1")
+	_, err := NewPackage("random", "PkgName", "0.1.1")
 	assert.Error(err)
 }
 
 func TestName(t *testing.T) {
 	tstName := "PkgName"
 	assert := assert.New(t)
-	p, err := NewSwPkg("pip", tstName, "")
+	p, err := NewPackage("pip", tstName, "")
 	assert.NoError(err)
 	assert.Equal(tstName, p.Name())
 
 	// Name can not be empty
-	_, err = NewSwPkg("pip", "", "")
+	_, err = NewPackage("pip", "", "")
 	assert.Error(err)
 }
 
 func TestVersions(t *testing.T) {
 	tstVersion := "0.1.1"
 	assert := assert.New(t)
-	p, err := NewSwPkg("pip", "PkgName", tstVersion)
+	p, err := NewPackage("pip", "PkgName", tstVersion)
 	assert.NoError(err)
 	versions := []string{tstVersion}
 	assert.Equal(versions, p.Versions())

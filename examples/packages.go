@@ -18,7 +18,7 @@ func CheckPackages() error {
 	}
 
 	for _, tstPkg := range tstPkgs {
-		p, err := pkg.NewSwPkg(tstPkg.pkgType, tstPkg.name, tstPkg.version)
+		p, err := pkg.NewPackage(tstPkg.pkgType, tstPkg.name, tstPkg.version)
 		if err != nil {
 			return err
 		}

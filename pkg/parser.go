@@ -103,7 +103,7 @@ func parseListOut(pkgType, line string, re *regexp.Regexp) (Pkg, error) {
 	if match == nil || len(match) < 3 {
 		return nil, fmt.Errorf("Unable to parse List package info")
 	}
-	return NewSwPkg(pkgType, match[1], match[2])
+	return NewPackage(pkgType, match[1], match[2])
 }
 
 func parseQueryOut(pkgType, line string, re *regexp.Regexp) (Pkg, error) {
@@ -116,5 +116,5 @@ func parseQueryOut(pkgType, line string, re *regexp.Regexp) (Pkg, error) {
 	for _, v := range rawVersions {
 		versions = append(versions, strings.TrimSpace(v))
 	}
-	return NewSwPkg(pkgType, "N/A", versions...)
+	return NewPackage(pkgType, "N/A", versions...)
 }
