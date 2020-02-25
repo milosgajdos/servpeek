@@ -1,6 +1,6 @@
 package main
 
-import "github.com/milosgajdos83/servpeek/pkg"
+import "github.com/milosgajdos/servpeek/pkg"
 
 // CheckPackages checks various properties of different kid of software pacakges
 // It returns error if any of the checked properties could not be satisfied.

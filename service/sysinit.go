@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 const (

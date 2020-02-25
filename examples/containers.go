@@ -1,6 +1,6 @@
 package main
 
-import "github.com/milosgajdos83/servpeek/container"
+import "github.com/milosgajdos/servpeek/container"
 
 // CheckContainers checkss various properties of container images and containers
 // It returns error if any of the checked properties could not be satisfied.

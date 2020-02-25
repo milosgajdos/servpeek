@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -16,7 +16,7 @@ func getDockerEndPoint() (dep string, err error) {
 		dep = dockerHost
 		return dep, nil
 	}
-	return docker.DefaultDockerHost()
+	return "unix:///var/run/docker.sock", nil
 }
 
 // Reads DOCKER_CERT_PATH environment variable and returns a slice of strings

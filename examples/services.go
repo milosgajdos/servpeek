@@ -1,6 +1,6 @@
 package main
 
-import "github.com/milosgajdos83/servpeek/service"
+import "github.com/milosgajdos/servpeek/service"
 
 // CheckServices checks various properties of OS services
 // It returns error if any of the checked properties could not be satisfied.

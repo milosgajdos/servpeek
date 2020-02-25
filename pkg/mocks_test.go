@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 // mockPkgCmdOut implements command.Output interface

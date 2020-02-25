@@ -3,7 +3,7 @@ package main
 import (
 	"regexp"
 
-	"github.com/milosgajdos83/servpeek/file"
+	"github.com/milosgajdos/servpeek/file"
 )
 
 // CheckFiles checks various file properties.

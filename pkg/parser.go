@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 // CmdOutParser provides an interface to parse output of package manager commands

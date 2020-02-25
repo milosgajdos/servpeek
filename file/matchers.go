@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/milosgajdos83/servpeek/utils"
+	"github.com/milosgajdos/servpeek/utils"
 )
 
 // Bit mask for regular files

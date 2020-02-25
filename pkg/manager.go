@@ -3,7 +3,7 @@ package pkg
 import (
 	"fmt"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 // Manager provides software defines manager interface

@@ -1,7 +1,7 @@
 # servpeek
 
-[![circleci](https://circleci.com/gh/milosgajdos83/servpeek.svg?style=shield)](https://circleci.com/gh/milosgajdos83/servpeek)
-[![GoDoc](https://godoc.org/github.com/milosgajdos83/servpeek?status.svg)](https://godoc.org/github.com/milosgajdos83/servpeek)
+[![GoDoc](https://godoc.org/github.com/milosgajdos/servpeek?status.svg)](https://godoc.org/github.com/milosgajdos/servpeek)
+[![Travis CI](https://travis-ci.org/milosgajdos/servpeek.svg?branch=master)](https://travis-ci.org/milosgajdos/servpeek)
 
 Introspective peek into your infrastructure guts
 
@@ -25,7 +25,7 @@ The project does not offer a single program to run as it stands right now. Inste
 
 Get the package:
 ```
-$ go get github.com/milosgajdos83/servpeek
+$ go get github.com/milosgajdos/servpeek
 ```
 
 Write a go program that does some testing:
@@ -35,8 +35,8 @@ package main
 import (
 	"log"
 
-	"github.com/milosgajdos83/servpeek/file"
-	"github.com/milosgajdos83/servpeek/pkg"
+	"github.com/milosgajdos/servpeek/file"
+	"github.com/milosgajdos/servpeek/pkg"
 )
 
 func main() {
@@ -58,7 +58,7 @@ func main() {
 }
 ```
 
-You can find a more elaborate example program in the [examples](https://github.com/milosgajdos83/servpeek/tree/master/examples) directory.
+You can find a more elaborate example program in the [examples](https://github.com/milosgajdos/servpeek/tree/master/examples) directory.
 
 ## TODO
 

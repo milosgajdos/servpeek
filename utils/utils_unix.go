@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/milosgajdos83/servpeek/utils/group"
+	"github.com/milosgajdos/servpeek/utils/group"
 )
 
 func roleToID(role string, name string) (uint64, error) {

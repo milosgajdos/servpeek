@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"syscall"
 
-	"github.com/milosgajdos83/servpeek/utils"
+	"github.com/milosgajdos/servpeek/utils"
 )
 
 func isOwnedBy(f Filer, username string) error {

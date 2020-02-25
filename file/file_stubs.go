@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/milosgajdos83/servpeek/resource"
+	"github.com/milosgajdos/servpeek/resource"
 )
 
 func isOwnedBy(f resource.Filer, username string) error {

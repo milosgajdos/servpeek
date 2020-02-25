@@ -3,7 +3,7 @@ package pkg
 import (
 	"regexp"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 const pip = "pip"

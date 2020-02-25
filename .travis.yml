@@ -1,0 +1,9 @@
+language: go
+go:
+  - "1.12"
+  - "1.13"
+
+script:
+  - go get ./...
+  - go test ./...
+  - go build

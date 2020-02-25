@@ -1,6 +1,6 @@
 package main
 
-import "github.com/milosgajdos83/servpeek/process"
+import "github.com/milosgajdos/servpeek/process"
 
 // CheckProcesses checks various properties of os processes
 // It returns error if any of the checked properties could not be satisfied.

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/milosgajdos83/servpeek/utils"
+	"github.com/milosgajdos/servpeek/utils"
 	"github.com/prometheus/procfs"
 )
 

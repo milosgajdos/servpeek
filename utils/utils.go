@@ -9,7 +9,7 @@ import (
 	"hash"
 	"io"
 
-	"github.com/milosgajdos83/servpeek/utils/command"
+	"github.com/milosgajdos/servpeek/utils/command"
 )
 
 // BuildCmd builds Command from cmd name and arguments
